@@ -22,9 +22,18 @@ public static class DependencyInjection
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddApiEndpoints();
 
+        var host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost";
+        var port = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
+        var database = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "udemydb";
+        var username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "udemyuser";
+        var password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "udemypassword";
+
+        var connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password}";
+
+
         services.AddDbContext<ApplicationDbContext>(options =>
         {
-            options.UseNpgsql(configuration.GetConnectionString("Database"));
+            options.UseNpgsql(connectionString);
         });
 
         return services;

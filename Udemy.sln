@@ -35,15 +35,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Udemy.Tests", "Udemy.Tests"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Udemy.Auth", "Udemy.Auth", "{51F4A6F4-E097-4F0E-BF49-14757AC765EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Udemy.Auth.API", "Udemy.Auth\Udemy.Auth.API\Udemy.Auth.API.csproj", "{A343717F-2F45-4ED1-875D-27EA6026F8D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Udemy.Auth.API", "Udemy.Auth\Udemy.Auth.API\Udemy.Auth.API.csproj", "{A343717F-2F45-4ED1-875D-27EA6026F8D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Udemy.Auth.Infrastructure", "Udemy.Auth\Udemy.Auth.Infrastructure\Udemy.Auth.Infrastructure.csproj", "{D437537A-818F-4B88-9E09-0C5B28413D5B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Udemy.Auth.Infrastructure", "Udemy.Auth\Udemy.Auth.Infrastructure\Udemy.Auth.Infrastructure.csproj", "{D437537A-818F-4B88-9E09-0C5B28413D5B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Udemy.Auth.Application", "Udemy.Auth\Udemy.Auth.Application\Udemy.Auth.Application.csproj", "{3713BD06-470A-4D52-B06C-507C090F21EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Udemy.Auth.Application", "Udemy.Auth\Udemy.Auth.Application\Udemy.Auth.Application.csproj", "{3713BD06-470A-4D52-B06C-507C090F21EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Udemy.Auth.Domain", "Udemy.Auth\Udemy.Auth.Domain\Udemy.Auth.Domain.csproj", "{6D200952-1342-4CBE-AF03-2A075AA29ABA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Udemy.Auth.Domain", "Udemy.Auth\Udemy.Auth.Domain\Udemy.Auth.Domain.csproj", "{6D200952-1342-4CBE-AF03-2A075AA29ABA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Udemy.Auth.Contracts", "Udemy.Auth\Udemy.Auth.Contracts\Udemy.Auth.Contracts.csproj", "{8CA494F2-9EB3-45F4-8CFB-14C4F2BED8AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Udemy.Auth.Contracts", "Udemy.Auth\Udemy.Auth.Contracts\Udemy.Auth.Contracts.csproj", "{8CA494F2-9EB3-45F4-8CFB-14C4F2BED8AE}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{FFC84CB0-6753-4A49-8BE5-87FC02D834A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +73,10 @@ Global
 		{8CA494F2-9EB3-45F4-8CFB-14C4F2BED8AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CA494F2-9EB3-45F4-8CFB-14C4F2BED8AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CA494F2-9EB3-45F4-8CFB-14C4F2BED8AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFC84CB0-6753-4A49-8BE5-87FC02D834A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFC84CB0-6753-4A49-8BE5-87FC02D834A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFC84CB0-6753-4A49-8BE5-87FC02D834A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFC84CB0-6753-4A49-8BE5-87FC02D834A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

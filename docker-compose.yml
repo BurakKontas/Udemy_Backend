@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  udemy.auth.api:
+    image: ${DOCKER_REGISTRY-}udemyauthapi
+    build:
+      context: .
+      dockerfile: Udemy.Auth/Udemy.Auth.API/Dockerfile
+    environment:
+      - POSTGRES_HOST=udemy.postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=udemydb
+      - POSTGRES_USER=udemyuser
+      - POSTGRES_PASSWORD=udemypassword
+    depends_on:
+      - udemy.postgres
+
+  udemy.postgres:
+    image: postgres:latest
+    container_name: udemy_postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: udemydb
+      POSTGRES_USER: udemyuser
+      POSTGRES_PASSWORD: udemypassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
