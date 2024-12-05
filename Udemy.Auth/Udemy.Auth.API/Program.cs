@@ -1,3 +1,4 @@
+using Udemy.Auth.Application;
 using Udemy.Auth.Domain;
 using Udemy.Auth.Infrastructure;
 
@@ -9,6 +10,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
@@ -25,7 +27,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapIdentityApi<User>(); // couldnt extend in infrastructure layer
+app.MapIdentityApi<User>(); // I couldn't extend this to infrastructure layer
 
 app.MapControllers();
 

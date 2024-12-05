@@ -4,7 +4,7 @@ using Udemy.Auth.Domain;
 
 namespace Udemy.Auth.Infrastructure;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<User>(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<User, Role, string>(options)
 {
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -14,6 +14,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         {
             entity.Property(e => e.Initials)
                 .HasMaxLength(5);
+        });
+
+        builder.Entity<Role>(entity =>
+        {
+            entity.Property(e => e.Description)
+                .HasMaxLength(100)
+                .IsRequired();
         });
 
         builder.HasDefaultSchema("identity");

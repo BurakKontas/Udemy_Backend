@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Udemy.Auth.Domain;
+using Udemy.Auth.Domain.Options;
 
 namespace Udemy.Auth.Infrastructure;
 
@@ -18,21 +20,31 @@ public static class DependencyInjection
             //})
             .AddBearerToken(IdentityConstants.BearerScheme);
 
-        services.AddIdentityCore<User>()
+        services.AddSingleton<IPersonalDataProtector, PersonalDataProtector>();
+        services.AddIdentityCore<User>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.User.RequireUniqueEmail = true;
+
+                options.Stores.ProtectPersonalData = true;
+            })
+            .AddRoles<Role>()
+            .AddRoleManager<RoleManager<Role>>()
+            .AddSignInManager<SignInManager<User>>()
+            .AddUserManager<UserManager<User>>()
+            .AddRoleStore<RoleStore<Role, ApplicationDbContext>>()
+            .AddUserStore<ProtectedUserStore>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddApiEndpoints();
-
-        var host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost";
-        var port = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
-        var database = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "udemydb";
-        var username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "udemyuser";
-        var password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "udemypassword";
-
-        var connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password}";
-
+            .AddTokenProvider<DataProtectorTokenProvider<User>>(TokenOptions.DefaultProvider);
+            //.AddApiEndpoints();
 
         services.AddDbContext<ApplicationDbContext>(options =>
         {
+            var connectionString = PostgresConnectionOptions.FromEnvironment()
+                .BuildConnectionString();
             options.UseNpgsql(connectionString);
         });
 
