@@ -2,7 +2,7 @@
 using Consul;
 using Microsoft.Extensions.Hosting;
 
-namespace Udemy.Auth.Infrastructure.Consul;
+namespace Udemy.Common.Consul;
 
 public class ConsulHostedService(IConsulClient consulClient) : IHostedService
 {
@@ -12,6 +12,7 @@ public class ConsulHostedService(IConsulClient consulClient) : IHostedService
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         var name = Assembly.GetEntryAssembly()?.GetName().Name;
+        var tags = name?.Split(".");
         var host = Environment.GetEnvironmentVariable("API_HOST") ?? throw new ArgumentNullException($"env:API_HOST");
         var port = Convert.ToInt32(Environment.GetEnvironmentVariable("API_HTTPS_PORT") ?? throw new ArgumentNullException($"env:API_HTTPS_PORT"));
         var registration = new AgentServiceRegistration
@@ -20,7 +21,7 @@ public class ConsulHostedService(IConsulClient consulClient) : IHostedService
             Name = name,
             Address = $"https://{host}",
             Port = port,
-            Tags = ["Auth", "API"]
+            Tags = tags
         };
 
         _registrationId = registration.ID;

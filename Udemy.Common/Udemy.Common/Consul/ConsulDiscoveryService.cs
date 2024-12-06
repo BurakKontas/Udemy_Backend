@@ -1,8 +1,7 @@
 ﻿using System.Net;
 using Consul;
-using Udemy.Auth.Domain.Interfaces;
 
-namespace Udemy.Auth.Infrastructure.Consul;
+namespace Udemy.Common.Consul;
 
 public class ConsulDiscoveryService(IConsulClient consulClient) : IConsulDiscoveryService
 {

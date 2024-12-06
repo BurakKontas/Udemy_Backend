@@ -1,21 +1,17 @@
-﻿using Consul;
-using Microsoft.AspNetCore.DataProtection;
+﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System.Net;
 using System.Net.Mail;
-using Udemy.Auth.Domain.Entities;
-using Udemy.Auth.Domain.Interfaces;
 using Udemy.Auth.Domain.Options;
-using Udemy.Auth.Infrastructure.Consul;
 using Udemy.Auth.Infrastructure.Context;
 using Udemy.Auth.Infrastructure.DataProtection;
 using Udemy.Auth.Infrastructure.Repositories;
 using Udemy.Auth.Infrastructure.User;
+using Udemy.Common.Consul;
 using DataProtectionProvider = Udemy.Auth.Infrastructure.DataProtection.DataProtectionProvider;
 using Role = Udemy.Auth.Domain.Entities.Role;
 
@@ -93,14 +89,7 @@ public static class DependencyInjection
         });
         services.AddScoped<IEmailSender<Domain.Entities.User>, SmtpEmailSender>();
 
-        services.AddSingleton<IConsulClient, ConsulClient>(p => new ConsulClient(cfg =>
-        {
-            var consulUrl = Environment.GetEnvironmentVariable("CONSUL_URL") ?? throw new ArgumentNullException($"env:CONSUL_URL");
-            cfg.Address = new Uri(consulUrl);
-        }));
-
-        services.AddSingleton<IHostedService, ConsulHostedService>();
-        services.AddScoped<IConsulDiscoveryService, ConsulDiscoveryService>();
+        services.AddConsul(configuration);
 
         return services;
     }

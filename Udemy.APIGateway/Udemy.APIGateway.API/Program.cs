@@ -1,5 +1,7 @@
 ﻿using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
+using Udemy.Common.Consul;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +17,13 @@ builder.Services.AddReverseProxy()
         
     });
 
+builder.Services.AddConsul(builder.Configuration);
+
 var app = builder.Build();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.MapReverseProxy();
 

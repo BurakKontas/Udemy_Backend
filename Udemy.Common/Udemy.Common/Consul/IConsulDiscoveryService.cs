@@ -1,6 +1,6 @@
 ﻿using Consul;
 
-namespace Udemy.Auth.Domain.Interfaces;
+namespace Udemy.Common.Consul;
 
 public interface IConsulDiscoveryService
 {
