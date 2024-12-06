@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Udemy.Auth.Domain;
+namespace Udemy.Auth.Domain.Entities;
 
 public class Role : IdentityRole
 {

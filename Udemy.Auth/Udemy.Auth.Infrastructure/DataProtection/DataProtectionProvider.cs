@@ -1,21 +1,20 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Udemy.Auth.Domain;
 using System;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Udemy.Auth.Infrastructure.DataProtection;
 
-public class DataProtectionProvider : IUserTwoFactorTokenProvider<Domain.User>
+public class DataProtectionProvider : IUserTwoFactorTokenProvider<Domain.Entities.User>
 {
-    public async Task<string> GenerateAsync(string purpose, UserManager<Domain.User> manager, Domain.User user)
+    public async Task<string> GenerateAsync(string purpose, UserManager<Domain.Entities.User> manager, Domain.Entities.User user)
     {
         var data = $"{user.Id}:{purpose}:{DateTime.UtcNow.Ticks}";
         var token = Convert.ToBase64String(Encoding.UTF8.GetBytes(data));
         return await Task.FromResult(token);
     }
 
-    public async Task<bool> ValidateAsync(string purpose, string token, UserManager<Domain.User> manager, Domain.User user)
+    public async Task<bool> ValidateAsync(string purpose, string token, UserManager<Domain.Entities.User> manager, Domain.Entities.User user)
     {
         try
         {
@@ -37,7 +36,7 @@ public class DataProtectionProvider : IUserTwoFactorTokenProvider<Domain.User>
         }
     }
 
-    public async Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<Domain.User> manager, Domain.User user)
+    public async Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<Domain.Entities.User> manager, Domain.Entities.User user)
     {
         return await Task.FromResult(!string.IsNullOrEmpty(user.Email));
     }

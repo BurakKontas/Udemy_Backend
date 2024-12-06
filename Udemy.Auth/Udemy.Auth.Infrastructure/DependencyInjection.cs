@@ -6,13 +6,13 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net.Mail;
 using System.Net;
 using Microsoft.AspNetCore.DataProtection;
-using Udemy.Auth.Domain;
 using Udemy.Auth.Domain.Options;
 using Udemy.Auth.Infrastructure.Context;
 using Udemy.Auth.Infrastructure.DataProtection;
 using Udemy.Auth.Infrastructure.Repositories;
 using Udemy.Auth.Infrastructure.User;
 using DataProtectionProvider = Udemy.Auth.Infrastructure.DataProtection.DataProtectionProvider;
+using Udemy.Auth.Domain.Entities;
 
 namespace Udemy.Auth.Infrastructure;
 
@@ -40,7 +40,7 @@ public static class DependencyInjection
         services.AddScoped<IPersonalDataProtector, PersonalDataProtector>();
         services.AddScoped<ILookupProtectorKeyRing, KeyRing>();
         services.AddScoped<ILookupProtector, LookupProtector>();
-        services.AddIdentityCore<Domain.User>(options =>
+        services.AddIdentityCore<Domain.Entities.User>(options =>
             {
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 6;
@@ -61,8 +61,8 @@ public static class DependencyInjection
             })
             .AddRoles<Role>()
             .AddRoleManager<RoleManager<Role>>()
-            .AddSignInManager<SignInManager<Domain.User>>()
-            .AddUserManager<UserManager<Domain.User>>()
+            .AddSignInManager<SignInManager<Domain.Entities.User>>()
+            .AddUserManager<UserManager<Domain.Entities.User>>()
             .AddRoleStore<RoleStore<Role, ApplicationDbContext>>()
             .AddUserStore<ProtectedUserStore>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -85,7 +85,7 @@ public static class DependencyInjection
             Credentials = new NetworkCredential("resend", Environment.GetEnvironmentVariable("resend:apikey")),
             EnableSsl = true
         });
-        services.AddScoped<IEmailSender<Domain.User>, SmtpEmailSender>();
+        services.AddScoped<IEmailSender<Domain.Entities.User>, SmtpEmailSender>();
 
         return services;
     }

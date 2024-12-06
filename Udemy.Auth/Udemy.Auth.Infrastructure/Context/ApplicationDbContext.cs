@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Udemy.Auth.Domain;
+using Udemy.Auth.Domain.Entities;
 
 namespace Udemy.Auth.Infrastructure.Context;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<Domain.User, Role, string>(options), IDataProtectionKeyContext
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<Domain.Entities.User, Role, string>(options), IDataProtectionKeyContext
 {
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
@@ -13,7 +13,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<Domain.User>(entity =>
+        builder.Entity<Domain.Entities.User>(entity =>
         {
             entity.Property(e => e.Initials)
                 .HasMaxLength(5);

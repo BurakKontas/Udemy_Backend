@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Udemy.Auth.Infrastructure;
+using Udemy.Auth.Infrastructure.Context;
 
 #nullable disable
 
