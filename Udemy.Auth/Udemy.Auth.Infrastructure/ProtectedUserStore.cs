@@ -9,7 +9,7 @@ public class ProtectedUserStore(
     ApplicationDbContext context,
     IDataProtectionProvider dataProtectionProvider,
     IdentityErrorDescriber describer = null!)
-    : UserStore<User, Role, ApplicationDbContext>(context, describer)
+    : UserStore<User, Role, ApplicationDbContext>(context, describer), IProtectedUserStore<User>
 {
     private readonly IDataProtector _dataProtector = dataProtectionProvider.CreateProtector("Identity.PersonalData");
 

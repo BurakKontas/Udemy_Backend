@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Identity;
+using System.Net.Mail;
+using System.Net;
 using Udemy.Auth.Application;
 using Udemy.Auth.Domain;
 using Udemy.Auth.Infrastructure;
@@ -23,11 +26,11 @@ if (app.Environment.IsDevelopment())
     app.ApplyMigrations();
 }
 
+//app.MapIdentityApi<User>();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
-app.MapIdentityApi<User>(); // I couldn't extend this to infrastructure layer
 
 app.MapControllers();
 

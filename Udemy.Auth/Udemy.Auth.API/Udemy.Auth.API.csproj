@@ -26,8 +26,4 @@
     <ProjectReference Include="..\Udemy.Auth.Infrastructure\Udemy.Auth.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>

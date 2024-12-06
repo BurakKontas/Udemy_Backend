@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Mail;
+using System.Net;
+using Microsoft.AspNetCore.DataProtection;
 using Udemy.Auth.Domain;
 using Udemy.Auth.Domain.Options;
 
@@ -14,13 +17,24 @@ public static class DependencyInjection
     {
         services.AddAuthorization();
         services.AddAuthentication()
-            //.AddCookie(IdentityConstants.ApplicationScheme, options =>
-            //{
-            //    options.Cookie.Expiration = TimeSpan.FromDays(150);
-            //})
-            .AddBearerToken(IdentityConstants.BearerScheme);
+            .AddCookie(IdentityConstants.ApplicationScheme, options =>
+            {
+                options.Cookie.Expiration = TimeSpan.FromDays(150);
+            })
+            .AddBearerToken(IdentityConstants.BearerScheme, options =>
+            {
+                options.BearerTokenExpiration = TimeSpan.FromMinutes(15);
+                options.RefreshTokenExpiration = TimeSpan.FromDays(30);
+            });
 
-        services.AddSingleton<IPersonalDataProtector, PersonalDataProtector>();
+        services.AddDataProtection()
+            .PersistKeysToDbContext<ApplicationDbContext>()
+            .SetApplicationName("Udemy")
+            .SetDefaultKeyLifetime(TimeSpan.FromDays(90));
+
+        services.AddScoped<IPersonalDataProtector, PersonalDataProtector>();
+        services.AddScoped<ILookupProtectorKeyRing, KeyRing>();
+        services.AddScoped<ILookupProtector, LookupProtector>();
         services.AddIdentityCore<User>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -28,6 +42,15 @@ public static class DependencyInjection
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
                 options.User.RequireUniqueEmail = true;
+                options.SignIn.RequireConfirmedEmail = true;
+                options.SignIn.RequireConfirmedAccount = true;
+
+                options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultProvider;
+                options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultProvider;
+                options.Tokens.ChangeEmailTokenProvider = TokenOptions.DefaultProvider;
+                options.Tokens.ChangePhoneNumberTokenProvider = TokenOptions.DefaultProvider;
+                options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultProvider;
+                options.Tokens.AuthenticatorIssuer = "Udemy.Auth";
 
                 options.Stores.ProtectPersonalData = true;
             })
@@ -38,7 +61,9 @@ public static class DependencyInjection
             .AddRoleStore<RoleStore<Role, ApplicationDbContext>>()
             .AddUserStore<ProtectedUserStore>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddTokenProvider<DataProtectorTokenProvider<User>>(TokenOptions.DefaultProvider);
+            .AddTokenProvider<DataProtectionProvider>(TokenOptions.DefaultProvider)
+            .AddUserConfirmation<UserConfirmation>()
+            .AddUserValidator<UserValidator>();
             //.AddApiEndpoints();
 
         services.AddDbContext<ApplicationDbContext>(options =>
@@ -47,6 +72,15 @@ public static class DependencyInjection
                 .BuildConnectionString();
             options.UseNpgsql(connectionString);
         });
+
+        services.AddSingleton(_ => new SmtpClient
+        {
+            Host = "smtp.resend.com",
+            Port = 587,
+            Credentials = new NetworkCredential("resend", Environment.GetEnvironmentVariable("resend:apikey")),
+            EnableSsl = true
+        });
+        services.AddScoped<IEmailSender<User>, SmtpEmailSender>();
 
         return services;
     }
