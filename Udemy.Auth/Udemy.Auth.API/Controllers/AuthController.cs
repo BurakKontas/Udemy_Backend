@@ -1,22 +1,15 @@
-﻿using Microsoft.AspNetCore.Authentication.BearerToken;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity.Data;
-using Udemy.Auth.Application.Services;
-using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 using Udemy.Auth.Domain.Entities;
+using Udemy.Auth.Domain.Interfaces;
 
 namespace Udemy.Auth.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("/")]
 [ApiController]
-public class AuthController(AuthService authService) : ControllerBase
+public class AuthController(IAuthService authService) : ControllerBase
 {
-    private readonly AuthService _authService = authService;
+    private readonly IAuthService _authService = authService;
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)

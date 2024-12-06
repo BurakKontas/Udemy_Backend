@@ -26,6 +26,10 @@ public class AuthService(
 
     public async Task<IdentityResult> RegisterUserAsync(RegisterRequest request, CancellationToken cancellationToken)
     {
+        //check if user already exists
+        var existingUser = await _userManager.FindByNameAsync(request.Email);
+        if (existingUser != null) return IdentityResult.Failed(new IdentityError { Description = "User already exists.", Code = "USER_EXISTS"});
+
         var user = new User { UserName = request.Email, Email = request.Email };
         user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, request.Password);
 

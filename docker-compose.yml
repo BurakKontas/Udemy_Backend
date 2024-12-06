@@ -1,4 +1,4 @@
-﻿services:
+services:
   udemy.auth.api:
     image: ${DOCKER_REGISTRY-}udemyauthapi
     build:
@@ -20,6 +20,19 @@
     depends_on:
       - udemy.postgres
       - consul
+    networks:
+      - udemy_network
+
+  udemy.apigateway.api:
+    image: ${DOCKER_REGISTRY-}udemyapigatewayapi
+    ports:
+      - "3000:8080"
+      - "3001:8081"
+    build:
+      context: .
+      dockerfile: Udemy.APIGateway/Udemy.APIGateway.API/Dockerfile
+    networks:
+      - udemy_network
 
   udemy.postgres:
     image: postgres:latest
@@ -33,6 +46,8 @@
       POSTGRES_PASSWORD: udemypassword
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - udemy_network
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -47,6 +62,8 @@
       - udemy.postgres
     volumes:
       - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - udemy_network
 
   consul:
     image: hashicorp/consul:latest
@@ -58,8 +75,14 @@
     restart: always
     volumes:
       - consul_data:/consul/data
+    networks:
+      - udemy_network
 
 volumes:
   postgres_data:
   pgadmin_data:
   consul_data:
+
+networks:
+  udemy_network:
+    driver: bridge

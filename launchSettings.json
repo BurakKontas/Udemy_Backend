@@ -1,11 +1,11 @@
 {
   "profiles": {
     "Docker Compose": {
-      "launchBrowser": false,
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "udemy.auth.api": "StartDebugging"
+        "udemy.auth.api": "StartDebugging",
+        "udemy.apigateway.api": "StartDebugging"
       }
     }
   }

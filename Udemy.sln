@@ -47,6 +47,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Udemy.Auth.Contracts", "Ude
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{FFC84CB0-6753-4A49-8BE5-87FC02D834A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Udemy.APIGateway.API", "Udemy.APIGateway\Udemy.APIGateway.API\Udemy.APIGateway.API.csproj", "{71D681BE-4481-402D-A0E1-5BF1B01D2E66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{FFC84CB0-6753-4A49-8BE5-87FC02D834A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFC84CB0-6753-4A49-8BE5-87FC02D834A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFC84CB0-6753-4A49-8BE5-87FC02D834A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71D681BE-4481-402D-A0E1-5BF1B01D2E66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71D681BE-4481-402D-A0E1-5BF1B01D2E66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71D681BE-4481-402D-A0E1-5BF1B01D2E66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71D681BE-4481-402D-A0E1-5BF1B01D2E66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +93,7 @@ Global
 		{3713BD06-470A-4D52-B06C-507C090F21EA} = {51F4A6F4-E097-4F0E-BF49-14757AC765EC}
 		{6D200952-1342-4CBE-AF03-2A075AA29ABA} = {51F4A6F4-E097-4F0E-BF49-14757AC765EC}
 		{8CA494F2-9EB3-45F4-8CFB-14C4F2BED8AE} = {51F4A6F4-E097-4F0E-BF49-14757AC765EC}
+		{71D681BE-4481-402D-A0E1-5BF1B01D2E66} = {77354F3C-2DC9-4D67-98C1-5088DBDEE925}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF0223CD-E1C9-4A14-8DD5-D83737BC343A}

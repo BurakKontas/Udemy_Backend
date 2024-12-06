@@ -83,11 +83,12 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString);
         });
 
+        var resendApiKey = configuration.GetValue("resend:apikey", "");
         services.AddSingleton(_ => new SmtpClient
         {
             Host = "smtp.resend.com",
             Port = 587,
-            Credentials = new NetworkCredential("resend", Environment.GetEnvironmentVariable("resend:apikey")),
+            Credentials = new NetworkCredential("resend", resendApiKey),
             EnableSsl = true
         });
         services.AddScoped<IEmailSender<Domain.Entities.User>, SmtpEmailSender>();
