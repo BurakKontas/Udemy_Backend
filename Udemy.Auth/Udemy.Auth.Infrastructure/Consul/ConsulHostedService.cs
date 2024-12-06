@@ -1,11 +1,8 @@
 ﻿using System.Reflection;
+using Consul;
+using Microsoft.Extensions.Hosting;
 
 namespace Udemy.Auth.Infrastructure.Consul;
-
-using Consul;
-using global::Consul;
-using Microsoft.Extensions.Hosting;
-using System.Text;
 
 public class ConsulHostedService(IConsulClient consulClient) : IHostedService
 {
