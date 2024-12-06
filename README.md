@@ -124,5 +124,4 @@ This project is a Udemy-like platform built using a microservices architecture. 
 	```
 
 3. **Access the API Gateway**:
-   - API Gateway: http://localhost:5000
-   - Swagger UI: http://localhost:5000/[microservice-alias]/swagger
+   - API Gateway: http://localhost:3000
