@@ -8,6 +8,11 @@ using System.Net;
 using Microsoft.AspNetCore.DataProtection;
 using Udemy.Auth.Domain;
 using Udemy.Auth.Domain.Options;
+using Udemy.Auth.Infrastructure.Context;
+using Udemy.Auth.Infrastructure.DataProtection;
+using Udemy.Auth.Infrastructure.Repositories;
+using Udemy.Auth.Infrastructure.User;
+using DataProtectionProvider = Udemy.Auth.Infrastructure.DataProtection.DataProtectionProvider;
 
 namespace Udemy.Auth.Infrastructure;
 
@@ -35,7 +40,7 @@ public static class DependencyInjection
         services.AddScoped<IPersonalDataProtector, PersonalDataProtector>();
         services.AddScoped<ILookupProtectorKeyRing, KeyRing>();
         services.AddScoped<ILookupProtector, LookupProtector>();
-        services.AddIdentityCore<User>(options =>
+        services.AddIdentityCore<Domain.User>(options =>
             {
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 6;
@@ -56,8 +61,8 @@ public static class DependencyInjection
             })
             .AddRoles<Role>()
             .AddRoleManager<RoleManager<Role>>()
-            .AddSignInManager<SignInManager<User>>()
-            .AddUserManager<UserManager<User>>()
+            .AddSignInManager<SignInManager<Domain.User>>()
+            .AddUserManager<UserManager<Domain.User>>()
             .AddRoleStore<RoleStore<Role, ApplicationDbContext>>()
             .AddUserStore<ProtectedUserStore>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -80,7 +85,7 @@ public static class DependencyInjection
             Credentials = new NetworkCredential("resend", Environment.GetEnvironmentVariable("resend:apikey")),
             EnableSsl = true
         });
-        services.AddScoped<IEmailSender<User>, SmtpEmailSender>();
+        services.AddScoped<IEmailSender<Domain.User>, SmtpEmailSender>();
 
         return services;
     }

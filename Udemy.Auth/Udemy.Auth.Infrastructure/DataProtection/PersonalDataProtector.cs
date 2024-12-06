@@ -3,7 +3,7 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Udemy.Auth.Infrastructure;
+namespace Udemy.Auth.Infrastructure.DataProtection;
 
 public class PersonalDataProtector : IPersonalDataProtector
 {
@@ -22,7 +22,7 @@ public class PersonalDataProtector : IPersonalDataProtector
 
         try
         {
-            var result = Encoding.UTF8.GetString(Convert.FromBase64String(protectedData));;
+            var result = Encoding.UTF8.GetString(Convert.FromBase64String(protectedData)); ;
             return result;
         }
         catch

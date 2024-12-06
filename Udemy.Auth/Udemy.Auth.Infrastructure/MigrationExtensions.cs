@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Udemy.Auth.Infrastructure.Context;
 
 namespace Udemy.Auth.Infrastructure;
 

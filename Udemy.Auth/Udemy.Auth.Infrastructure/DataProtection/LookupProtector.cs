@@ -2,7 +2,7 @@
 using System;
 using System.Text;
 
-namespace Udemy.Auth.Infrastructure;
+namespace Udemy.Auth.Infrastructure.DataProtection;
 
 public class LookupProtector(ILookupProtectorKeyRing keyRing) : ILookupProtector
 {

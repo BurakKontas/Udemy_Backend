@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Udemy.Auth.Infrastructure
+namespace Udemy.Auth.Infrastructure.DataProtection
 {
     public class KeyRing : ILookupProtectorKeyRing
     {
