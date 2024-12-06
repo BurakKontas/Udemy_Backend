@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication.BearerToken;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 using Udemy.Auth.Domain;
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Udemy.Auth.API.Controllers;
 
@@ -31,15 +31,15 @@ public class AuthController(
     private readonly BearerTokenOptions _bearerOptions = bearerOptionsMonitor.Get(IdentityConstants.BearerScheme);
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(string email, string password, CancellationToken cancellationToken)
+    public async Task<Results<ContentHttpResult, BadRequest<IdentityResult>>> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
         var user = new User
         {
-            UserName = email,
-            Email = email,
+            UserName = request.Email,
+            Email = request.Email,
         };
 
-        user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, password);
+        user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, request.Password);
 
         var result = await _userStore.CreateAsync(user, cancellationToken);
 
@@ -48,38 +48,34 @@ public class AuthController(
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var protectedId = await _userStore.GetUserIdAsync(user, cancellationToken);
 
-            await _emailSender.SendConfirmationLinkAsync(user, email, $"https://localhost:5001/api/auth/verify-email?token={token}&id={protectedId}");
+            await _emailSender.SendConfirmationLinkAsync(user, request.Email, $"https://localhost:5001/api/auth/verify-email?token={token}&id={protectedId}");
 
-            return Ok(new { message = "Registration successful, please check your email to confirm your account." });
+            return TypedResults.Text("Registration successful, please check your email to confirm your account.");
         }
 
-        return BadRequest(result);
+        return TypedResults.BadRequest(result);
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(string email, string password, bool useCookie = false)
+    public async Task<Results<Ok<SignInResult>, UnauthorizedHttpResult, BadRequest<string>>> Login([FromBody] LoginRequest request, bool useCookie = false)
     {
-        var user = await _userManager.FindByNameAsync(email);
+        var user = await _userManager.FindByNameAsync(request.Email);
 
         if (user == null)
         {
-            return BadRequest("User not found");
+            return TypedResults.BadRequest("User not found");
         }
 
         _signInManager.AuthenticationScheme = useCookie ? IdentityConstants.ApplicationScheme : IdentityConstants.BearerScheme;
 
-        var result = await _signInManager.PasswordSignInAsync(user, password, false, false);
+        var result = await _signInManager.PasswordSignInAsync(user, request.Password, false, false);
 
         if (!result.Succeeded)
         {
-            return Unauthorized(result);
+            return TypedResults.Unauthorized();
         }
 
-        if (result.Succeeded)
-        {
-            return Ok(result);
-        }
-        return BadRequest(result);
+        return TypedResults.Ok(result);
     }
 
     [HttpPost("refresh")]
@@ -99,39 +95,52 @@ public class AuthController(
     }
 
     [HttpGet("verify-email")]
-    public async Task<IActionResult> VerifyEmail(string token, string id, CancellationToken cancellationToken)
+    public async Task<Results<ContentHttpResult, BadRequest<string>>> VerifyEmail(string token, string id, CancellationToken cancellationToken)
     {
         var user = await _userStore.FindByIdAsync(id, cancellationToken);
 
-        if(user == null)
+        if (user == null)
         {
-            return BadRequest("User not found");
+            return TypedResults.BadRequest("User not found");
         }
 
         if (user.EmailConfirmed)
         {
-            return BadRequest("Email already confirmed");
+            return TypedResults.BadRequest("Email already confirmed");
         }
 
         var result = await _userManager.ConfirmEmailAsync(user, token);
 
-        if(result.Succeeded) 
+        if (result.Succeeded)
         {
-            return Ok("Email confirmed successfully");
+            return TypedResults.Text("Email confirmed successfully");
         }
 
-        return BadRequest(result);
+        return TypedResults.BadRequest("Failed to confirm email");
     }
 
     [HttpPost("create-role")]
-    public async Task<IActionResult> CreateRole(Role role)
+    public async Task<Results<ContentHttpResult, BadRequest<IdentityResult>>> CreateRole([FromBody] Role role)
     {
         var result = await _roleManager.CreateAsync(role);
 
         if (result.Succeeded)
         {
-            return Ok(result);
+            return TypedResults.Text("Role created.");
         }
-        return BadRequest(result);
+
+        return TypedResults.BadRequest(result);
     }
+}
+
+public class RegisterRequest
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
+}
+
+public class LoginRequest
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
 }
