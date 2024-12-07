@@ -1,15 +1,10 @@
-﻿using System.Security.Principal;
-using Microsoft.AspNetCore.Authentication.BearerToken;
+﻿using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.Extensions.Options;
-using System.Threading;
-using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.AspNetCore.Authentication;
 using Udemy.Auth.Domain.Entities;
 using Udemy.Auth.Domain.Interfaces;
-using System.Linq;
 
 namespace Udemy.Auth.Application.Services;
 
