@@ -1,9 +1,6 @@
-using Microsoft.AspNetCore.Identity;
-using System.Net.Mail;
-using System.Net;
+using Microsoft.AspNetCore.Diagnostics;
 using Udemy.Auth.API.Middlewares;
 using Udemy.Auth.Application;
-using Udemy.Auth.Domain;
 using Udemy.Auth.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +13,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddTransient<IExceptionHandler, GlobalExceptionHandler>();
 
 var app = builder.Build();
 
@@ -32,7 +31,7 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ArgumentNullExceptionHandler>();
 app.UseMiddleware<ValidationExceptionHandler>();
 
-app.UseMiddleware<GlobalExceptionHandler>();
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
