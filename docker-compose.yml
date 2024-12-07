@@ -36,6 +36,9 @@ services:
       - API_HOST=udemy.apigateway.api
       - API_HTTP_PORT=3000
       - API_HTTPS_PORT=3001
+    depends_on:
+      - consul
+      - udemy.auth.api
     networks:
       - udemy_network
 

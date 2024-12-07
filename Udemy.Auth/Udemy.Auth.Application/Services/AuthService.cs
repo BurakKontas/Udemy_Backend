@@ -1,46 +1,68 @@
-﻿using Microsoft.AspNetCore.Authentication.BearerToken;
+﻿using System.Security.Principal;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.Extensions.Options;
+using System.Threading;
+using Microsoft.AspNetCore.Authentication;
 using Udemy.Auth.Domain.Entities;
 using Udemy.Auth.Domain.Interfaces;
 
 namespace Udemy.Auth.Application.Services;
 
-public class AuthService(
-    IUserStore<User> userStore,
-    IRoleStore<Role> roleStore,
-    UserManager<User> userManager,
-    RoleManager<Role> roleManager,
-    SignInManager<User> signInManager,
-    IEmailSender<User> emailSender,
-    IOptionsMonitor<BearerTokenOptions> bearerOptionsMonitor) : IAuthService
+public class AuthService : IAuthService
 {
-    private readonly IUserStore<User> _userStore = userStore;
-    private readonly IRoleStore<Role> _roleStore = roleStore;
-    private readonly RoleManager<Role> _roleManager = roleManager;
-    private readonly UserManager<User> _userManager = userManager;
-    private readonly SignInManager<User> _signInManager = signInManager;
-    private readonly IEmailSender<User> _emailSender = emailSender;
-    private readonly BearerTokenOptions _bearerOptions = bearerOptionsMonitor.Get(IdentityConstants.BearerScheme);
+    private readonly RoleManager<Role> _roleManager;
+    private readonly UserManager<User> _userManager;
+    private readonly SignInManager<User> _signInManager;
+    private readonly IEmailSender<User> _emailSender;
+    private readonly BearerTokenOptions _bearerOptions;
+
+    public AuthService(UserManager<User> userManager,
+        RoleManager<Role> roleManager,
+        SignInManager<User> signInManager,
+        IEmailSender<User> emailSender,
+        IOptionsMonitor<BearerTokenOptions> bearerOptionsMonitor)
+    {
+        _roleManager = roleManager;
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _emailSender = emailSender;
+        _bearerOptions = bearerOptionsMonitor.Get(IdentityConstants.BearerScheme);
+
+        // remove default user validator because it causes issues with data protectors
+        var defaultValidator = userManager.UserValidators.First(v => v is Microsoft.AspNetCore.Identity.UserValidator<User>);
+        userManager.UserValidators.Remove(defaultValidator);
+    }
 
     public async Task<IdentityResult> RegisterUserAsync(RegisterRequest request, CancellationToken cancellationToken)
     {
         //check if user already exists
         var existingUser = await _userManager.FindByNameAsync(request.Email);
-        if (existingUser != null) return IdentityResult.Failed(new IdentityError { Description = "User already exists.", Code = "USER_EXISTS"});
+        if (existingUser != null)
+        {
+            await SendConfirmationEmail(existingUser, request.Email, cancellationToken);
+            return IdentityResult.Success;
+        }
 
         var user = new User { UserName = request.Email, Email = request.Email };
-        user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, request.Password);
 
-        var result = await _userStore.CreateAsync(user, cancellationToken);
+        var result = await _userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded) return result;
+        
 
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var protectedId = await _userStore.GetUserIdAsync(user, cancellationToken);
-        await _emailSender.SendConfirmationLinkAsync(user, request.Email, $"https://localhost:5001/api/auth/verify-email?token={token}&id={protectedId}");
+        var protectedId = await _userManager.GetUserIdAsync(user);
+        await _emailSender.SendConfirmationLinkAsync(user, request.Email, $"http://localhost:3000/api/auth/verify-email?token={token}&id={protectedId}");
 
         return result;
+    }
+
+    private async Task SendConfirmationEmail(User user,string email, CancellationToken cancellationToken)
+    {
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var protectedId = await _userManager.GetUserIdAsync(user);
+        await _emailSender.SendConfirmationLinkAsync(user, email, $"http://localhost:3000/api/auth/verify-email?token={token}&id={protectedId}");
     }
 
     public async Task<SignInResult> LoginUserAsync(LoginRequest request, bool useCookie)
@@ -52,13 +74,14 @@ public class AuthService(
         return await _signInManager.PasswordSignInAsync(user, request.Password, false, false);
     }
 
-    public async Task<bool> ConfirmEmailAsync(string token, string id, CancellationToken cancellationToken)
+    public async Task<IdentityResult> ConfirmEmailAsync(string token, string id, CancellationToken cancellationToken)
     {
-        var user = await _userStore.FindByIdAsync(id, cancellationToken);
-        if (user == null || user.EmailConfirmed) return false;
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null) return IdentityResult.Failed(new IdentityError { Description = "User not found.", Code = "USER_NOT_FOUND"});
 
         var result = await _userManager.ConfirmEmailAsync(user, token);
-        return result.Succeeded;
+        return result;
+
     }
 
     public async Task<string> GeneratePasswordResetTokenAsync(string email)
@@ -71,7 +94,7 @@ public class AuthService(
 
     public async Task<IdentityResult> ResetPasswordAsync(string token, string id, string newPassword, CancellationToken cancellationToken)
     {
-        var user = await _userStore.FindByIdAsync(id, cancellationToken);
+        var user = await _userManager.FindByIdAsync(id);
         if (user == null) throw new Exception("User not found");
 
         return await _userManager.ResetPasswordAsync(user, token, newPassword);
@@ -95,7 +118,10 @@ public class AuthService(
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null) throw new Exception("User not found");
 
-        return await _userManager.AddToRoleAsync(user, roleName);
+        // check if role exists
+        if (await _roleManager.FindByNameAsync(roleName) == null) throw new Exception("Role not found");
+
+        return await _userManager.AddToRolesAsync(user, [roleName]);
     }
 
     public async Task<IdentityResult> RemoveUserFromRoleAsync(string email, string roleName)
@@ -109,9 +135,10 @@ public class AuthService(
     public async Task<bool> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
     {
         var refreshTicket = _bearerOptions.RefreshTokenProtector.Unprotect(refreshToken);
+        var timeProvider = _bearerOptions.TimeProvider;
 
         if (refreshTicket?.Properties?.ExpiresUtc is not { } expiresUtc ||
-            DateTime.Now >= expiresUtc ||
+            timeProvider!.GetUtcNow() >= expiresUtc ||
             await _signInManager.ValidateSecurityStampAsync(refreshTicket.Principal) is not { } user)
         {
             return false;
@@ -127,9 +154,23 @@ public class AuthService(
         if (user == null) throw new Exception("User not found");
 
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var protectedId = await _userStore.GetUserIdAsync(user, cancellationToken);
+        var protectedId = await _userManager.GetUserIdAsync(user);
 
         await _emailSender.SendConfirmationLinkAsync(user, email, $"https://localhost:5001/api/auth/verify-email?token={token}&id={protectedId}");
         return "Confirmation email sent.";
+    }
+
+    public async Task<AuthenticationTicket> GetIdentityFromToken(string token, CancellationToken cancellationToken)
+    {
+        var unprotectedToken = _bearerOptions.BearerTokenProtector.Unprotect(token);
+        if (unprotectedToken == null) throw new Exception("Invalid token.");
+
+        return unprotectedToken;
+    }
+
+    public string[] GetRolesFromTicket(AuthenticationTicket ticket, CancellationToken cancellationToken)
+    {
+        var roles = ticket.Principal.Claims.Where(c => c.Type == ticket.Principal.Identities.First().RoleClaimType).Select(c => c.Value);
+        return roles.ToArray();
     }
 }

@@ -60,6 +60,8 @@ public static class DependencyInjection
 
                 options.Stores.ProtectPersonalData = true;
             })
+            .AddUserConfirmation<UserConfirmation>()
+            .AddUserValidator<User.UserValidator<Domain.Entities.User>>()
             .AddRoles<Role>()
             .AddRoleManager<RoleManager<Role>>()
             .AddSignInManager<SignInManager<Domain.Entities.User>>()
@@ -67,9 +69,7 @@ public static class DependencyInjection
             .AddRoleStore<RoleStore<Role, ApplicationDbContext>>()
             .AddUserStore<ProtectedUserStore>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddTokenProvider<DataProtectionProvider>(TokenOptions.DefaultProvider)
-            .AddUserConfirmation<UserConfirmation>()
-            .AddUserValidator<UserValidator>();
+            .AddTokenProvider<DataProtectionProvider>(TokenOptions.DefaultProvider);
             //.AddApiEndpoints();
 
         services.AddDbContext<ApplicationDbContext>(options =>
