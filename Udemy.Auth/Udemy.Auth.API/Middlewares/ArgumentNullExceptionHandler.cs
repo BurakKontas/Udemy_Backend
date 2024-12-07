@@ -1,9 +1,10 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Udemy.Auth.API.Middlewares;
 
-public class ArgumentNullExceptionHandler : IMiddleware
+public class ArgumentNullExceptionHandler(ILogger<ArgumentNullExceptionHandler> logger) : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -11,14 +12,18 @@ public class ArgumentNullExceptionHandler : IMiddleware
         {
             await next(context);
         }
-        catch (ArgumentNullException ex)
+        catch (ArgumentNullException exception)
         {
+            var exceptionId = Guid.NewGuid();
+            var exceptionMessage = exception.Message;
+            logger.LogError(exception, "Id: {@Id}\nError Message: {@ExceptionMessage}\nStackTrace: {@StackTrace}", exceptionId, exceptionMessage, exception.StackTrace);
+
             var problemDetails = new ProblemDetails
             {
-                Title = "Argument Null Exception",
-                Type = "ArgumentFailure",
+                Title = $"ArgumentNullError: {exceptionMessage}",
+                Type = "ArgumentNullFailure",
                 Status = StatusCodes.Status400BadRequest,
-                Detail = ex.Message,
+                Detail = exceptionId.ToString(),
                 Instance = context.Request.Path
             };
 

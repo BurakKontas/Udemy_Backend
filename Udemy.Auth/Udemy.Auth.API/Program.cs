@@ -14,7 +14,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddTransient<IExceptionHandler, GlobalExceptionHandler>();
+// Register custom middleware services
+builder.Services.AddTransient<ArgumentNullExceptionHandler>();
+builder.Services.AddTransient<ValidationExceptionHandler>();
+builder.Services.AddTransient<GlobalExceptionHandler>();
 
 var app = builder.Build();
 
@@ -30,8 +33,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ArgumentNullExceptionHandler>();
 app.UseMiddleware<ValidationExceptionHandler>();
-
-app.UseExceptionHandler();
+app.UseMiddleware<GlobalExceptionHandler>();
 
 app.UseHttpsRedirection();
 

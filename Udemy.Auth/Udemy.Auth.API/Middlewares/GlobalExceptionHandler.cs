@@ -1,26 +1,34 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
+using System;
 
 namespace Udemy.Auth.API.Middlewares;
 
-public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
+public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IMiddleware
 {
-    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        var exceptionMessage = exception.Message;
-        logger.LogError(exception, "Error Message: {@ExceptionMessage}", exceptionMessage);
-
-        var problemDetails = new ProblemDetails
+        try
         {
-            Title = $"Server Error: {exceptionMessage}",
-            Status = StatusCodes.Status500InternalServerError,
-            Instance = httpContext.Request.Path,
-        };
+            await next(context);
+        }
+        catch (Exception exception)
+        {
+            var exceptionId = Guid.NewGuid();
+            var exceptionMessage = exception.Message;
+            logger.LogError(exception, "Id: {@Id}\nError Message: {@ExceptionMessage}\nStackTrace: {@StackTrace}", exceptionId, exceptionMessage, exception.StackTrace);
 
-        httpContext.Response.StatusCode = problemDetails.Status.Value;
-
-        await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken: cancellationToken);
-
-        return true;
+            var problemDetails = new ProblemDetails
+            {
+                Title = $"Server Error: {exceptionMessage}",
+                Status = StatusCodes.Status500InternalServerError,
+                Instance = context.Request.Path,
+                Detail = exceptionId.ToString(),
+            };
+            context.Response.StatusCode = problemDetails.Status.Value;
+            await context.Response.WriteAsJsonAsync(problemDetails);
+        }
     }
 }

@@ -92,7 +92,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
     [HttpGet("identity")]
-    public async Task<IResult> DeserializeBearerToken(CancellationToken cancellationToken)
+    public async Task<IResult> GetIdentity(CancellationToken cancellationToken)
     {
         var token = Request.Headers["Authorization"][0]?.Split(" ").Last();
         if (string.IsNullOrEmpty(token))
