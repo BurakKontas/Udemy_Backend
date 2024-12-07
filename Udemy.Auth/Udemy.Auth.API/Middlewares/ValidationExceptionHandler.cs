@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Udemy.Auth.API.Middlewares;
 
-public class ValidationExceptionHandler(RequestDelegate next)
+public class ValidationExceptionHandler : IMiddleware
 {
-    public async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         try
         {
