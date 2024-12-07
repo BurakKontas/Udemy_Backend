@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using System.Net.Mail;
 using System.Net;
+using Udemy.Auth.API.Middlewares;
 using Udemy.Auth.Application;
 using Udemy.Auth.Domain;
 using Udemy.Auth.Infrastructure;
@@ -27,6 +28,11 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.MapIdentityApi<User>();
+
+app.UseMiddleware<ArgumentNullExceptionHandler>();
+app.UseMiddleware<ValidationExceptionHandler>();
+
+app.UseMiddleware<GlobalExceptionHandler>();
 
 app.UseHttpsRedirection();
 

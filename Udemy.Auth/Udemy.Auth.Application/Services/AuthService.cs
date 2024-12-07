@@ -4,9 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.Extensions.Options;
 using System.Threading;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authentication;
 using Udemy.Auth.Domain.Entities;
 using Udemy.Auth.Domain.Interfaces;
+using System.Linq;
 
 namespace Udemy.Auth.Application.Services;
 
@@ -87,7 +90,7 @@ public class AuthService : IAuthService
     public async Task<string> GeneratePasswordResetTokenAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) throw new Exception("User not found");
+        if (user == null) throw new ArgumentNullException($"User not found");
 
         return await _userManager.GeneratePasswordResetTokenAsync(user);
     }
@@ -95,7 +98,7 @@ public class AuthService : IAuthService
     public async Task<IdentityResult> ResetPasswordAsync(string token, string id, string newPassword, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByIdAsync(id);
-        if (user == null) throw new Exception("User not found");
+        if (user == null) throw new ArgumentException($"User not found");
 
         return await _userManager.ResetPasswordAsync(user, token, newPassword);
     }
@@ -103,7 +106,7 @@ public class AuthService : IAuthService
     public async Task<IdentityResult> ChangePasswordAsync(string email, string currentPassword, string newPassword)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) throw new Exception("User not found");
+        if (user == null) throw new ArgumentException($"User not found");
 
         return await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
     }
@@ -116,10 +119,10 @@ public class AuthService : IAuthService
     public async Task<IdentityResult> AddUserToRoleAsync(string email, string roleName)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) throw new Exception("User not found");
+        if (user == null) throw new ArgumentException($"User not found");
 
         // check if role exists
-        if (await _roleManager.FindByNameAsync(roleName) == null) throw new Exception("Role not found");
+        if (await _roleManager.FindByNameAsync(roleName) == null) throw new ArgumentNullException($"Role not found");
 
         return await _userManager.AddToRolesAsync(user, [roleName]);
     }
@@ -127,7 +130,7 @@ public class AuthService : IAuthService
     public async Task<IdentityResult> RemoveUserFromRoleAsync(string email, string roleName)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) throw new Exception("User not found");
+        if (user == null) throw new ArgumentException($"User not found");
 
         return await _userManager.RemoveFromRoleAsync(user, roleName);
     }
@@ -145,13 +148,13 @@ public class AuthService : IAuthService
         }
 
         var newPrincipal = await _signInManager.CreateUserPrincipalAsync(user);
-        return newPrincipal != null;
+        return newPrincipal != null!;
     }
 
     public async Task<string> ResendConfirmationEmailAsync(string email, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) throw new Exception("User not found");
+        if (user == null) throw new ArgumentNullException($"User not found");
 
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         var protectedId = await _userManager.GetUserIdAsync(user);
@@ -163,7 +166,7 @@ public class AuthService : IAuthService
     public async Task<AuthenticationTicket> GetIdentityFromToken(string token, CancellationToken cancellationToken)
     {
         var unprotectedToken = _bearerOptions.BearerTokenProtector.Unprotect(token);
-        if (unprotectedToken == null) throw new Exception("Invalid token.");
+        if (unprotectedToken == null) throw new ArgumentNullException($"Invalid token");
 
         return unprotectedToken;
     }
