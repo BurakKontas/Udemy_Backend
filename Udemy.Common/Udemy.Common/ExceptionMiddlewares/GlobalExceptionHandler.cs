@@ -22,6 +22,14 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IM
         {
             await HandleExceptionAsync(context, exception, "ArgumentNullFailure", StatusCodes.Status400BadRequest);
         }
+        catch (Exception exception) when (exception is UnauthorizedAccessException)
+        {
+            await HandleExceptionAsync(context, exception, "UnauthorizedAccessFailure", StatusCodes.Status401Unauthorized);
+        }
+        catch (Exception exception) when (exception is ArgumentException)
+        {
+            await HandleExceptionAsync(context, exception, "ArgumentFailure", StatusCodes.Status400BadRequest);
+        }
         catch (Exception exception) when (exception is AuthenticationFailureException)
         {
             await HandleExceptionAsync(context, exception, "AuthenticationFailure", StatusCodes.Status403Forbidden);

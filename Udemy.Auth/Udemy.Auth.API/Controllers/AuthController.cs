@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using Udemy.Auth.Domain.Entities;
 using Udemy.Auth.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity.Data;
@@ -93,13 +94,17 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
     [HttpGet("identity")]
-    public IResult GetIdentity(CancellationToken cancellationToken)
+    public IResult GetIdentity(string token, CancellationToken cancellationToken)
     {
-        var token = Request.Headers.Authorization[0]?.Split(" ").Last();
-        if (string.IsNullOrEmpty(token))
-            return TypedResults.BadRequest("No token provided.");
-
         var ticket = _authService.GetIdentityFromToken(token, cancellationToken);
-        return TypedResults.Ok(ticket);
+
+        var identityResponse = new IdentityResponse(
+            ticket.Principal.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList(),
+            ticket.Principal.Identity!.IsAuthenticated,
+            ticket.Principal.Identity!.Name,
+            ticket.Principal.Identity.AuthenticationType
+        );
+
+        return TypedResults.Ok(identityResponse);
     }
 }

@@ -43,7 +43,7 @@ public static class DependencyInjection
         var consulServices = consulClient.Agent.Services().Result;
         var serviceList = consulServices.Response.Values
             .Select(x => new { x.Service, x.Port, x.Address })
-            .Distinct()
+            .DistinctBy(x => x.Service)
             .ToList();
 
         foreach (var service in serviceList)

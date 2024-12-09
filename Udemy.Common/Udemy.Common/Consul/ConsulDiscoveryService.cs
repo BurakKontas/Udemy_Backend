@@ -15,7 +15,7 @@ public class ConsulDiscoveryService(IConsulClient consulClient) : IConsulDiscove
         if (service == null)
             throw new Exception($"Service not found: {serviceName}");
 
-        return $"http://{service.Address}:{service.Port}";
+        return $"{service.Address}:{service.Port}";
     }
 
     public async Task<Dictionary<string, AgentService>> GetServices()

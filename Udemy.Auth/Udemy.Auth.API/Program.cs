@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Udemy.Auth.Application;
 using Udemy.Auth.Infrastructure;
 using Udemy.Common.ExceptionMiddlewares;
+using Udemy.Common.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddAuthMiddleware();
 
 builder.Services.AddExceptionMiddlewares();
 
@@ -29,6 +31,8 @@ if (app.Environment.IsDevelopment())
 //app.MapIdentityApi<User>();
 
 app.AddExceptionMiddlewares();
+
+app.AddAuthMiddleware();
 
 app.UseHttpsRedirection();
 

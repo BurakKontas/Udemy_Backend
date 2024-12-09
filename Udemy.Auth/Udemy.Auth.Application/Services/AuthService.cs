@@ -66,7 +66,7 @@ public class AuthService : IAuthService
     public async Task<SignInResult> LoginUserAsync(LoginRequest request, bool useCookie)
     {
         var user = await _userManager.FindByNameAsync(request.Email);
-        if (user == null) return SignInResult.Failed;
+        if (user == null) throw new ArgumentException($"User not found.");
 
         _signInManager.AuthenticationScheme = useCookie ? IdentityConstants.ApplicationScheme : IdentityConstants.BearerScheme;
         return await _signInManager.PasswordSignInAsync(user, request.Password, false, false);

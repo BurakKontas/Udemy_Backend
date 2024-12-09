@@ -1,46 +1,71 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using System.Net.Http.Headers;
+﻿using Microsoft.AspNetCore.Http;
 using System.Net.Http;
-using System.Security.Claims;
-using System.Text.Json;
+using System.Net.Http.Json;
+using Microsoft.AspNetCore.Authentication;
 using Udemy.Auth.Contracts.Response;
+using Udemy.Common.Consul;
 
 namespace Udemy.APIGateway.API.Middlewares;
 
-public class IdentityMiddleware(HttpClient httpClient) : IMiddleware
+public class IdentityMiddleware : IMiddleware
 {
-    private readonly HttpClient _httpClient = httpClient;
+    private readonly IConsulDiscoveryService _discoveryService;
+    private readonly HttpClient _httpClient;
+    private readonly string API_KEY;
+
+    public IdentityMiddleware(HttpClient httpClient, IConsulDiscoveryService discoveryService)
+    {
+        _discoveryService = discoveryService;
+
+        var handler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        };
+
+        _httpClient = new HttpClient(handler);
+        API_KEY = Environment.GetEnvironmentVariable("API_KEY") ?? throw new ArgumentNullException($"env:API_KEY");
+    }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        await GetAndAddAuthenticationTicket(context);
+        await AddAuthenticationTicketToHeaders(context);
         await next(context);
     }
 
-    private async Task GetAndAddAuthenticationTicket(HttpContext context)
+    private async Task AddAuthenticationTicketToHeaders(HttpContext context)
     {
-        var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        context.Request.Headers["X-Api-Key"] = API_KEY;
+
+        var token = context.Request.Headers.Authorization.ToString();
 
         if (string.IsNullOrEmpty(token))
         {
-            throw new AuthenticationFailureException("Authorization token is missing.");
+            return;
         }
 
-        var request = new HttpRequestMessage(HttpMethod.Get, "/identity");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var requestUri = $"http://host.docker.internal:5000/identity?token=" + token.Split(" ").Last();
+
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Split(" ").Last());
+        request.Headers.Add("X-Api-Key", API_KEY);
 
         var response = await _httpClient.SendAsync(request);
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new AuthenticationFailureException("Invalid token.");
+            return;
         }
 
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var ticket = JsonSerializer.Deserialize<AuthenticationTicket>(responseContent);
-        if (ticket == null)
-            throw new AuthenticationFailureException("AuthenticationTicket is null");
+        var ticket = await response.Content.ReadFromJsonAsync<IdentityResponse>();
 
-        context.Items["AuthenticationTicket"] = ticket;
+        if (ticket == null)
+        {
+            return;
+        }
+
+        context.Request.Headers["X-User-Roles"] = string.Join(",", ticket.Roles);
+        context.Request.Headers["X-User-IsAuthenticated"] = ticket.IsAuthenticated.ToString();
+        context.Request.Headers["X-User-Name"] = ticket.Name ?? string.Empty;
+        context.Request.Headers["X-User-AuthType"] = ticket.AuthenticationType ?? string.Empty;
     }
 }
