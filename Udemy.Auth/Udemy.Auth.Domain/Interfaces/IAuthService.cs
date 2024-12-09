@@ -19,6 +19,6 @@ public interface IAuthService
     Task<IdentityResult> RemoveUserFromRoleAsync(string email, string roleName);
     Task<bool> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
     Task<string> ResendConfirmationEmailAsync(string email, CancellationToken cancellationToken);
-    public Task<AuthenticationTicket> GetIdentityFromToken(string token, CancellationToken cancellationToken);
+    public AuthenticationTicket GetIdentityFromToken(string token, CancellationToken cancellationToken);
     public string[] GetRolesFromTicket(AuthenticationTicket ticket, CancellationToken cancellationToken);
 }

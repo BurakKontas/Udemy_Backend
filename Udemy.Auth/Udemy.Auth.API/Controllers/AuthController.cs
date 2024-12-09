@@ -66,6 +66,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         return TypedResults.BadRequest("Role creation failed.");
     }
 
+    //authorize with admin role
     [HttpPost("add-to-role")]
     public async Task<IResult> AddToRole(string email, string roleName)
     {
@@ -92,15 +93,13 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
     [HttpGet("identity")]
-    public async Task<IResult> GetIdentity(CancellationToken cancellationToken)
+    public IResult GetIdentity(CancellationToken cancellationToken)
     {
-        var token = Request.Headers["Authorization"][0]?.Split(" ").Last();
+        var token = Request.Headers.Authorization[0]?.Split(" ").Last();
         if (string.IsNullOrEmpty(token))
             return TypedResults.BadRequest("No token provided.");
 
-        var ticket = await _authService.GetIdentityFromToken(token, cancellationToken);
-        var roles = _authService.GetRolesFromTicket(ticket, cancellationToken);
-        var response = new IdentityResponse(roles, ticket.Principal.Identity?.IsAuthenticated, ticket.Principal.Identity?.Name, ticket.Principal.Identity?.AuthenticationType);
-        return TypedResults.Ok(response);
+        var ticket = _authService.GetIdentityFromToken(token, cancellationToken);
+        return TypedResults.Ok(ticket);
     }
 }

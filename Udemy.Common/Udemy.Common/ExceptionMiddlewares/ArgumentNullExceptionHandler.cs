@@ -1,8 +1,8 @@
-﻿using FluentValidation;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using Microsoft.Extensions.Logging;
 
-namespace Udemy.Auth.API.Middlewares;
+namespace Udemy.Common.ExceptionMiddlewares;
 
 public class ArgumentNullExceptionHandler(ILogger<ArgumentNullExceptionHandler> logger) : IMiddleware
 {

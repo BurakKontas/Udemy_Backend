@@ -1,10 +1,10 @@
-﻿using FluentValidation;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using Microsoft.Extensions.Logging;
 
-namespace Udemy.Auth.API.Middlewares;
+namespace Udemy.Common.ExceptionMiddlewares;
 
-public class ValidationExceptionHandler(ILogger<ValidationExceptionHandler> logger) : IMiddleware
+public class AuthenticationFailureExceptionHandler(ILogger<AuthenticationFailureExceptionHandler> logger) : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -12,7 +12,7 @@ public class ValidationExceptionHandler(ILogger<ValidationExceptionHandler> logg
         {
             await next(context);
         }
-        catch (ValidationException exception)
+        catch (ArgumentNullException exception)
         {
             var exceptionId = Guid.NewGuid();
             var exceptionMessage = exception.Message;
@@ -20,17 +20,12 @@ public class ValidationExceptionHandler(ILogger<ValidationExceptionHandler> logg
 
             var problemDetails = new ProblemDetails
             {
-                Title = $"Validation Error: {exceptionMessage}",
-                Type = "ValidationFailure",
-                Status = StatusCodes.Status400BadRequest,
+                Title = $" AuthenticationFailureError: {exceptionMessage}",
+                Type = "AuthenticationFailure",
+                Status = StatusCodes.Status403Forbidden,
                 Detail = exceptionId.ToString(),
                 Instance = context.Request.Path
             };
-
-            if (exception.Errors != null)
-            {
-                problemDetails.Extensions["errors"] = exception.Errors;
-            }
 
             context.Response.StatusCode = problemDetails.Status.Value;
 

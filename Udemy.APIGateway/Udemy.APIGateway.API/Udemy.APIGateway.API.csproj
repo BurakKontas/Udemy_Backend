@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Udemy.Auth\Udemy.Auth.Contracts\Udemy.Auth.Contracts.csproj" />
     <ProjectReference Include="..\..\Udemy.Common\Udemy.Common\Udemy.Common.csproj" />
   </ItemGroup>
 

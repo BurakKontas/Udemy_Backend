@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Diagnostics;
-using Udemy.Auth.API.Middlewares;
 using Udemy.Auth.Application;
 using Udemy.Auth.Infrastructure;
+using Udemy.Common.ExceptionMiddlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,10 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// Register custom middleware services
-builder.Services.AddTransient<ArgumentNullExceptionHandler>();
-builder.Services.AddTransient<ValidationExceptionHandler>();
-builder.Services.AddTransient<GlobalExceptionHandler>();
+builder.Services.AddExceptionMiddlewares();
 
 var app = builder.Build();
 
@@ -31,9 +28,7 @@ if (app.Environment.IsDevelopment())
 
 //app.MapIdentityApi<User>();
 
-app.UseMiddleware<ArgumentNullExceptionHandler>();
-app.UseMiddleware<ValidationExceptionHandler>();
-app.UseMiddleware<GlobalExceptionHandler>();
+app.AddExceptionMiddlewares();
 
 app.UseHttpsRedirection();
 

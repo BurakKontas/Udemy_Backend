@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading;
-using System;
+using Microsoft.Extensions.Logging;
 
-namespace Udemy.Auth.API.Middlewares;
+namespace Udemy.Common.ExceptionMiddlewares;
 
 public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IMiddleware
 {

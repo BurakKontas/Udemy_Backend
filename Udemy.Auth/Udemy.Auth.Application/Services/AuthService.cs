@@ -158,7 +158,7 @@ public class AuthService : IAuthService
         return "Confirmation email sent.";
     }
 
-    public async Task<AuthenticationTicket> GetIdentityFromToken(string token, CancellationToken cancellationToken)
+    public AuthenticationTicket GetIdentityFromToken(string token, CancellationToken cancellationToken)
     {
         var unprotectedToken = _bearerOptions.BearerTokenProtector.Unprotect(token);
         if (unprotectedToken == null) throw new ArgumentNullException($"Invalid token");
