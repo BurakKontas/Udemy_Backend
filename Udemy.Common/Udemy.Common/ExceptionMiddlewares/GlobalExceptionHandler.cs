@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.IO;
+using System.Net.Http;
+using System.Security.Authentication;
+using System.Threading.Tasks;
 
 namespace Udemy.Common.ExceptionMiddlewares;
 
@@ -25,6 +29,18 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IM
         catch (Exception exception) when (exception is ValidationException)
         {
             await HandleExceptionAsync(context, exception, "ValidationFailure", StatusCodes.Status400BadRequest);
+        }
+        catch (Exception exception) when (exception is FileNotFoundException)
+        {
+            await HandleExceptionAsync(context, exception, "FileNotFound", StatusCodes.Status404NotFound);
+        }
+        catch (Exception exception) when (exception is HttpRequestException)
+        {
+            await HandleExceptionAsync(context, exception, "HttpRequestFailure", StatusCodes.Status503ServiceUnavailable);
+        }
+        catch (Exception exception) when (exception is AuthenticationException)
+        {
+            await HandleExceptionAsync(context, exception, "AuthenticationException", StatusCodes.Status401Unauthorized);
         }
         catch (Exception exception)
         {
