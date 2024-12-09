@@ -11,6 +11,12 @@ public class AuthMiddleware : IMiddleware
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
+        await Middleware(context);
+        await next(context);
+    }
+
+    public async Task Middleware(HttpContext context)
+    {
         var receivedApiKey = context.Request.Headers["X-Api-Key"];
 
         if (!receivedApiKey.Equals(API_KEY)) throw new AuthenticationException("API_KEY is not valid.");
@@ -22,8 +28,6 @@ public class AuthMiddleware : IMiddleware
 
         if (roles == null || isAuthenticated == null || name == null || authType == null)
         {
-            // some of the informations are missing
-            await next(context);
             return;
         }
 
@@ -31,7 +35,5 @@ public class AuthMiddleware : IMiddleware
         var principal = new GenericPrincipal(identity, roles);
 
         context.User = principal;
-
-        await next(context);
     }
 }

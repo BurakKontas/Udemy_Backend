@@ -65,8 +65,8 @@ public static class DependencyInjection
                         $"http-destination-{discriminator}",
                         new DestinationConfig
                         {
-                            //Address = $"{service.Address}:{service.Port}",
-                            Address = $"https://host.docker.internal:{service.Port}", // Postman does not work with service.Address since its in docker and postman is not
+                            Address = $"{service.Address}:{service.Port}",
+                            //Address = $"https://host.docker.internal:{service.Port}", // Postman does not work with service.Address since its in docker and postman is not
                             Metadata = new Dictionary<string, string>
                             {
                                 { "Scheme", "http" }

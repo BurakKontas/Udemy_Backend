@@ -43,7 +43,8 @@ public class IdentityMiddleware : IMiddleware
             return;
         }
 
-        var requestUri = $"http://host.docker.internal:5000/identity?token=" + token.Split(" ").Last();
+        var authUri = await _discoveryService.GetServiceUriAsync("Udemy.Auth.API");
+        var requestUri = $"{authUri}/identity?token=" + token.Split(" ").Last();
 
         var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Split(" ").Last());
