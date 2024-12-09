@@ -10,6 +10,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Udemy.Auth/Udemy.Auth.API/Udemy.Auth.API.csproj", "Udemy.Auth/Udemy.Auth.API/"]
+COPY ["Udemy.Auth/Udemy.Auth.Application/Udemy.Auth.Application.csproj", "Udemy.Auth/Udemy.Auth.Application/"]
+COPY ["Udemy.Auth/Udemy.Auth.Domain/Udemy.Auth.Domain.csproj", "Udemy.Auth/Udemy.Auth.Domain/"]
+COPY ["Udemy.Auth/Udemy.Auth.Contracts/Udemy.Auth.Contracts.csproj", "Udemy.Auth/Udemy.Auth.Contracts/"]
+COPY ["Udemy.Auth/Udemy.Auth.Infrastructure/Udemy.Auth.Infrastructure.csproj", "Udemy.Auth/Udemy.Auth.Infrastructure/"]
+COPY ["Udemy.Common/Udemy.Common/Udemy.Common.csproj", "Udemy.Common/Udemy.Common/"]
 RUN dotnet restore "./Udemy.Auth/Udemy.Auth.API/Udemy.Auth.API.csproj"
 COPY . .
 WORKDIR "/src/Udemy.Auth/Udemy.Auth.API"

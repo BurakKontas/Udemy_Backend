@@ -10,6 +10,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Udemy.APIGateway/Udemy.APIGateway.API/Udemy.APIGateway.API.csproj", "Udemy.APIGateway/Udemy.APIGateway.API/"]
+COPY ["Udemy.Auth/Udemy.Auth.Contracts/Udemy.Auth.Contracts.csproj", "Udemy.Auth/Udemy.Auth.Contracts/"]
+COPY ["Udemy.Common/Udemy.Common/Udemy.Common.csproj", "Udemy.Common/Udemy.Common/"]
 RUN dotnet restore "./Udemy.APIGateway/Udemy.APIGateway.API/Udemy.APIGateway.API.csproj"
 COPY . .
 WORKDIR "/src/Udemy.APIGateway/Udemy.APIGateway.API"
