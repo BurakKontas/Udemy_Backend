@@ -80,6 +80,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         return TypedResults.BadRequest("Failed to add user to role.");
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("remove-from-role")]
     public async Task<IResult> RemoveFromRole(string email, string roleName)
     {

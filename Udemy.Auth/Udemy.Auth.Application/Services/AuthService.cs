@@ -78,6 +78,9 @@ public class AuthService : IAuthService
         if (user == null) return IdentityResult.Failed(new IdentityError { Description = "User not found.", Code = "USER_NOT_FOUND"});
 
         var result = await _userManager.ConfirmEmailAsync(user, token);
+
+        if(result.Succeeded) await AddUserToRoleAsync(user.Email!, "User");
+
         return result;
 
     }
