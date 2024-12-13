@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication;
 using Udemy.Auth.Contracts.Response;
 using Udemy.Common.Consul;
+using Udemy.Common.Helpers;
 
 namespace Udemy.APIGateway.API.Middlewares;
 
@@ -12,6 +14,7 @@ public class IdentityMiddleware : IMiddleware
     private readonly IConsulDiscoveryService _discoveryService;
     private readonly HttpClient _httpClient;
     private readonly string API_KEY;
+    private readonly string SALT;
 
     public IdentityMiddleware(HttpClient httpClient, IConsulDiscoveryService discoveryService)
     {
@@ -24,6 +27,7 @@ public class IdentityMiddleware : IMiddleware
 
         _httpClient = new HttpClient(handler);
         API_KEY = Environment.GetEnvironmentVariable("API_KEY") ?? throw new ArgumentNullException($"env:API_KEY");
+        SALT = Environment.GetEnvironmentVariable("SALT") ?? throw new ArgumentNullException($"env:SALT");
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -68,5 +72,10 @@ public class IdentityMiddleware : IMiddleware
         context.Request.Headers["X-User-IsAuthenticated"] = ticket.IsAuthenticated.ToString();
         context.Request.Headers["X-User-Name"] = ticket.Name ?? string.Empty;
         context.Request.Headers["X-User-AuthType"] = ticket.AuthenticationType ?? string.Empty;
+
+        var secret = context.Request.Headers["X-User-Roles"] + context.Request.Headers["X-User-IsAuthenticated"] + context.Request.Headers["X-User-Name"] + context.Request.Headers["X-User-AuthType"];
+        secret = Sha256Helper.Hash(secret, SALT);
+
+        context.Request.Headers["X-User-Secret"] = secret;
     }
 }

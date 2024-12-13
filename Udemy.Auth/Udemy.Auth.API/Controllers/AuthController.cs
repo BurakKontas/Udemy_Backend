@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Udemy.Auth.Domain.Entities;
 using Udemy.Auth.Domain.Interfaces;
@@ -58,6 +59,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         return TypedResults.BadRequest("Password change failed.");
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("create-role")]
     public async Task<IResult> CreateRole([FromBody] Role role)
     {
@@ -68,6 +70,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
     //authorize with admin role
+    [Authorize(Roles = "Admin")]
     [HttpPost("add-to-role")]
     public async Task<IResult> AddToRole(string email, string roleName)
     {
