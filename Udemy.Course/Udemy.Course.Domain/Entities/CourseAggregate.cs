@@ -4,7 +4,7 @@ public class CourseAggregate : BaseEntity
 {
     public Course Course { get; set; } = new();
     public CourseDetails Details { get; set; } = new();
-    public List<CourseCategory> Categories { get; set; } = [];
+    public List<LessonCategory> Categories { get; set; } = [];
     public List<Lesson> Lessons { get; set; } = [];
     public List<Enrollment> Enrollments { get; set; } = [];
     public List<AuditLog> AuditLogs { get; set; } = [];
@@ -23,7 +23,7 @@ public class CourseAggregate : BaseEntity
         return Course.Price;
     }
 
-    public void AddLesson(CourseCategory category, Lesson lesson)
+    public void AddLesson(LessonCategory category, Lesson lesson)
     {
         if (!Categories.Contains(category))
         {

@@ -51,11 +51,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Udemy.Common", "Udemy.Commo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Udemy.Course.API", "Udemy.Course\Udemy.Course.API\Udemy.Course.API.csproj", "{457B7DEF-979D-4CAD-8FDF-7106D796B564}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Udemy.Course.Application", "Udemy.Course\Udemy.Course.Application\Udemy.Course.Application.csproj", "{9DD366F6-4FD2-4BD8-B409-F753D31BD506}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Udemy.Course.Application", "Udemy.Course\Udemy.Course.Application\Udemy.Course.Application.csproj", "{9DD366F6-4FD2-4BD8-B409-F753D31BD506}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Udemy.Course.Infrastructure", "Udemy.Course\Udemy.Course.Infrastructure\Udemy.Course.Infrastructure.csproj", "{42870452-F0B2-45D5-AA66-EA1B029A2E53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Udemy.Course.Infrastructure", "Udemy.Course\Udemy.Course.Infrastructure\Udemy.Course.Infrastructure.csproj", "{42870452-F0B2-45D5-AA66-EA1B029A2E53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Udemy.Course.Domain", "Udemy.Course\Udemy.Course.Domain\Udemy.Course.Domain.csproj", "{7A4814B2-26E9-4606-A6E5-EDF1C2F5A0F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Udemy.Course.Domain", "Udemy.Course\Udemy.Course.Domain\Udemy.Course.Domain.csproj", "{7A4814B2-26E9-4606-A6E5-EDF1C2F5A0F3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Udemy.UI", "Udemy.UI", "{6ACCF8EC-97F2-409A-AF4B-7C21B5FEF40D}"
+	ProjectSection(SolutionItems) = preProject
+		.todo = .todo
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

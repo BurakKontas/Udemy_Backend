@@ -8,7 +8,7 @@ public class Course : BaseEntity
     public string Title { get; set; } = "";
     public string Description { get; set; } = "";
     public string? ImageUrl { get; set; }
-    public List<CourseCategory> Categories { get; set; } = [];
+    public List<LessonCategory> Categories { get; set; } = [];
     public List<Lesson> Lessons { get; set; } = [];
     public List<Tag> Tags { get; set; } = [];
     public decimal Price { get; set; }
@@ -24,4 +24,6 @@ public class Course : BaseEntity
     public string? PreviewVideoUrl { get; set; }
     public bool HasCertificate { get; set; }
     public string? CertificateTemplateUrl { get; set; }
+
+    public virtual ICollection<Enrollment> Enrollments { get; set; } = [];
 }
