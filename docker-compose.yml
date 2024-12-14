@@ -40,6 +40,24 @@ services:
     depends_on:
       - consul
       - udemy.auth.api
+      - udemy.course.api
+    networks:
+      - udemy_network
+
+  udemy.course.api:
+    image: ${DOCKER_REGISTRY-}udemycourseapi
+    build:
+      context: .
+      dockerfile: Udemy.Course/Udemy.Course.API/Dockerfile
+    environment:
+      - CONSUL_URL=http://consul:8500
+      - API_HOST=udemy.course.api
+      - API_HTTP_PORT=8080
+      - API_HTTPS_PORT=8081
+      - API_KEY=d0107a8c-b28d-4266-86e5-5ca24a48cc3f # secret api key that should not be known to anyone
+      - SALT=123456
+    depends_on:
+      - consul
     networks:
       - udemy_network
 
@@ -88,11 +106,37 @@ services:
     networks:
       - udemy_network
 
+  elasticsearch:
+    image: elasticsearch:8.16.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    # ports:
+    #   - "9200:9200"
+    #   - "9300:9300"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - udemy_network
+
+  kibana:
+    image: kibana:8.16.1
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - udemy_network
+
 volumes:
   postgres_data:
   pgadmin_data:
   consul_data:
+  elasticsearch-data:
 
 networks:
   udemy_network:
     driver: bridge
+

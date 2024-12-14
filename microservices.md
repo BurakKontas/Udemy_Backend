@@ -4,7 +4,7 @@ Below is a proposed microservices architecture for a Udemy-like platform. Each s
 
 ---
 
-## 1. **User Management Service**
+## 1. **Auth Service**
 - **Purpose**: Manages user registration, authentication, and authorization.
 - **Features**:
   - User registration and login (using JWT).

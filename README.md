@@ -21,7 +21,7 @@ This project is a Udemy-like platform built using a microservices architecture. 
 
 ## Microservices Overview
 
-### 1. **User Management Service**
+### 1. **Auth Service**
 - Manages user registration, login, and role-based access control.
 - **gRPC Endpoints**: Authentication, user profile updates.
 - **REST Controllers**: User registration, login.
