@@ -4,12 +4,13 @@ namespace Udemy.Course.Domain.Entities;
 
 public class Course : BaseEntity
 {
-    public List<Guid> InstructorIds { get; set; } = new();
+    public List<Guid> InstructorIds { get; set; } = [];
     public string Title { get; set; } = "";
     public string Description { get; set; } = "";
     public string? ImageUrl { get; set; }
-    public List<CourseCategory> Categories { get; set; } = new();
-    public List<Tag> Tags { get; set; } = new();
+    public List<CourseCategory> Categories { get; set; } = [];
+    public List<Lesson> Lessons { get; set; } = [];
+    public List<Tag> Tags { get; set; } = [];
     public decimal Price { get; set; }
     public decimal? DiscountedPrice { get; set; }
     public DateTime? DiscountStartDate { get; set; }
