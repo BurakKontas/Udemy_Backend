@@ -3,10 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.IO;
-using System.Net.Http;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 
 namespace Udemy.Common.ExceptionMiddlewares;
 

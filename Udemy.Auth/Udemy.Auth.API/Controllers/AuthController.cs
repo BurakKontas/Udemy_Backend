@@ -102,11 +102,18 @@ public class AuthController(IAuthService authService) : ControllerBase
     {
         var ticket = _authService.GetIdentityFromToken(token, cancellationToken);
 
+        if (ticket == null) return TypedResults.Unauthorized();
+
+        var id = ticket.Properties.Items["Id"];
+
+        if (id == null) return TypedResults.Unauthorized();
+
         var identityResponse = new IdentityResponse(
             ticket.Principal.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList(),
             ticket.Principal.Identity!.IsAuthenticated,
             ticket.Principal.Identity!.Name,
-            ticket.Principal.Identity.AuthenticationType
+            ticket.Principal.Identity.AuthenticationType,
+            Guid.Parse(id)
         );
 
         return TypedResults.Ok(identityResponse);

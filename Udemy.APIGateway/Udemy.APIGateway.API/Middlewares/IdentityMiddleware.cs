@@ -72,8 +72,9 @@ public class IdentityMiddleware : IMiddleware
         context.Request.Headers["X-User-IsAuthenticated"] = ticket.IsAuthenticated.ToString();
         context.Request.Headers["X-User-Name"] = ticket.Name ?? string.Empty;
         context.Request.Headers["X-User-AuthType"] = ticket.AuthenticationType ?? string.Empty;
+        context.Request.Headers["X-User-Id"] = ticket.Id.ToString();
 
-        var secret = context.Request.Headers["X-User-Roles"] + context.Request.Headers["X-User-IsAuthenticated"] + context.Request.Headers["X-User-Name"] + context.Request.Headers["X-User-AuthType"];
+        var secret = context.Request.Headers["X-User-Roles"] + context.Request.Headers["X-User-IsAuthenticated"] + context.Request.Headers["X-User-Name"] + context.Request.Headers["X-User-AuthType"] + context.Request.Headers["X-User-Id"];
         secret = Sha256Helper.Hash(secret, SALT);
 
         context.Request.Headers["X-User-Secret"] = secret;

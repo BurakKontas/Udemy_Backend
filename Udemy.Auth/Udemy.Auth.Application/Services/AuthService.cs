@@ -5,6 +5,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication;
 using Udemy.Auth.Domain.Entities;
 using Udemy.Auth.Domain.Interfaces;
+using System.Security.Claims;
+using Role = Udemy.Auth.Domain.Entities.Role;
 
 namespace Udemy.Auth.Application.Services;
 
@@ -161,10 +163,19 @@ public class AuthService : IAuthService
         return "Confirmation email sent.";
     }
 
-    public AuthenticationTicket GetIdentityFromToken(string token, CancellationToken cancellationToken)
+    public AuthenticationTicket? GetIdentityFromToken(string token, CancellationToken cancellationToken)
     {
         var unprotectedToken = _bearerOptions.BearerTokenProtector.Unprotect(token);
         if (unprotectedToken == null) throw new ArgumentNullException($"Invalid token");
+
+        if (unprotectedToken.Properties.ExpiresUtc < DateTimeOffset.UtcNow) return null!;
+        
+        var user = _userManager.FindByEmailAsync(unprotectedToken.Principal.Identity!.Name!).Result;
+        if (user == null || user.IsDeactivated) throw new Exception("User not found");
+
+        var id = user.Id;
+
+        unprotectedToken.Properties.Items.Add("Id", id);
 
         return unprotectedToken;
     }

@@ -34,13 +34,14 @@ public class AuthAuthenticationHandler(
         var name = Context.Request.Headers["X-User-Name"].FirstOrDefault();
         var authType = Context.Request.Headers["X-User-AuthType"].FirstOrDefault();
         var secret = Context.Request.Headers["X-User-Secret"].FirstOrDefault();
+        var userId = Guid.Parse(Context.Request.Headers["X-User-Id"].FirstOrDefault()!);
 
         if(secret == null)
         {
             return AuthenticateResult.Fail("Missing secret header.");
         }
 
-        var secretText = Context.Request.Headers["X-User-Roles"] + Context.Request.Headers["X-User-IsAuthenticated"] + Context.Request.Headers["X-User-Name"] + Context.Request.Headers["X-User-AuthType"];
+        var secretText = Context.Request.Headers["X-User-Roles"] + Context.Request.Headers["X-User-IsAuthenticated"] + Context.Request.Headers["X-User-Name"] + Context.Request.Headers["X-User-AuthType"] + Context.Request.Headers["X-User-Id"];
 
         var isSecretVerified = Sha256Helper.Verify(secretText, SALT, secret);
 
@@ -60,6 +61,9 @@ public class AuthAuthenticationHandler(
         Context.User = principal;
 
         var ticket = new AuthenticationTicket(principal, Scheme.Name);
+
+        ticket.Properties.Items["Id"] = userId.ToString();
+
         return AuthenticateResult.Success(ticket);
     }
 }

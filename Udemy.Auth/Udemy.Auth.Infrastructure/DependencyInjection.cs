@@ -6,12 +6,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Mail;
-using Udemy.Auth.Domain.Options;
 using Udemy.Auth.Infrastructure.Context;
 using Udemy.Auth.Infrastructure.DataProtection;
 using Udemy.Auth.Infrastructure.Repositories;
 using Udemy.Auth.Infrastructure.User;
 using Udemy.Common.Consul;
+using Udemy.Common.Helpers;
 using DataProtectionProvider = Udemy.Auth.Infrastructure.DataProtection.DataProtectionProvider;
 using Role = Udemy.Auth.Domain.Entities.Role;
 

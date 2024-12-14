@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Diagnostics;
 using Udemy.Auth.Application;
 using Udemy.Auth.Infrastructure;
+using Udemy.Auth.Infrastructure.Context;
 using Udemy.Common.ExceptionMiddlewares;
+using Udemy.Common.Helpers;
 using Udemy.Common.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +26,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.ApplyMigrations();
+    app.ApplyMigrations<ApplicationDbContext>();
 }
 
 //app.MapIdentityApi<User>();
