@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Udemy.Common.Helpers;
-using Udemy.Course.Domain.Interfaces;
+using Udemy.Course.Domain.Interfaces.Repository;
 using Udemy.Course.Infrastructure.Contexts;
 using Udemy.Course.Infrastructure.Repositories;
 
