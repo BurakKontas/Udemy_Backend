@@ -10,4 +10,8 @@
     <ProjectReference Include="..\..\Udemy.Common\Udemy.Common\Udemy.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interfaces\Service\" />
+  </ItemGroup>
+
 </Project>
