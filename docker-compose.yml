@@ -50,6 +50,11 @@ services:
       context: .
       dockerfile: Udemy.Course/Udemy.Course.API/Dockerfile
     environment:
+      - POSTGRES_HOST=udemy.postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=udemycoursedb
+      - POSTGRES_USER=udemyuser
+      - POSTGRES_PASSWORD=udemypassword
       - CONSUL_URL=http://consul:8500
       - API_HOST=udemy.course.api
       - API_HTTP_PORT=8080
