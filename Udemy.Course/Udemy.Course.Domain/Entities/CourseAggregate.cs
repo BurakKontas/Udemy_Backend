@@ -2,7 +2,7 @@
 
 public class CourseAggregate : BaseEntity
 {
-    public Course Course { get; set; } = new();
+    public Course Course { get; set; }
     public CourseDetails Details { get; set; } = new();
     public List<LessonCategory> Categories { get; set; } = [];
     public List<Lesson> Lessons { get; set; } = [];

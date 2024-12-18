@@ -2,7 +2,8 @@
 using Udemy.Common.Base;
 using Udemy.Course.Domain.Entities;
 using Udemy.Course.Domain.Interfaces.Repository;
+using Udemy.Course.Infrastructure.Contexts;
 
 namespace Udemy.Course.Infrastructure.Repositories;
 
-public class LessonRepository(DbContext context) : BaseRepository<Lesson>(context), ILessonRepository;
+public class LessonRepository(ApplicationDbContext context) : BaseRepository<Lesson>(context), ILessonRepository;

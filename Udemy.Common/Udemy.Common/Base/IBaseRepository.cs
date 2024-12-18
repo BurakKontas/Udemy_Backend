@@ -10,6 +10,7 @@ public interface IBaseRepository<T> where T : class
     Task AddAsync(T entity);
     Task AddManyAsync(IEnumerable<T> entities);
     Task UpdateAsync(T entity);
+    Task UpdateAsync(T entity, Dictionary<string, object> updatedValues);
     Task UpdateManyAsync(IEnumerable<T> entities);
     Task DeleteAsync(T entity);
     Task DeleteManyAsync(IEnumerable<T> entities);

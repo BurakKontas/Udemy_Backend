@@ -20,10 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Udemy.Course.Application\Udemy.Course.Application.csproj" />
     <ProjectReference Include="..\Udemy.Course.Domain\Udemy.Course.Domain.csproj" />
     <ProjectReference Include="..\Udemy.Course.Infrastructure\Udemy.Course.Infrastructure.csproj" />

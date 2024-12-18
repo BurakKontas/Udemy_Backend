@@ -18,8 +18,4 @@
     <ProjectReference Include="..\Udemy.Course.Domain\Udemy.Course.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
 </Project>

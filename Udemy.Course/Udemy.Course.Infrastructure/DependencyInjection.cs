@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Elastic.Clients.Elasticsearch;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Udemy.Common.Helpers;
@@ -19,6 +20,15 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString);
         });
 
+        services.AddSingleton<ElasticsearchClient>(serviceProvider =>
+        {
+            var url = Environment.GetEnvironmentVariable("ELASTICSEARCH_URL") ?? "http://localhost:9200";
+            var options = new Uri(url);
+            var client = new ElasticsearchClient(options);
+            return client;
+        });
+
+        services.AddScoped<IElasticSearchRepository, ElasticSearchRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();

@@ -47,6 +47,34 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
         await _context.SaveChangesAsync();
     }
 
+    public async Task UpdateAsync(T entity, Dictionary<string, object> updatedValues)
+    {
+        try
+        {
+            if (updatedValues == null || !updatedValues.Any())
+                throw new ArgumentException("No values provided to update.");
+
+            var entry = _context.Entry(entity);
+
+            foreach (var kvp in updatedValues)
+            {
+                var property = entry.Property(kvp.Key);
+
+                if (property == null)
+                    throw new ArgumentException($"Property {kvp.Key} not found on entity.");
+
+                property.CurrentValue = kvp.Value;
+            }
+
+            _dbSet.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Error updating entity.", ex);
+        }
+    }
+
     public async Task UpdateManyAsync(IEnumerable<T> entities)
     {
         _dbSet.UpdateRange(entities);

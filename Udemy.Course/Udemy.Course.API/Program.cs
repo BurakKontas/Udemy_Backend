@@ -1,4 +1,7 @@
+using Udemy.Common.ExceptionMiddlewares;
 using Udemy.Common.Helpers;
+using Udemy.Common.Middlewares;
+using Udemy.Course.Application;
 using Udemy.Course.Infrastructure;
 using Udemy.Course.Infrastructure.Contexts;
 
@@ -11,7 +14,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddTransactionMiddleware<ApplicationDbContext>();
+builder.Services.AddExceptionMiddlewares();
+builder.Services.AddAuthMiddleware();
 
 var app = builder.Build();
 
@@ -22,6 +29,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.ApplyMigrations<ApplicationDbContext>();
 }
+
+app.AddExceptionMiddlewares();
+
+app.AddAuthMiddleware();
+
+app.AddTransactionMiddleware<ApplicationDbContext>();
 
 app.UseHttpsRedirection();
 

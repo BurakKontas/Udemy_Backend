@@ -16,6 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAuthMiddleware();
+builder.Services.AddTransactionMiddleware<ApplicationDbContext>();
 
 builder.Services.AddExceptionMiddlewares();
 
@@ -30,6 +31,8 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.MapIdentityApi<User>();
+
+app.AddTransactionMiddleware<ApplicationDbContext>();
 
 app.AddExceptionMiddlewares();
 
