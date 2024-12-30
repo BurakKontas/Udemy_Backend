@@ -51,6 +51,7 @@ public class Course : BaseEntity, ICloneable
 
     // Static Factory Method
     public static Course Create(
+        Guid instructorId,
         string title,
         string description,
         decimal price,
@@ -58,7 +59,9 @@ public class Course : BaseEntity, ICloneable
         string language = "English",
         bool isActive = true)
     {
-        return new Course(title, description, price, level, language, isActive);
+        var course = new Course(title, description, price, level, language, isActive);
+        course.AssignInstructor(instructorId);
+        return course;
     }
 
     public void AssignInstructor(Guid instructorId)
