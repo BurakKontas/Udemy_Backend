@@ -34,9 +34,11 @@ public class AuthAuthenticationHandler(
         var name = Context.Request.Headers["X-User-Name"].FirstOrDefault();
         var authType = Context.Request.Headers["X-User-AuthType"].FirstOrDefault();
         var secret = Context.Request.Headers["X-User-Secret"].FirstOrDefault();
-        var userId = Guid.Parse(Context.Request.Headers["X-User-Id"].FirstOrDefault()!);
+        var userId = Guid.TryParse(Context.Request.Headers["X-User-Id"].FirstOrDefault(), out var parsedUserId)
+            ? parsedUserId
+            : Guid.Empty;
 
-        if(secret == null)
+        if (secret == null)
         {
             return AuthenticateResult.Fail("Missing secret header.");
         }
