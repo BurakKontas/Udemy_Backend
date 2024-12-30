@@ -12,8 +12,8 @@ public class EndpointFilterModelBinder : IModelBinder
 
         var start = int.TryParse(query["start"], out var s) ? s : 0;
         var limit = int.TryParse(query["limit"], out var l) ? l : 10;
-        var sortBy = query["sortBy"].FirstOrDefault() ?? "Id";
-        var sortOrder = query["sortOrder"].FirstOrDefault()?.ToLower() ?? "asc";
+        var sortBy = query["sortBy"].FirstOrDefault();
+        var sortOrder = query["sortOrder"].FirstOrDefault()?.ToLower();
         var filterBy = query["filterBy"].FirstOrDefault();
         var filterValue = query["filterValue"].FirstOrDefault();
 
@@ -38,8 +38,8 @@ public record EndpointFilter
 {
     public int Start { get; init; }
     public int Limit { get; init; } = 10;
-    public string SortBy { get; init; } = "Id";
-    public string SortOrder { get; init; } = "asc";
+    public string? SortBy { get; init; }
+    public string? SortOrder { get; init; }
     public string? FilterBy { get; init; }
     public string? FilterValue { get; init; }
 }
