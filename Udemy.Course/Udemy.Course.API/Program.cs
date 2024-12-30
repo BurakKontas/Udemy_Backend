@@ -16,7 +16,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddTransactionMiddleware<ApplicationDbContext>();
+//builder.Services.AddTransactionMiddleware<ApplicationDbContext>();
 builder.Services.AddExceptionMiddlewares();
 builder.Services.AddAuthMiddleware();
 
@@ -34,7 +34,7 @@ app.AddExceptionMiddlewares();
 
 app.AddAuthMiddleware();
 
-app.AddTransactionMiddleware<ApplicationDbContext>();
+//app.AddTransactionMiddleware<ApplicationDbContext>();
 
 app.UseHttpsRedirection();
 
