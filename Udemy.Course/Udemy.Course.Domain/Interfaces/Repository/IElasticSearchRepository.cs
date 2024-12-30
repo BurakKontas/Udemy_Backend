@@ -1,9 +1,11 @@
-﻿namespace Udemy.Course.Domain.Interfaces.Repository;
+﻿using Udemy.Common.ModelBinder;
+
+namespace Udemy.Course.Domain.Interfaces.Repository;
 
 public interface IElasticSearchRepository
 {
     Task<T?> GetByIdAsync<T>(string id) where T : class;
-    Task<IEnumerable<T>> SearchAsync<T>(string query) where T : class;
+    Task<IEnumerable<T>> SearchAsync<T>(string query, EndpointFilter filter) where T : class;
     Task IndexAsync<T>(T document) where T : class;
     Task UpdateAsync<T>(string id, T document) where T : class;
     Task DeleteAsync<T>(string id) where T : class;

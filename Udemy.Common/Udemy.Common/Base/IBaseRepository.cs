@@ -1,12 +1,13 @@
 ﻿using System.Linq.Expressions;
+using Udemy.Common.ModelBinder;
 
 namespace Udemy.Common.Base;
 
 public interface IBaseRepository<T> where T : class
 {
-    IQueryable<T> GetAll();
+    IQueryable<T> GetAll(EndpointFilter filter);
     Task<T?> GetByIdAsync(Guid id);
-    Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> predicate);
+    Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> predicate, EndpointFilter filter);
     Task AddAsync(T entity);
     Task AddManyAsync(IEnumerable<T> entities);
     Task UpdateAsync(T entity);

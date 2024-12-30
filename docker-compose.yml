@@ -22,28 +22,6 @@ services:
     networks:
       - udemy_network
 
-  udemy.apigateway.api:
-    image: ${DOCKER_REGISTRY-}udemyapigatewayapi
-    ports:
-      - "3000:8080"
-      - "3001:8081"
-    build:
-      context: .
-      dockerfile: Udemy.APIGateway/Udemy.APIGateway.API/Dockerfile
-    environment:
-      - CONSUL_URL=http://consul:8500
-      - API_HOST=udemy.apigateway.api
-      - API_HTTP_PORT=8080
-      - API_HTTPS_PORT=8081
-      - API_KEY=d0107a8c-b28d-4266-86e5-5ca24a48cc3f # secret api key that should not be known to anyone
-      - SALT=123456
-    depends_on:
-      - consul
-      - udemy.auth.api
-      - udemy.course.api
-    networks:
-      - udemy_network
-
   udemy.course.api:
     image: ${DOCKER_REGISTRY-}udemycourseapi
     build:
@@ -64,6 +42,28 @@ services:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
     depends_on:
       - consul
+    networks:
+      - udemy_network
+
+  udemy.apigateway.api:
+    image: ${DOCKER_REGISTRY-}udemyapigatewayapi
+    ports:
+      - "3000:8080"
+      - "3001:8081"
+    build:
+      context: .
+      dockerfile: Udemy.APIGateway/Udemy.APIGateway.API/Dockerfile
+    environment:
+      - CONSUL_URL=http://consul:8500
+      - API_HOST=udemy.apigateway.api
+      - API_HTTP_PORT=8080
+      - API_HTTPS_PORT=8081
+      - API_KEY=d0107a8c-b28d-4266-86e5-5ca24a48cc3f # secret api key that should not be known to anyone
+      - SALT=123456
+    depends_on:
+      - consul
+      - udemy.auth.api
+      - udemy.course.api
     networks:
       - udemy_network
 

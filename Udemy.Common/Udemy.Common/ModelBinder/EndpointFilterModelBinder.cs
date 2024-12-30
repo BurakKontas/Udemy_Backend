@@ -1,8 +1,7 @@
-﻿namespace Udemy.Common.Attributes;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+
+namespace Udemy.Common.ModelBinder;
 
 public class EndpointFilterModelBinder : IModelBinder
 {
@@ -32,7 +31,6 @@ public class EndpointFilterModelBinder : IModelBinder
     }
 }
 
-// Record to encapsulate filtering logic
 [ModelBinder(BinderType = typeof(EndpointFilterModelBinder))]
 public record EndpointFilter
 {

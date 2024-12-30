@@ -1,4 +1,6 @@
 ﻿using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.QueryDsl;
+using Udemy.Common.ModelBinder;
 using Udemy.Course.Domain.Interfaces.Repository;
 
 namespace Udemy.Course.Infrastructure.Repositories;
@@ -13,19 +15,49 @@ public class ElasticSearchRepository(ElasticsearchClient elasticClient) : IElast
         return response.Found ? response.Source : null;
     }
 
-    public async Task<IEnumerable<T>> SearchAsync<T>(string query) where T : class
+    public async Task<IEnumerable<T>> SearchAsync<T>(string query, EndpointFilter filter) where T : class
     {
-        var searchResponse = await _elasticClient.SearchAsync<T>(s => s
-            .Query(q => q
-                .QueryString(d => d
-                        .Query(query)
-                )
-            )
-        );
-
-        if (searchResponse.IsValidResponse && searchResponse.Documents.Any())
+        var searchRequest = new SearchRequest<T>
         {
-            return searchResponse.Documents;
+            Query = new QueryStringQuery
+            {
+                Query = query
+            }
+        };
+
+        if (filter != null)
+        {
+            if (!string.IsNullOrEmpty(filter.FilterBy) && !string.IsNullOrEmpty(filter.FilterValue))
+            {
+                searchRequest.Query = new QueryStringQuery
+                {
+                    Query = $"{filter.FilterBy}:{filter.FilterValue}"
+                };
+            }
+
+            if (!string.IsNullOrEmpty(filter.SortBy))
+            {
+                searchRequest.Sort = new List<SortOptions>
+                {
+                    SortOptions.Field(Field.FromString(filter.SortBy)!, new FieldSort
+                    {
+                        Order = filter.SortOrder?.ToLower() == "desc"
+                            ? SortOrder.Desc
+                            : SortOrder.Asc,
+                    }),
+                };
+
+            }
+
+            searchRequest.From = filter.Start;
+            searchRequest.Size = filter.Limit;
+        }
+
+        var response = await _elasticClient.SearchAsync<T>(searchRequest);
+
+        if (response.IsValidResponse && response.Documents.Any())
+        {
+            return response.Documents;
         }
 
         return [];
