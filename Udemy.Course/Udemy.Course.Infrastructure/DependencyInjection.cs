@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Udemy.Common.Consul;
 using Udemy.Common.Helpers;
 using Udemy.Course.Domain.Interfaces.Repository;
 using Udemy.Course.Infrastructure.Contexts;
@@ -13,6 +14,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddConsul(configuration);
+
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             var connectionString = PostgresConnectionOptions.FromEnvironment()
