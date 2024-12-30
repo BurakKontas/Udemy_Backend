@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Udemy.Common.Exceptions;
+using Udemy.Common.ModelBinder;
 using Udemy.Course.Domain.Enums;
 using Udemy.Course.Domain.Interfaces.Repository;
 using Udemy.Course.Domain.Interfaces.Service;
@@ -14,8 +15,7 @@ public class CourseService(IValidator<AppCourse> validator, ICourseRepository co
 
     public async Task CreateAsync(Guid instructorId, string title, string description, decimal price, CourseLevel level, string language, bool isActive)
     {
-        var course = AppCourse.Create(title, description, price, level, language, isActive);
-        course.AssignInstructor(instructorId);
+        var course = AppCourse.Create(instructorId, title, description, price, level, language, isActive);
 
         await ValidateCourse(course);
         await _courseRepository.AddAsync(course);
@@ -57,19 +57,19 @@ public class CourseService(IValidator<AppCourse> validator, ICourseRepository co
         return await _courseRepository.GetByIdAsync(courseId);
     }
 
-    public async Task<IEnumerable<AppCourse>> GetAllByInstructorAsync(Guid instructorId)
+    public async Task<IEnumerable<AppCourse>> GetAllByInstructorAsync(Guid instructorId, EndpointFilter filter)
     {
-        return await _courseRepository.GetCoursesByInstructorAsync(instructorId);
+        return await _courseRepository.GetCoursesByInstructorAsync(instructorId, filter);
     }
 
-    public async Task<IEnumerable<AppCourse>> SearchCoursesAsync(string keyword)
+    public async Task<IEnumerable<AppCourse>> SearchCoursesAsync(string keyword, EndpointFilter filter)
     {
-        return await _courseRepository.GetCoursesByKeywordAsync(keyword);
+        return await _courseRepository.GetCoursesByKeywordAsync(keyword, filter);
     }
 
-    public async Task<IEnumerable<AppCourse>> GetFeaturedCoursesAsync()
+    public async Task<IEnumerable<AppCourse>> GetFeaturedCoursesAsync(EndpointFilter filter)
     {
-        return await _courseRepository.GetFeaturedCoursesAsync();
+        return await _courseRepository.GetFeaturedCoursesAsync(filter);
     }
 
     public async Task AssignInstructorAsync(Guid courseId, Guid instructorId)
