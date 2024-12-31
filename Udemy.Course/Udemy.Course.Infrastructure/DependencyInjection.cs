@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Udemy.Common.Consul;
 using Udemy.Common.Helpers;
+using Udemy.Common.Middlewares;
 using Udemy.Course.Domain.Interfaces.Repository;
 using Udemy.Course.Infrastructure.Contexts;
 using Udemy.Course.Infrastructure.Repositories;
@@ -39,6 +40,8 @@ public static class DependencyInjection
         services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
         services.AddScoped<ILessonRepository, LessonRepository>();
         services.AddScoped<IRateRepository, RateRepository>();
+
+        services.AddTransient<TransactionMiddleware<ApplicationDbContext>>();
 
         return services;
     }
