@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Udemy.Common.ModelBinder;
 
 namespace Udemy.Common.Base;
 
-public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
+public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
 {
     private readonly DbContext _context;
     private readonly DbSet<T> _dbSet;
@@ -14,40 +15,114 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
         _dbSet = _context.Set<T>();
     }
 
-    public IQueryable<T> GetAll()
+public async Task<IEnumerable<T>> GetAll(EndpointFilter filter)
+{
+    var query = _dbSet.AsNoTracking();
+
+    // Filtering
+    if (!string.IsNullOrEmpty(filter.FilterBy) && !string.IsNullOrEmpty(filter.FilterValue))
     {
-        return _dbSet.AsNoTracking();
+        var parameter = Expression.Parameter(typeof(T), "x");
+        var property = Expression.Property(parameter, filter.FilterBy);
+        var value = Expression.Constant(filter.FilterValue);
+        var condition = Expression.Equal(property, value);
+        var predicate = Expression.Lambda<Func<T, bool>>(condition, parameter);
+
+        query = query.Where(predicate);
     }
+
+    // Sorting
+    if (!string.IsNullOrEmpty(filter.SortBy))
+    {
+        var parameter = Expression.Parameter(typeof(T), "x");
+        var property = Expression.Property(parameter, filter.SortBy);
+        var lambda = Expression.Lambda(property, parameter);
+
+        var methodName = filter.SortOrder?.ToLower() == "desc" ? "OrderByDescending" : "OrderBy";
+        var method = typeof(Queryable).GetMethods()
+            .First(m => m.Name == methodName && m.GetParameters().Length == 2)
+            .MakeGenericMethod(typeof(T), property.Type);
+
+        query = (IQueryable<T>)method.Invoke(null, [query, lambda])!;
+    }
+
+    // Paginating
+    query = query.Skip(filter.Start).Take(filter.Limit);
+
+    return await query.ToArrayAsync();
+}
+
 
     public async Task<T?> GetByIdAsync(Guid id)
     {
         return await _dbSet.FindAsync(id);
     }
 
-    public async Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> predicate)
+    public async Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> predicate, EndpointFilter filter)
     {
-        return await _dbSet.Where(predicate).ToListAsync();
+        var query = _dbSet.AsNoTracking().Where(predicate);
+
+        // Filtering
+        if (!string.IsNullOrEmpty(filter.FilterBy) && !string.IsNullOrEmpty(filter.FilterValue))
+        {
+            var parameter = Expression.Parameter(typeof(T), "x");
+            var property = Expression.Property(parameter, filter.FilterBy);
+            var value = Expression.Constant(filter.FilterValue);
+            var condition = Expression.Equal(property, value);
+            var filterPredicate = Expression.Lambda<Func<T, bool>>(condition, parameter);
+
+            query = query.Where(filterPredicate);
+        }
+
+        // Sorting
+        if (!string.IsNullOrEmpty(filter.SortBy))
+        {
+            var parameter = Expression.Parameter(typeof(T), "x");
+            var property = Expression.Property(parameter, filter.SortBy);
+            var lambda = Expression.Lambda(property, parameter);
+
+            var methodName = filter.SortOrder?.ToLower() == "desc" ? "OrderByDescending" : "OrderBy";
+            var method = typeof(Queryable).GetMethods()
+                .First(m => m.Name == methodName && m.GetParameters().Length == 2)
+                .MakeGenericMethod(typeof(T), property.Type);
+
+            query = (IQueryable<T>)method.Invoke(null, [query, lambda])!;
+        }
+
+        // Paginating
+        query = query.Skip(filter.Start).Take(filter.Limit);
+
+        return await query.ToListAsync();
     }
 
-    public async Task AddAsync(T entity)
+    public async Task<Guid> AddAsync(T entity)
     {
         await _dbSet.AddAsync(entity);
         await _context.SaveChangesAsync();
+
+        return entity.Id;
     }
 
-    public async Task AddManyAsync(IEnumerable<T> entities)
+    public async Task<Guid[]> AddManyAsync(IEnumerable<T> entities)
     {
-        await _dbSet.AddRangeAsync(entities);
+        var entityArray = entities as T[] ?? entities.ToArray();
+        if (!entityArray.Any()) return [];
+
+        await _dbSet.AddRangeAsync(entityArray);
         await _context.SaveChangesAsync();
+
+        return entityArray.Select(x => x.Id).ToArray();
     }
 
-    public async Task UpdateAsync(T entity)
+    public async Task<Guid> UpdateAsync(T entity)
     {
         _dbSet.Update(entity);
         await _context.SaveChangesAsync();
+
+        return entity.Id;
     }
 
-    public async Task UpdateAsync(T entity, Dictionary<string, object> updatedValues)
+    public async Task<Guid> UpdateAsync(T entity, Dictionary<string, object> updatedValues)
     {
         try
         {
@@ -68,29 +143,44 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
 
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
+
+            return entity.Id;
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException("Error updating entity.", ex);
         }
+
     }
 
-    public async Task UpdateManyAsync(IEnumerable<T> entities)
+    public async Task<Guid[]> UpdateManyAsync(IEnumerable<T> entities)
     {
-        _dbSet.UpdateRange(entities);
+        var entityArray = entities as T[] ?? entities.ToArray();
+        if (!entityArray.Any()) return [];
+
+        _dbSet.UpdateRange(entityArray);
         await _context.SaveChangesAsync();
+
+        return entityArray.Select(x => x.Id).ToArray();
     }
 
-    public async Task DeleteAsync(T entity)
+    public async Task<Guid> DeleteAsync(T entity)
     {
         _dbSet.Remove(entity);
         await _context.SaveChangesAsync();
+
+        return entity.Id;
     }
 
-    public async Task DeleteManyAsync(IEnumerable<T> entities)
+    public async Task<Guid[]> DeleteManyAsync(IEnumerable<T> entities)
     {
-        _dbSet.RemoveRange(entities);
+        var entityArray = entities as T[] ?? entities.ToArray();
+        if (!entityArray.Any()) return [];
+
+        _dbSet.RemoveRange(entityArray);
         await _context.SaveChangesAsync();
+
+        return entityArray.Select(x => x.Id).ToArray();
     }
 
     public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)

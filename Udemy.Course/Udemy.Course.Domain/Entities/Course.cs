@@ -1,4 +1,5 @@
-﻿using Udemy.Course.Domain.Enums;
+﻿using Udemy.Common.Base;
+using Udemy.Course.Domain.Enums;
 
 namespace Udemy.Course.Domain.Entities;
 
@@ -31,7 +32,7 @@ public class Course : BaseEntity, ICloneable
     public virtual ICollection<Enrollment> Enrollments { get; set; } = [];
 
     // EF Core Constructor
-    protected Course() { }
+    public Course() { }
 
     private Course(
         string title,

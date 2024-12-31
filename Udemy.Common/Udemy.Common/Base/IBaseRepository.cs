@@ -5,15 +5,15 @@ namespace Udemy.Common.Base;
 
 public interface IBaseRepository<T> where T : class
 {
-    IQueryable<T> GetAll(EndpointFilter filter);
+    Task<IEnumerable<T>> GetAll(EndpointFilter filter);
     Task<T?> GetByIdAsync(Guid id);
     Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> predicate, EndpointFilter filter);
-    Task AddAsync(T entity);
-    Task AddManyAsync(IEnumerable<T> entities);
-    Task UpdateAsync(T entity);
-    Task UpdateAsync(T entity, Dictionary<string, object> updatedValues);
-    Task UpdateManyAsync(IEnumerable<T> entities);
-    Task DeleteAsync(T entity);
-    Task DeleteManyAsync(IEnumerable<T> entities);
+    Task<Guid> AddAsync(T entity);
+    Task<Guid[]> AddManyAsync(IEnumerable<T> entities);
+    Task<Guid> UpdateAsync(T entity);
+    Task<Guid> UpdateAsync(T entity, Dictionary<string, object> updatedValues);
+    Task<Guid[]> UpdateManyAsync(IEnumerable<T> entities);
+    Task<Guid> DeleteAsync(T entity);
+    Task<Guid[]> DeleteManyAsync(IEnumerable<T> entities);
     Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
 }

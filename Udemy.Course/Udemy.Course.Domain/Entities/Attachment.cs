@@ -1,4 +1,6 @@
-﻿namespace Udemy.Course.Domain.Entities;
+﻿using Udemy.Common.Base;
+
+namespace Udemy.Course.Domain.Entities;
 
 public class Attachment : BaseEntity
 {
