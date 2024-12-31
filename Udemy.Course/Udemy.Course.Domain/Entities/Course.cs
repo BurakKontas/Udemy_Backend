@@ -112,13 +112,13 @@ public class Course : BaseEntity, ICloneable
         return new Course
         {
             Id = this.Id,
-            InstructorIds = new List<Guid>(this.InstructorIds),
+            InstructorIds = [..this.InstructorIds],
             Title = this.Title,
             Description = this.Description,
             ImageUrl = this.ImageUrl,
-            Categories = new List<LessonCategory>(this.Categories),
-            Lessons = new List<Lesson>(this.Lessons),
-            Tags = new List<Tag>(this.Tags),
+            Categories = [..this.Categories],
+            Lessons = [..this.Lessons],
+            Tags = [..this.Tags],
             Price = this.Price,
             DiscountedPrice = this.DiscountedPrice,
             DiscountStartDate = this.DiscountStartDate,
@@ -134,7 +134,7 @@ public class Course : BaseEntity, ICloneable
             CertificateTemplateUrl = this.CertificateTemplateUrl,
             RateCount = this.RateCount,
             RateValue = this.RateValue,
-            Enrollments = new List<Enrollment>(this.Enrollments)
+            Enrollments = [..this.Enrollments]
         };
     }
 }

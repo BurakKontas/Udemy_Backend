@@ -15,7 +15,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
         _dbSet = _context.Set<T>();
     }
 
-public async Task<IEnumerable<T>> GetAll(EndpointFilter filter)
+    public async Task<IEnumerable<T>> GetAll(EndpointFilter filter)
 {
     var query = _dbSet.AsNoTracking();
 
@@ -114,15 +114,15 @@ public async Task<IEnumerable<T>> GetAll(EndpointFilter filter)
         return entityArray.Select(x => x.Id).ToArray();
     }
 
-    public async Task<Guid> UpdateAsync(T entity)
+    public async Task<T> UpdateAsync(T entity)
     {
         _dbSet.Update(entity);
         await _context.SaveChangesAsync();
 
-        return entity.Id;
+        return entity;
     }
 
-    public async Task<Guid> UpdateAsync(T entity, Dictionary<string, object> updatedValues)
+    public async Task<T> UpdateAsync(T entity, Dictionary<string, object> updatedValues)
     {
         try
         {
@@ -144,7 +144,7 @@ public async Task<IEnumerable<T>> GetAll(EndpointFilter filter)
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
 
-            return entity.Id;
+            return entity;
         }
         catch (Exception ex)
         {

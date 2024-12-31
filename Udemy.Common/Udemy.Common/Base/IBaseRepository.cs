@@ -10,8 +10,8 @@ public interface IBaseRepository<T> where T : class
     Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> predicate, EndpointFilter filter);
     Task<Guid> AddAsync(T entity);
     Task<Guid[]> AddManyAsync(IEnumerable<T> entities);
-    Task<Guid> UpdateAsync(T entity);
-    Task<Guid> UpdateAsync(T entity, Dictionary<string, object> updatedValues);
+    Task<T> UpdateAsync(T entity);
+    Task<T> UpdateAsync(T entity, Dictionary<string, object> updatedValues);
     Task<Guid[]> UpdateManyAsync(IEnumerable<T> entities);
     Task<Guid> DeleteAsync(T entity);
     Task<Guid[]> DeleteManyAsync(IEnumerable<T> entities);

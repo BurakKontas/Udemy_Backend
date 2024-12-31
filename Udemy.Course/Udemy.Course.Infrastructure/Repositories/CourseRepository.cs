@@ -2,108 +2,153 @@
 using Microsoft.EntityFrameworkCore;
 using Udemy.Common.Base;
 using Udemy.Common.ModelBinder;
+using Udemy.Course.Domain.Adapters;
+using Udemy.Course.Domain.Dtos;
 using Udemy.Course.Domain.Entities;
 using Udemy.Course.Domain.Interfaces.Repository;
 using Udemy.Course.Infrastructure.Contexts;
 
 namespace Udemy.Course.Infrastructure.Repositories;
 
-public class CourseRepository(IElasticSearchRepository elasticSearchRepository) : ICourseRepository
+public class CourseRepository(IElasticSearchRepository elasticSearchRepository, ApplicationDbContext dbContext)
+    : BaseRepository<Domain.Entities.Course>(dbContext), ICourseRepository
 {
     private readonly IElasticSearchRepository _elasticSearchRepository = elasticSearchRepository;
+    private readonly ApplicationDbContext _dbContext = dbContext;
 
+    // from pg
     public async Task<IEnumerable<Domain.Entities.Course>> GetCoursesByInstructorAsync(Guid instructorId, EndpointFilter filter)
     {
-        var query = $"instructorIds:{instructorId}";
-        return await _elasticSearchRepository.SearchAsync<Domain.Entities.Course>(query, filter);
+        var query = _dbContext.Courses.AsQueryable();
+
+        query = query.Where(c => c.InstructorIds.Contains(instructorId));
+
+        query = query
+            .Skip(filter.Start)
+            .Take(filter.Limit);
+
+        return await query.ToArrayAsync();
     }
 
+    // from pg
     public async Task<IEnumerable<Domain.Entities.Course>> GetFeaturedCoursesAsync(EndpointFilter filter)
     {
-        var query = "isFeatured:true";
-        var courses = await _elasticSearchRepository.SearchAsync<Domain.Entities.Course>(query, filter);
-        return courses;
+        var query = _dbContext.Courses.AsQueryable();
+
+        query = query.Where(c => c.IsFeatured);
+
+        query = query
+            .Skip(filter.Start)
+            .Take(filter.Limit);
+
+        return await query.ToArrayAsync();
     }
 
+    // from elastic then get pg details
     public async Task<IEnumerable<Domain.Entities.Course>> GetCoursesByKeywordAsync(string keyword, EndpointFilter filter)
     {
-        var query = $"title:{keyword}~ OR description:{keyword}~"; // ~ makes query fuzzy
-        var courses = await _elasticSearchRepository.SearchAsync<Domain.Entities.Course>(query, filter);
+        var elasticQuery = $"title:{keyword}~ OR description:{keyword}~"; // ~ makes query fuzzy
+        var courseDtos = await _elasticSearchRepository.SearchAsync<CourseElasticDto>(elasticQuery, filter);
+
+        var courseIds = courseDtos.Select(x => x.Id).ToArray();
+        var query = _dbContext.Courses.AsQueryable();
+
+        query = query.Where(c => courseIds.Contains(c.Id));
+
+        var courses = await query.ToArrayAsync();
+
         return courses;
     }
 
-    public async Task<IEnumerable<Domain.Entities.Course>> GetAll(EndpointFilter filter)
+    //from elastic then pg
+    public new async Task<IEnumerable<Domain.Entities.Course>> GetManyAsync(Expression<Func<Domain.Entities.Course, bool>> predicate, EndpointFilter filter)
     {
-        return await _elasticSearchRepository.SearchAsync<Domain.Entities.Course>("*", filter);
+        var courseDtos = await _elasticSearchRepository.SearchAsync<CourseElasticDto>(predicate.ToString(), filter);
+
+        var courseIds = courseDtos.Select(x => x.Id).ToArray();
+
+        var query = _dbContext.Courses.AsQueryable();
+
+        query = query.Where(c => courseIds.Contains(c.Id));
+
+        return await query.ToArrayAsync();
     }
 
-    public async Task<Domain.Entities.Course?> GetByIdAsync(Guid id)
-    {
-        var result = await _elasticSearchRepository.GetByIdAsync<Domain.Entities.Course>(id.ToString());
-        return result;
-    }
-
-    public async Task<IEnumerable<Domain.Entities.Course>> GetManyAsync(Expression<Func<Domain.Entities.Course, bool>> predicate, EndpointFilter filter)
-    {
-        return await _elasticSearchRepository.SearchAsync<Domain.Entities.Course>(predicate.ToString(), filter);
-    }
-
-    public async Task<Guid> AddAsync(Domain.Entities.Course entity)
+    // add elastic and pg
+    public new async Task<Guid> AddAsync(Domain.Entities.Course entity)
     {
         await _elasticSearchRepository.IndexAsync(entity);
         return entity.Id;
     }
 
-    public async Task<Guid[]> AddManyAsync(IEnumerable<Domain.Entities.Course> entities)
+    // add elastic and pg
+    public new async Task<Guid[]> AddManyAsync(IEnumerable<Domain.Entities.Course> entities)
     {
         var courses = entities as Domain.Entities.Course[] ?? entities.ToArray();
         if (!courses.Any()) return [];
 
-        await _elasticSearchRepository.BulkIndexAsync(courses);
-        return courses.Select(x => x.Id).ToArray();
+        var courseDtos = courses.Select(c => c.ToCourseElasticDto()).ToArray();
+
+        await _elasticSearchRepository.BulkIndexAsync<CourseElasticDto>(courseDtos);
+
+        await _dbContext.Courses.AddRangeAsync(courses);
+
+        return courseDtos.Select(x => x.Id).ToArray();
     }
 
-    public async Task<Guid> UpdateAsync(Domain.Entities.Course entity)
+    // update elastic and pg
+    public new async Task<Guid> UpdateAsync(Domain.Entities.Course entity)
     {
-        await _elasticSearchRepository.UpdateAsync(entity.Id.ToString(), entity);
+        await _elasticSearchRepository.UpdateAsync(entity.Id.ToString(), entity.ToCourseElasticDto());
+
+        await base.UpdateAsync(entity);
+
         return entity.Id;
     }
 
-    public async Task<Guid> UpdateAsync(Domain.Entities.Course entity, Dictionary<string, object> updatedValues)
+    // update elastic and pg
+    public new  async Task<Guid> UpdateAsync(Domain.Entities.Course entity, Dictionary<string, object> updatedValues)
     {
-        await _elasticSearchRepository.UpdateAsync(entity.Id.ToString(), updatedValues);
+        var updated = await base.UpdateAsync(entity, updatedValues);
+
+        await _elasticSearchRepository.UpdateAsync(entity.Id.ToString(), updated.ToCourseElasticDto());
+
         return entity.Id;
     }
 
-    public async Task<Guid[]> UpdateManyAsync(IEnumerable<Domain.Entities.Course> entities)
+    // update elastic and pg
+    public new async Task<Guid[]> UpdateManyAsync(IEnumerable<Domain.Entities.Course> entities)
     {
         var courses = entities as Domain.Entities.Course[] ?? entities.ToArray();
         if (!courses.Any()) return [];
 
-        await _elasticSearchRepository.BulkIndexAsync(courses);
-        return courses.Select(x => x.Id).ToArray();
+        await base.UpdateManyAsync(courses);
+
+        var courseDtos = courses.Select(c => c.ToCourseElasticDto()).ToArray();
+        await _elasticSearchRepository.BulkIndexAsync<CourseElasticDto>(courseDtos);
+
+        return courseDtos.Select(x => x.Id).ToArray();
     }
 
-    public async Task<Guid> DeleteAsync(Domain.Entities.Course entity)
+    // delete elastic and pg
+    public new async Task<Guid> DeleteAsync(Domain.Entities.Course entity)
     {
-        await _elasticSearchRepository.DeleteAsync<Domain.Entities.Course>(entity.Id.ToString());
+        await base.DeleteAsync(entity);
+
+        await _elasticSearchRepository.DeleteAsync<CourseElasticDto>(entity.Id.ToString());
         return entity.Id;
     }
 
-    public async Task<Guid[]> DeleteManyAsync(IEnumerable<Domain.Entities.Course> entities)
+    // delete elastic and pg
+    public new async Task<Guid[]> DeleteManyAsync(IEnumerable<Domain.Entities.Course> entities)
     {
         var courses = entities as Domain.Entities.Course[] ?? entities.ToArray();
         if (!courses.Any()) return [];
+
+        await base.DeleteManyAsync(courses);
 
         var ids = courses.Select(e => e.Id.ToString());
-        await _elasticSearchRepository.BulkDeleteAsync<Domain.Entities.Course>(ids);
+        await _elasticSearchRepository.BulkDeleteAsync<CourseElasticDto>(ids);
         return courses.Select(x => x.Id).ToArray();
-    }
-
-    public async Task<bool> ExistsAsync(Expression<Func<Domain.Entities.Course, bool>> predicate)
-    {
-        var query = predicate.ToString();
-        var result = await _elasticSearchRepository.CountAsync<Domain.Entities.Course>(query);
-        return result > 0;
     }
 }
