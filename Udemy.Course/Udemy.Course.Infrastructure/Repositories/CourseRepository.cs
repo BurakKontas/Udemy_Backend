@@ -27,7 +27,7 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository) 
 
     public async Task<IEnumerable<Domain.Entities.Course>> GetCoursesByKeywordAsync(string keyword, EndpointFilter filter)
     {
-        var query = $"title:{keyword} OR description:{keyword}";
+        var query = $"title:{keyword}~ OR description:{keyword}~"; // ~ makes query fuzzy
         var courses = await _elasticSearchRepository.SearchAsync<Domain.Entities.Course>(query, filter);
         return courses;
     }
