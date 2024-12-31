@@ -34,7 +34,6 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository) 
 
     public async Task<IEnumerable<Domain.Entities.Course>> GetAll(EndpointFilter filter)
     {
-        // ReSharper disable once SuspiciousTypeConversion.Global
         return await _elasticSearchRepository.SearchAsync<Domain.Entities.Course>("*", filter);
     }
 
