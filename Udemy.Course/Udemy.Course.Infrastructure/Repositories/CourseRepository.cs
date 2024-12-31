@@ -77,7 +77,13 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository, 
     // add elastic and pg
     public new async Task<Guid> AddAsync(Domain.Entities.Course entity)
     {
-        await _elasticSearchRepository.IndexAsync(entity);
+        var courseDto = entity.ToCourseElasticDto();
+
+        await Task.WhenAll(
+            base.AddAsync(entity),
+            _elasticSearchRepository.IndexAsync(courseDto)
+        );
+        
         return entity.Id;
     }
 
@@ -89,9 +95,10 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository, 
 
         var courseDtos = courses.Select(c => c.ToCourseElasticDto()).ToArray();
 
-        await _elasticSearchRepository.BulkIndexAsync<CourseElasticDto>(courseDtos);
-
-        await _dbContext.Courses.AddRangeAsync(courses);
+        await Task.WhenAll(
+            _elasticSearchRepository.BulkIndexAsync<CourseElasticDto>(courseDtos),
+            _dbContext.Courses.AddRangeAsync(courses)
+        );
 
         return courseDtos.Select(x => x.Id).ToArray();
     }
@@ -99,9 +106,10 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository, 
     // update elastic and pg
     public new async Task<Guid> UpdateAsync(Domain.Entities.Course entity)
     {
-        await _elasticSearchRepository.UpdateAsync(entity.Id.ToString(), entity.ToCourseElasticDto());
-
-        await base.UpdateAsync(entity);
+        await Task.WhenAll(
+            base.UpdateAsync(entity),
+            _elasticSearchRepository.UpdateAsync(entity.Id.ToString(), entity.ToCourseElasticDto())
+        );
 
         return entity.Id;
     }
@@ -121,11 +129,12 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository, 
     {
         var courses = entities as Domain.Entities.Course[] ?? entities.ToArray();
         if (!courses.Any()) return [];
-
-        await base.UpdateManyAsync(courses);
-
         var courseDtos = courses.Select(c => c.ToCourseElasticDto()).ToArray();
-        await _elasticSearchRepository.BulkIndexAsync<CourseElasticDto>(courseDtos);
+
+        await Task.WhenAll(
+            base.UpdateManyAsync(courses),
+            _elasticSearchRepository.BulkIndexAsync<CourseElasticDto>(courseDtos)
+        );
 
         return courseDtos.Select(x => x.Id).ToArray();
     }
@@ -133,9 +142,10 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository, 
     // delete elastic and pg
     public new async Task<Guid> DeleteAsync(Domain.Entities.Course entity)
     {
-        await base.DeleteAsync(entity);
-
-        await _elasticSearchRepository.DeleteAsync<CourseElasticDto>(entity.Id.ToString());
+        await Task.WhenAll(
+            base.DeleteAsync(entity),
+            _elasticSearchRepository.DeleteAsync<CourseElasticDto>(entity.Id.ToString())
+        );
         return entity.Id;
     }
 
@@ -144,11 +154,13 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository, 
     {
         var courses = entities as Domain.Entities.Course[] ?? entities.ToArray();
         if (!courses.Any()) return [];
-
-        await base.DeleteManyAsync(courses);
-
         var ids = courses.Select(e => e.Id.ToString());
-        await _elasticSearchRepository.BulkDeleteAsync<CourseElasticDto>(ids);
+
+        await Task.WhenAll(
+            base.DeleteManyAsync(courses),
+            _elasticSearchRepository.BulkDeleteAsync<CourseElasticDto>(ids)
+        );
+
         return courses.Select(x => x.Id).ToArray();
     }
 }
