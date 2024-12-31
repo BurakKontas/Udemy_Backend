@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Udemy.Course.Application\Udemy.Course.Application.csproj" />
+    <ProjectReference Include="..\Udemy.Course.Contracts\Udemy.Course.Contracts.csproj" />
     <ProjectReference Include="..\Udemy.Course.Domain\Udemy.Course.Domain.csproj" />
     <ProjectReference Include="..\Udemy.Course.Infrastructure\Udemy.Course.Infrastructure.csproj" />
   </ItemGroup>

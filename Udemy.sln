@@ -62,6 +62,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Udemy.UI", "Udemy.UI", "{6A
 		.todo = .todo
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Udemy.Course.Contracts", "Udemy.Course\Udemy.Course.Contracts\Udemy.Course.Contracts.csproj", "{15155E66-A444-4A9F-BA41-89224681B2D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -116,6 +118,10 @@ Global
 		{7A4814B2-26E9-4606-A6E5-EDF1C2F5A0F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A4814B2-26E9-4606-A6E5-EDF1C2F5A0F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A4814B2-26E9-4606-A6E5-EDF1C2F5A0F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15155E66-A444-4A9F-BA41-89224681B2D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15155E66-A444-4A9F-BA41-89224681B2D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15155E66-A444-4A9F-BA41-89224681B2D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15155E66-A444-4A9F-BA41-89224681B2D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -132,6 +138,7 @@ Global
 		{9DD366F6-4FD2-4BD8-B409-F753D31BD506} = {04F53332-B597-4D06-921C-56CBF77DFE06}
 		{42870452-F0B2-45D5-AA66-EA1B029A2E53} = {04F53332-B597-4D06-921C-56CBF77DFE06}
 		{7A4814B2-26E9-4606-A6E5-EDF1C2F5A0F3} = {04F53332-B597-4D06-921C-56CBF77DFE06}
+		{15155E66-A444-4A9F-BA41-89224681B2D5} = {04F53332-B597-4D06-921C-56CBF77DFE06}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF0223CD-E1C9-4A14-8DD5-D83737BC343A}
