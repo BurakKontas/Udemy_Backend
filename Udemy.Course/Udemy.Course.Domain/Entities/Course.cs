@@ -14,13 +14,13 @@ public class Course : BaseEntity, ICloneable
     public List<Tag> Tags { get; set; } = [];
     public decimal Price { get; set; }
     public decimal? DiscountedPrice { get; set; }
-    public DateTime? DiscountStartDate { get; set; }
-    public DateTime? DiscountEndDate { get; set; }
+    public DateTimeOffset? DiscountStartDate { get; set; }
+    public DateTimeOffset? DiscountEndDate { get; set; }
     public CourseLevel Level { get; set; }
     public string Language { get; set; }
     public bool IsActive { get; set; }
     public bool IsApproved { get; set; }
-    public DateTime? ApprovedAt { get; set; }
+    public DateTimeOffset? ApprovedAt { get; set; }
     public bool IsFeatured { get; set; }
     public string? PreviewVideoUrl { get; set; }
     public bool HasCertificate { get; set; }
