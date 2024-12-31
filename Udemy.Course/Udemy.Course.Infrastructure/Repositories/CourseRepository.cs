@@ -47,7 +47,7 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository, 
     // from elastic then get pg details
     public async Task<IEnumerable<Domain.Entities.Course>> GetCoursesByKeywordAsync(string keyword, EndpointFilter filter)
     {
-        var elasticQuery = $"title:{keyword}~ OR description:{keyword}~"; // ~ makes query fuzzy
+        var elasticQuery = $"title:{keyword}~ OR description:{keyword}~ OR tags:{keyword}~"; // ~ makes query fuzzy
         var courseDtos = await _elasticSearchRepository.SearchAsync<CourseElasticDto>(elasticQuery, filter);
 
         var courseIds = courseDtos.Select(x => x.Id).ToArray();
