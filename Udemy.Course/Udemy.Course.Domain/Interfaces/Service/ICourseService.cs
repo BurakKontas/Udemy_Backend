@@ -5,13 +5,14 @@ namespace Udemy.Course.Domain.Interfaces.Service;
 
 public interface ICourseService
 {
-    Task CreateAsync(Guid instructorId, string title, string description, decimal price, CourseLevel level, string language, bool isActive);
-    Task UpdateAsync(Guid courseId, Dictionary<string, object> updates);
-    Task DeleteAsync(Guid courseId);
+    Task<Guid> CreateAsync(Guid instructorId, string title, string description, decimal price, CourseLevel level, string language, bool isActive);
+    Task<Guid> UpdateAsync(Guid courseId, Dictionary<string, object> updates);
+    Task<Guid> DeleteAsync(Guid courseId);
     Task<Entities.Course?> GetByIdAsync(Guid courseId);
     Task<IEnumerable<Entities.Course>> GetAllByInstructorAsync(Guid instructorId, EndpointFilter filter);
     Task<IEnumerable<Entities.Course>> SearchCoursesAsync(string keyword, EndpointFilter filter);
     Task<IEnumerable<Entities.Course>> GetFeaturedCoursesAsync(EndpointFilter filter);
-    Task AssignInstructorAsync(Guid courseId, Guid instructorId);
-    Task UpdateStatusAsync(Guid courseId, bool isActive);
+    Task<Guid> AssignInstructorAsync(Guid courseId, Guid instructorId);
+    Task<Guid> UpdateStatusAsync(Guid courseId, bool isActive);
+    Task<Entities.Course[]> GetAllCourses(EndpointFilter filter); // will be only used for debug purposes
 }

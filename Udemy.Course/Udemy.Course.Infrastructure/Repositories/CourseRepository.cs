@@ -32,15 +32,16 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository) 
         return courses;
     }
 
-    public IQueryable<Domain.Entities.Course> GetAll(EndpointFilter filter)
+    public async Task<IEnumerable<Domain.Entities.Course>> GetAll(EndpointFilter filter)
     {
         // ReSharper disable once SuspiciousTypeConversion.Global
-        return (_elasticSearchRepository.SearchAsync<Domain.Entities.Course>("*", filter) as IQueryable<Domain.Entities.Course>)!;
+        return await _elasticSearchRepository.SearchAsync<Domain.Entities.Course>("*", filter);
     }
 
     public async Task<Domain.Entities.Course?> GetByIdAsync(Guid id)
     {
-        return await _elasticSearchRepository.GetByIdAsync<Domain.Entities.Course>(id.ToString());
+        var result = await _elasticSearchRepository.GetByIdAsync<Domain.Entities.Course>(id.ToString());
+        return result;
     }
 
     public async Task<IEnumerable<Domain.Entities.Course>> GetManyAsync(Expression<Func<Domain.Entities.Course, bool>> predicate, EndpointFilter filter)
@@ -48,40 +49,56 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository) 
         return await _elasticSearchRepository.SearchAsync<Domain.Entities.Course>(predicate.ToString(), filter);
     }
 
-    public async Task AddAsync(Domain.Entities.Course entity)
+    public async Task<Guid> AddAsync(Domain.Entities.Course entity)
     {
         await _elasticSearchRepository.IndexAsync(entity);
+        return entity.Id;
     }
 
-    public async Task AddManyAsync(IEnumerable<Domain.Entities.Course> entities)
+    public async Task<Guid[]> AddManyAsync(IEnumerable<Domain.Entities.Course> entities)
     {
-        await _elasticSearchRepository.BulkIndexAsync(entities);
+        var courses = entities as Domain.Entities.Course[] ?? entities.ToArray();
+        if (!courses.Any()) return [];
+
+        await _elasticSearchRepository.BulkIndexAsync(courses);
+        return courses.Select(x => x.Id).ToArray();
     }
 
-    public async Task UpdateAsync(Domain.Entities.Course entity)
+    public async Task<Guid> UpdateAsync(Domain.Entities.Course entity)
     {
         await _elasticSearchRepository.UpdateAsync(entity.Id.ToString(), entity);
+        return entity.Id;
     }
 
-    public async Task UpdateAsync(Domain.Entities.Course entity, Dictionary<string, object> updatedValues)
+    public async Task<Guid> UpdateAsync(Domain.Entities.Course entity, Dictionary<string, object> updatedValues)
     {
         await _elasticSearchRepository.UpdateAsync(entity.Id.ToString(), updatedValues);
+        return entity.Id;
     }
 
-    public async Task UpdateManyAsync(IEnumerable<Domain.Entities.Course> entities)
+    public async Task<Guid[]> UpdateManyAsync(IEnumerable<Domain.Entities.Course> entities)
     {
-        await _elasticSearchRepository.BulkIndexAsync(entities);
+        var courses = entities as Domain.Entities.Course[] ?? entities.ToArray();
+        if (!courses.Any()) return [];
+
+        await _elasticSearchRepository.BulkIndexAsync(courses);
+        return courses.Select(x => x.Id).ToArray();
     }
 
-    public async Task DeleteAsync(Domain.Entities.Course entity)
+    public async Task<Guid> DeleteAsync(Domain.Entities.Course entity)
     {
         await _elasticSearchRepository.DeleteAsync<Domain.Entities.Course>(entity.Id.ToString());
+        return entity.Id;
     }
 
-    public async Task DeleteManyAsync(IEnumerable<Domain.Entities.Course> entities)
+    public async Task<Guid[]> DeleteManyAsync(IEnumerable<Domain.Entities.Course> entities)
     {
-        var ids = entities.Select(e => e.Id.ToString());
+        var courses = entities as Domain.Entities.Course[] ?? entities.ToArray();
+        if (!courses.Any()) return [];
+
+        var ids = courses.Select(e => e.Id.ToString());
         await _elasticSearchRepository.BulkDeleteAsync<Domain.Entities.Course>(ids);
+        return courses.Select(x => x.Id).ToArray();
     }
 
     public async Task<bool> ExistsAsync(Expression<Func<Domain.Entities.Course, bool>> predicate)

@@ -25,33 +25,31 @@ public class ElasticSearchRepository(ElasticsearchClient elasticClient) : IElast
             }
         };
 
-        if (filter != null)
+        if (!string.IsNullOrEmpty(filter.FilterBy) && !string.IsNullOrEmpty(filter.FilterValue))
         {
-            if (!string.IsNullOrEmpty(filter.FilterBy) && !string.IsNullOrEmpty(filter.FilterValue))
+            searchRequest.Query = new QueryStringQuery
             {
-                searchRequest.Query = new QueryStringQuery
-                {
-                    Query = $"{filter.FilterBy}:{filter.FilterValue}"
-                };
-            }
-
-            if (!string.IsNullOrEmpty(filter.SortBy))
-            {
-                searchRequest.Sort = new List<SortOptions>
-                {
-                    SortOptions.Field(Field.FromString(filter.SortBy)!, new FieldSort
-                    {
-                        Order = filter.SortOrder?.ToLower() == "desc"
-                            ? SortOrder.Desc
-                            : SortOrder.Asc,
-                    }),
-                };
-
-            }
-
-            searchRequest.From = filter.Start;
-            searchRequest.Size = filter.Limit;
+                Query = $"{filter.FilterBy}:{filter.FilterValue}"
+            };
         }
+
+        if (!string.IsNullOrEmpty(filter.SortBy))
+        {
+            searchRequest.Sort = new List<SortOptions>
+            {
+                SortOptions.Field(Field.FromString(filter.SortBy)!, new FieldSort
+                {
+                    Order = filter.SortOrder?.ToLower() == "desc"
+                        ? SortOrder.Desc
+                        : SortOrder.Asc,
+                }),
+            };
+
+        }
+
+        searchRequest.From = filter.Start;
+        searchRequest.Size = filter.Limit;
+        
 
         var response = await _elasticClient.SearchAsync<T>(searchRequest);
 

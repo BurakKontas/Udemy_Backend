@@ -26,7 +26,9 @@ public static class DependencyInjection
         services.AddSingleton<ElasticsearchClient>(serviceProvider =>
         {
             var url = Environment.GetEnvironmentVariable("ELASTICSEARCH_URL") ?? "http://localhost:9200";
-            var options = new Uri(url);
+            var options = new ElasticsearchClientSettings(uri: new Uri(url));
+            options.DefaultIndex("udemy.course");
+
             var client = new ElasticsearchClient(options);
             return client;
         });

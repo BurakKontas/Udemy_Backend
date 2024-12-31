@@ -13,15 +13,17 @@ public class CourseService(IValidator<AppCourse> validator, ICourseRepository co
     private readonly IValidator<AppCourse> _validator = validator;
     private readonly ICourseRepository _courseRepository = courseRepository;
 
-    public async Task CreateAsync(Guid instructorId, string title, string description, decimal price, CourseLevel level, string language, bool isActive)
+    public async Task<Guid> CreateAsync(Guid instructorId, string title, string description, decimal price, CourseLevel level, string language, bool isActive)
     {
         var course = AppCourse.Create(instructorId, title, description, price, level, language, isActive);
 
         await ValidateCourse(course);
         await _courseRepository.AddAsync(course);
+
+        return course.Id;
     }
 
-    public async Task UpdateAsync(Guid courseId, Dictionary<string, object> updates)
+    public async Task<Guid> UpdateAsync(Guid courseId, Dictionary<string, object> updates)
     {
         var course = await _courseRepository.GetByIdAsync(courseId);
         if (course == null)
@@ -34,6 +36,8 @@ public class CourseService(IValidator<AppCourse> validator, ICourseRepository co
             await _courseRepository.UpdateAsync(course, updates);
 
             await ValidateCourse(course);
+
+            return courseId;
         }
         catch (ValidationException)
         {
@@ -43,13 +47,15 @@ public class CourseService(IValidator<AppCourse> validator, ICourseRepository co
         }
     }
 
-    public async Task DeleteAsync(Guid courseId)
+    public async Task<Guid> DeleteAsync(Guid courseId)
     {
         var course = await _courseRepository.GetByIdAsync(courseId);
         if (course == null)
             throw new NotFoundException($"Course with id {courseId} not found");
 
         await _courseRepository.DeleteAsync(course);
+
+        return courseId;
     }
 
     public async Task<AppCourse?> GetByIdAsync(Guid courseId)
@@ -72,7 +78,7 @@ public class CourseService(IValidator<AppCourse> validator, ICourseRepository co
         return await _courseRepository.GetFeaturedCoursesAsync(filter);
     }
 
-    public async Task AssignInstructorAsync(Guid courseId, Guid instructorId)
+    public async Task<Guid> AssignInstructorAsync(Guid courseId, Guid instructorId)
     {
         var course = await _courseRepository.GetByIdAsync(courseId);
         if (course == null)
@@ -80,9 +86,11 @@ public class CourseService(IValidator<AppCourse> validator, ICourseRepository co
 
         course.AssignInstructor(instructorId);
         await _courseRepository.UpdateAsync(course);
+
+        return courseId;
     }
 
-    public async Task UpdateStatusAsync(Guid courseId, bool isActive)
+    public async Task<Guid> UpdateStatusAsync(Guid courseId, bool isActive)
     {
         var course = await _courseRepository.GetByIdAsync(courseId);
         if (course == null)
@@ -90,6 +98,14 @@ public class CourseService(IValidator<AppCourse> validator, ICourseRepository co
 
         course.UpdateStatus(isActive);
         await _courseRepository.UpdateAsync(course);
+
+        return courseId;
+    }
+
+    public async Task<AppCourse[]> GetAllCourses(EndpointFilter filter)
+    {
+        var courses = await _courseRepository.GetAll(filter);
+        return courses.ToArray();
     }
 
     private async Task ValidateCourse(AppCourse course)
