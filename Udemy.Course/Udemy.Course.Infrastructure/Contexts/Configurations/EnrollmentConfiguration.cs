@@ -13,11 +13,7 @@ public class EnrollmentConfiguration : IEntityTypeConfiguration<Enrollment>
         builder.Property(e => e.EnrolledAt)
             .IsRequired();
 
-        builder.HasOne<Domain.Entities.Course>()
-            .WithMany(c => c.Enrollments)
-            .HasForeignKey(e => e.CourseId);
-
-        builder.HasOne<Domain.Entities.Course>()
+        builder.HasOne(e => e.Course)
             .WithMany(c => c.Enrollments)
             .HasForeignKey(e => e.CourseId)
             .OnDelete(DeleteBehavior.Cascade);

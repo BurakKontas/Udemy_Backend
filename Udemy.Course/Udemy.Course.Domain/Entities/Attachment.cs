@@ -9,4 +9,6 @@ public class Attachment : BaseEntity
     public string Type { get; set; } = "";
     public long Size { get; set; }
     public Guid LessonId { get; set; }
+
+    public virtual Lesson? Lesson { get; set; }
 }

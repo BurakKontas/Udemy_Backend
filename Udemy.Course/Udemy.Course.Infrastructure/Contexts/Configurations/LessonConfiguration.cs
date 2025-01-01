@@ -20,9 +20,20 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
         builder.Property(l => l.VideoUrl)
             .HasMaxLength(500);
 
+        builder.HasMany(l => l.Attachments)
+            .WithOne(a => a.Lesson)
+            .HasForeignKey(a => a.LessonId);
+
         builder.HasOne(l => l.LessonCategory)
             .WithMany(lc => lc.Lessons)
-            .HasForeignKey(l => l.LessonCategoryId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(l => l.LessonCategoryId);
+
+        builder.HasOne(l => l.Course)
+            .WithMany(c => c.Lessons)
+            .HasForeignKey(l => l.CourseId);
+
+        builder.HasMany(l => l.Questions)
+            .WithOne(q => q.Lesson)
+            .HasForeignKey(q => q.LessonId);
     }
 }

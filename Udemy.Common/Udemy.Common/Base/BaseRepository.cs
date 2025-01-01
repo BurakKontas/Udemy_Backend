@@ -15,7 +15,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
         _dbSet = _context.Set<T>();
     }
 
-    public async Task<IEnumerable<T>> GetAll(EndpointFilter filter)
+    public virtual async Task<IEnumerable<T>> GetAll(EndpointFilter filter)
 {
     var query = _dbSet.AsNoTracking();
 
@@ -53,12 +53,12 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
 }
 
 
-    public async Task<T?> GetByIdAsync(Guid id)
+    public virtual async Task<T?> GetByIdAsync(Guid id)
     {
         return await _dbSet.FindAsync(id);
     }
 
-    public async Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> predicate, EndpointFilter filter)
+    public virtual async Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> predicate, EndpointFilter filter)
     {
         var query = _dbSet.AsNoTracking().Where(predicate);
 
@@ -95,7 +95,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
         return await query.ToListAsync();
     }
 
-    public async Task<Guid> AddAsync(T entity)
+    public virtual async Task<Guid> AddAsync(T entity)
     {
         await _dbSet.AddAsync(entity);
         await _context.SaveChangesAsync();
@@ -103,7 +103,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
         return entity.Id;
     }
 
-    public async Task<Guid[]> AddManyAsync(IEnumerable<T> entities)
+    public virtual async Task<Guid[]> AddManyAsync(IEnumerable<T> entities)
     {
         var entityArray = entities as T[] ?? entities.ToArray();
         if (!entityArray.Any()) return [];
@@ -114,7 +114,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
         return entityArray.Select(x => x.Id).ToArray();
     }
 
-    public async Task<T> UpdateAsync(T entity)
+    public virtual async Task<T> UpdateAsync(T entity)
     {
         _dbSet.Update(entity);
         await _context.SaveChangesAsync();
@@ -122,7 +122,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
         return entity;
     }
 
-    public async Task<T> UpdateAsync(T entity, Dictionary<string, object> updatedValues)
+    public virtual async Task<T> UpdateAsync(T entity, Dictionary<string, object> updatedValues)
     {
         try
         {
@@ -153,7 +153,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
 
     }
 
-    public async Task<Guid[]> UpdateManyAsync(IEnumerable<T> entities)
+    public virtual async Task<Guid[]> UpdateManyAsync(IEnumerable<T> entities)
     {
         var entityArray = entities as T[] ?? entities.ToArray();
         if (!entityArray.Any()) return [];
@@ -164,7 +164,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
         return entityArray.Select(x => x.Id).ToArray();
     }
 
-    public async Task<Guid> DeleteAsync(T entity)
+    public virtual async Task<Guid> DeleteAsync(T entity)
     {
         _dbSet.Remove(entity);
         await _context.SaveChangesAsync();
@@ -172,7 +172,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
         return entity.Id;
     }
 
-    public async Task<Guid[]> DeleteManyAsync(IEnumerable<T> entities)
+    public virtual async Task<Guid[]> DeleteManyAsync(IEnumerable<T> entities)
     {
         var entityArray = entities as T[] ?? entities.ToArray();
         if (!entityArray.Any()) return [];
@@ -183,7 +183,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
         return entityArray.Select(x => x.Id).ToArray();
     }
 
-    public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)
+    public virtual async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)
     {
         return await _dbSet.AnyAsync(predicate);
     }

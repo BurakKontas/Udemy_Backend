@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Udemy.Common.Exceptions;
 using Udemy.Common.ModelBinder;
+using Udemy.Course.Domain.Entities;
 using Udemy.Course.Domain.Enums;
 using Udemy.Course.Domain.Interfaces.Repository;
 using Udemy.Course.Domain.Interfaces.Service;
@@ -15,7 +16,15 @@ public class CourseService(IValidator<AppCourse> validator, ICourseRepository co
 
     public async Task<Guid> CreateAsync(Guid instructorId, string title, string description, decimal price, CourseLevel level, string language, bool isActive)
     {
-        var course = AppCourse.Create(instructorId, title, description, price, level, language, isActive);
+        var course = AppCourse.Create(instructorId, title, level, language, isActive);
+        var courseDetails = new CourseDetails()
+        {
+            Description = description,
+            Price = price,
+            CourseId = course.Id
+        };
+
+        course.SetDetails(courseDetails);
 
         await ValidateCourse(course);
         await _courseRepository.AddAsync(course);

@@ -9,6 +9,6 @@ public static class CourseAdapter
     {
         var tags = course.Tags.Select(t => t.Name).ToImmutableArray();
 
-        return new CourseElasticDto(course.Id, course.Title, course.Description, tags);
+        return new CourseElasticDto(course.Id, course.Title, course.CourseDetails?.Description ?? string.Empty, tags);
     }
 }

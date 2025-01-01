@@ -11,12 +11,6 @@ public class CourseValidator : AbstractValidator<Domain.Entities.Course>
             .NotEmpty().WithMessage("Course title is required.")
             .MaximumLength(100).WithMessage("Course title must not exceed 100 characters.");
 
-        RuleFor(x => x.Description)
-            .NotEmpty().WithMessage("Course description is required.");
-
-        RuleFor(x => x.Price)
-            .GreaterThan(0).WithMessage("Price must be greater than zero.");
-
         RuleFor(x => x.Level)
             .IsInEnum().WithMessage("Invalid course level.");
 

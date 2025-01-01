@@ -19,7 +19,10 @@ public class LessonCategoryConfiguration : IEntityTypeConfiguration<LessonCatego
 
         builder.HasMany(lc => lc.Lessons)
             .WithOne(l => l.LessonCategory)
-            .HasForeignKey(l => l.LessonCategoryId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(l => l.LessonCategoryId);
+
+        builder.HasOne(lc => lc.Course)
+            .WithMany(c => c.LessonCategories)
+            .HasForeignKey(lc => lc.CourseId);
     }
 }

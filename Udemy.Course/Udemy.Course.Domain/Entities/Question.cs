@@ -6,8 +6,12 @@ public class Question : BaseEntity
 {
     public Guid UserId { get; set; }
     public string Value { get; set; } = "";
-    public List<Answer> Answers { get; set; } = new();
     public int AnswerCount { get; set; }
     public int LikeCount { get; set; }
-    public List<Like> Likes { get; set; } = new();
+    public Guid LessonId { get; set; }
+
+    public virtual List<Answer> Answers { get; set; } = [];
+    public virtual List<Like> Likes { get; set; } = [];
+
+    public virtual Lesson? Lesson { get; set; }
 }

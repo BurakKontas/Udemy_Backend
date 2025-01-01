@@ -16,5 +16,9 @@ public class AuditLogConfiguration : IEntityTypeConfiguration<AuditLog>
 
         builder.Property(a => a.Details)
             .HasMaxLength(1000);
+
+        builder.HasOne(a => a.Course)
+            .WithMany(c => c.AuditLogs)
+            .HasForeignKey(a => a.CourseId);
     }
 }

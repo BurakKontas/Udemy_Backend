@@ -6,5 +6,8 @@ public class LessonCategory : BaseEntity
 {
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";
-    public List<Lesson> Lessons { get; set; } = [];
+    public Guid CourseId { get; set; }
+
+    public virtual Course? Course { get; set; }
+    public virtual ICollection<Lesson> Lessons { get; set; } = [];
 }

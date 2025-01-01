@@ -23,5 +23,9 @@ public class AttachmentConfiguration : IEntityTypeConfiguration<Attachment>
 
         builder.Property(a => a.Size)
             .IsRequired();
+
+        builder.HasOne(a => a.Lesson)
+            .WithMany(l => l.Attachments)
+            .HasForeignKey(a => a.LessonId);
     }
 }
