@@ -13,9 +13,5 @@ public class AnswerConfiguration : IEntityTypeConfiguration<Answer>
         builder.Property(a => a.Value)
             .IsRequired()
             .HasMaxLength(500);
-
-        builder.HasOne(a => a.Question)
-            .WithMany(q => q.Answers)
-            .HasForeignKey(a => a.QuestionId);
     }
 }

@@ -12,6 +12,4 @@ public class Lesson : BaseEntity
 
     public virtual List<Attachment> Attachments { get; set; } = [];
     public virtual List<Question> Questions { get; set; } = [];
-    public virtual LessonCategory? LessonCategory { get; set; }
-    public virtual Course? Course { get; set; }
 }

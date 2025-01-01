@@ -33,7 +33,9 @@ public class CourseController(ICourseService courseService) : ControllerBase
 
         var id = await _courseService.CreateAsync(request.InstructorId, request.Title, request.Description, request.Price, courseLevel, request.Language, request.IsActive);
 
-        return TypedResults.Redirect($"http://localhost:3000/api/course/get/{id}");
+        var version = HttpContext.GetRequestedApiVersion()?.ToString();
+
+        return TypedResults.Redirect($"http://localhost:3000/api/v{version}/course/get/{id}");
     }
 
     // Update a course
@@ -42,7 +44,9 @@ public class CourseController(ICourseService courseService) : ControllerBase
     {
         var id = await _courseService.UpdateAsync(courseId, request.Updates);
 
-        return TypedResults.Redirect($"http://localhost:3000/api/course/get/{id}");
+        var version = HttpContext.GetRequestedApiVersion()?.ToString();
+
+        return TypedResults.Redirect($"http://localhost:3000/api/v{version}/course/get/{id}");
     }
 
     // Delete a course

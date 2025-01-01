@@ -18,8 +18,6 @@ public class CourseDetails : BaseEntity
     public TimeSpan TotalDuration { get; set; }
     public Guid CourseId { get; set; }
 
-    public virtual Course? Course { get; set; }
-
     public void AddRating(int ratingValue)
     {
         RateCount++;

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Udemy.Course.Infrastructure.Contexts;
@@ -12,9 +13,11 @@ using Udemy.Course.Infrastructure.Contexts;
 namespace Udemy.Course.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250101233102_CourseDetailsRelationshipFixes")]
+    partial class CourseDetailsRelationshipFixes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,6 +110,9 @@ namespace Udemy.Course.Infrastructure.Migrations
                     b.Property<Guid>("CourseId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("CourseId1")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -124,6 +130,8 @@ namespace Udemy.Course.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("CourseId1");
 
                     b.ToTable("AuditLogs");
                 });
@@ -532,20 +540,24 @@ namespace Udemy.Course.Infrastructure.Migrations
 
             modelBuilder.Entity("Udemy.Course.Domain.Entities.Answer", b =>
                 {
-                    b.HasOne("Udemy.Course.Domain.Entities.Question", null)
+                    b.HasOne("Udemy.Course.Domain.Entities.Question", "Question")
                         .WithMany("Answers")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Question");
                 });
 
             modelBuilder.Entity("Udemy.Course.Domain.Entities.Attachment", b =>
                 {
-                    b.HasOne("Udemy.Course.Domain.Entities.Lesson", null)
+                    b.HasOne("Udemy.Course.Domain.Entities.Lesson", "Lesson")
                         .WithMany("Attachments")
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Lesson");
                 });
 
             modelBuilder.Entity("Udemy.Course.Domain.Entities.AuditLog", b =>
@@ -555,6 +567,12 @@ namespace Udemy.Course.Infrastructure.Migrations
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Udemy.Course.Domain.Entities.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId1");
+
+                    b.Navigation("Course");
                 });
 
             modelBuilder.Entity("Udemy.Course.Domain.Entities.Comment", b =>
@@ -577,62 +595,76 @@ namespace Udemy.Course.Infrastructure.Migrations
 
             modelBuilder.Entity("Udemy.Course.Domain.Entities.Enrollment", b =>
                 {
-                    b.HasOne("Udemy.Course.Domain.Entities.Course", null)
+                    b.HasOne("Udemy.Course.Domain.Entities.Course", "Course")
                         .WithMany("Enrollments")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Course");
                 });
 
             modelBuilder.Entity("Udemy.Course.Domain.Entities.Favorite", b =>
                 {
-                    b.HasOne("Udemy.Course.Domain.Entities.Course", null)
+                    b.HasOne("Udemy.Course.Domain.Entities.Course", "Course")
                         .WithMany("Favorites")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Course");
                 });
 
             modelBuilder.Entity("Udemy.Course.Domain.Entities.Lesson", b =>
                 {
-                    b.HasOne("Udemy.Course.Domain.Entities.Course", null)
+                    b.HasOne("Udemy.Course.Domain.Entities.Course", "Course")
                         .WithMany("Lessons")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Udemy.Course.Domain.Entities.LessonCategory", null)
+                    b.HasOne("Udemy.Course.Domain.Entities.LessonCategory", "LessonCategory")
                         .WithMany("Lessons")
                         .HasForeignKey("LessonCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("LessonCategory");
                 });
 
             modelBuilder.Entity("Udemy.Course.Domain.Entities.LessonCategory", b =>
                 {
-                    b.HasOne("Udemy.Course.Domain.Entities.Course", null)
+                    b.HasOne("Udemy.Course.Domain.Entities.Course", "Course")
                         .WithMany("LessonCategories")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Course");
                 });
 
             modelBuilder.Entity("Udemy.Course.Domain.Entities.Like", b =>
                 {
-                    b.HasOne("Udemy.Course.Domain.Entities.Question", null)
+                    b.HasOne("Udemy.Course.Domain.Entities.Question", "Question")
                         .WithMany("Likes")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Question");
                 });
 
             modelBuilder.Entity("Udemy.Course.Domain.Entities.Question", b =>
                 {
-                    b.HasOne("Udemy.Course.Domain.Entities.Lesson", null)
+                    b.HasOne("Udemy.Course.Domain.Entities.Lesson", "Lesson")
                         .WithMany("Questions")
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Lesson");
                 });
 
             modelBuilder.Entity("Udemy.Course.Domain.Entities.Rate", b =>
@@ -646,11 +678,13 @@ namespace Udemy.Course.Infrastructure.Migrations
 
             modelBuilder.Entity("Udemy.Course.Domain.Entities.Tag", b =>
                 {
-                    b.HasOne("Udemy.Course.Domain.Entities.Course", null)
+                    b.HasOne("Udemy.Course.Domain.Entities.Course", "Course")
                         .WithMany("Tags")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Course");
                 });
 
             modelBuilder.Entity("Udemy.Course.Domain.Entities.Comment", b =>

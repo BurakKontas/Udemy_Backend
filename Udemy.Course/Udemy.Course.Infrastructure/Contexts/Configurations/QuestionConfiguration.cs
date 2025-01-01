@@ -15,11 +15,11 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
             .HasMaxLength(500);
 
         builder.HasMany(q => q.Answers)
-            .WithOne(a => a.Question)
+            .WithOne()
             .HasForeignKey(a => a.QuestionId);
 
         builder.HasMany(q => q.Likes)
-            .WithOne(l => l.Question)
+            .WithOne()
             .HasForeignKey(l => l.QuestionId);
     }
 }

@@ -13,9 +13,5 @@ public class CourseDetailsConfiguration : IEntityTypeConfiguration<CourseDetails
         builder.Property(cd => cd.Description)
             .IsRequired()
             .HasMaxLength(500);
-
-        builder.HasOne(cd => cd.Course)
-            .WithOne(c => c.CourseDetails)
-            .HasForeignKey<CourseDetails>(cd => cd.CourseId);
     }
 }

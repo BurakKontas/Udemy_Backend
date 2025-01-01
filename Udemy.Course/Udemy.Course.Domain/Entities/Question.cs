@@ -12,6 +12,4 @@ public class Question : BaseEntity
 
     public virtual List<Answer> Answers { get; set; } = [];
     public virtual List<Like> Likes { get; set; } = [];
-
-    public virtual Lesson? Lesson { get; set; }
 }

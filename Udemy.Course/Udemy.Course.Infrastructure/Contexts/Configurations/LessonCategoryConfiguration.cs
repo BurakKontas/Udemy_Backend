@@ -18,11 +18,7 @@ public class LessonCategoryConfiguration : IEntityTypeConfiguration<LessonCatego
             .HasMaxLength(500);
 
         builder.HasMany(lc => lc.Lessons)
-            .WithOne(l => l.LessonCategory)
+            .WithOne()
             .HasForeignKey(l => l.LessonCategoryId);
-
-        builder.HasOne(lc => lc.Course)
-            .WithMany(c => c.LessonCategories)
-            .HasForeignKey(lc => lc.CourseId);
     }
 }

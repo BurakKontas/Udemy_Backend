@@ -56,35 +56,43 @@ public class CourseConfiguration : IEntityTypeConfiguration<Domain.Entities.Cour
 
         builder.HasMany(c => c.AuditLogs)
             .WithOne()
-            .HasForeignKey(a => a.CourseId);
+            .HasForeignKey(a => a.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(c => c.Comments)
             .WithOne()
-            .HasForeignKey(r => r.CourseId);
+            .HasForeignKey(r => r.CourseId)
+            .OnDelete(DeleteBehavior.Cascade); ;
 
         builder.HasMany(c => c.Favorites)
             .WithOne()
-            .HasForeignKey(f => f.CourseId);
+            .HasForeignKey(f => f.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(c => c.Tags)
             .WithOne()
-            .HasForeignKey(t => t.CourseId);
+            .HasForeignKey(t => t.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(c => c.LessonCategories)
             .WithOne()
-            .HasForeignKey(lc => lc.CourseId);
+            .HasForeignKey(lc => lc.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(c => c.Lessons)
             .WithOne()
-            .HasForeignKey(l => l.CourseId);
+            .HasForeignKey(l => l.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(c => c.Enrollments)
             .WithOne()
-            .HasForeignKey(e => e.CourseId);
+            .HasForeignKey(e => e.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(c => c.CourseDetails)
-            .WithOne(cd => cd.Course)
-            .HasForeignKey<CourseDetails>(cd => cd.CourseId);
+            .WithOne()
+            .HasForeignKey<CourseDetails>(cd => cd.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         #endregion
     }

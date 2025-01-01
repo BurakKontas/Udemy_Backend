@@ -19,7 +19,9 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository, 
     // from pg
     public async Task<IEnumerable<Domain.Entities.Course>> GetCoursesByInstructorAsync(Guid instructorId, EndpointFilter filter)
     {
-        var query = _dbContext.Courses.AsQueryable();
+        var query = _dbContext.Courses
+            .Include(c => c.CourseDetails)
+            .AsQueryable();
 
         query = query.Where(c => c.InstructorIds.Contains(instructorId));
 
@@ -33,7 +35,9 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository, 
     // from pg
     public async Task<IEnumerable<Domain.Entities.Course>> GetFeaturedCoursesAsync(EndpointFilter filter)
     {
-        var query = _dbContext.Courses.AsQueryable();
+        var query = _dbContext.Courses
+            .Include(c => c.CourseDetails)
+            .AsQueryable();
 
         query = query.Where(c => c.IsFeatured);
 
@@ -51,7 +55,9 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository, 
         var courseDtos = await _elasticSearchRepository.SearchAsync<CourseElasticDto>(elasticQuery, filter);
 
         var courseIds = courseDtos.Select(x => x.Id).ToArray();
-        var query = _dbContext.Courses.AsQueryable();
+        var query = _dbContext.Courses
+            .Include(c => c.CourseDetails)
+            .AsQueryable();
 
         query = query.Where(c => courseIds.Contains(c.Id));
 
@@ -67,7 +73,9 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository, 
 
         var courseIds = courseDtos.Select(x => x.Id).ToArray();
 
-        var query = _dbContext.Courses.AsQueryable();
+        var query = _dbContext.Courses
+            .Include(c => c.CourseDetails)
+            .AsQueryable();
 
         query = query.Where(c => courseIds.Contains(c.Id));
 

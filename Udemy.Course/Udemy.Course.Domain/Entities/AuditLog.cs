@@ -8,6 +8,4 @@ public class AuditLog : BaseEntity
     public string Action { get; set; } = "";
     public string Details { get; set; } = "";
     public Guid CourseId { get; set; }
-
-    public virtual Course? Course { get; set; }
 }
