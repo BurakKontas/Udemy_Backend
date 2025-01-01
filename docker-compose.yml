@@ -1,6 +1,8 @@
 services:
   udemy.auth.api:
     image: ${DOCKER_REGISTRY-}udemyauthapi
+    ports:
+      - "1234:8081"
     build:
       context: .
       dockerfile: Udemy.Auth/Udemy.Auth.API/Dockerfile

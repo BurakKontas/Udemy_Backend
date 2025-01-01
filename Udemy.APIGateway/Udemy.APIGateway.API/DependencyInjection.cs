@@ -78,28 +78,45 @@ public static class DependencyInjection
 
             var route = new RouteConfig
             {
-                RouteId = routeId,
+                RouteId = $"{routeId}_versionless",
                 ClusterId = clusterId,
                 Match = new RouteMatch
                 {
                     Path = $"/api/{discriminator}/{{**catch-all}}"
                 },
-                //Metadata = new Dictionary<string, string>
-                //{
-                //    { "AuthorizationPolicy", $"{discriminator.ToLower()}-policy" }
-                //},
                 Transforms = new List<IReadOnlyDictionary<string, string>>
                 {
                     new Dictionary<string, string>
                     {
-                        { "PathPattern", "{**catch-all}" }
+                        { "PathPattern", "/{**catch-all}" }
                     }
                 }
             };
 
             routeList.Add(route);
+
+            var versionRoute = new RouteConfig
+            {
+                RouteId = $"{routeId}_version",
+                ClusterId = clusterId,
+                Match = new RouteMatch
+                {
+                    Path = $"/api/{{version}}/{discriminator}/{{**catch-all}}"
+                },
+                Transforms = new List<IReadOnlyDictionary<string, string>>
+                {
+                    new Dictionary<string, string>
+                    {
+                        { "PathPattern", "/{version}/{**catch-all}" }
+                    }
+                }
+            };
+
+            routeList.Add(versionRoute);
             clusterList.Add(cluster);
-            logger.LogInformation("Route: {RouteId}, Cluster: {ClusterId}, Path: /api/{Discriminator}/{{**catch-all}}",
+            logger.LogInformation("Route: {RouteId}_versionless, Cluster: {ClusterId}, Path: /api/{Discriminator}/{{**catch-all}}",
+                routeId, clusterId, discriminator);
+            logger.LogInformation("Route: {RouteId}_version, Cluster: {ClusterId}, Path: /api/{{version}}/{Discriminator}/{{**catch-all}}",
                 routeId, clusterId, discriminator);
         }
     }

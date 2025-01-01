@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Udemy.Common.ModelBinder;
 using Udemy.Course.Contracts.Requests;
@@ -7,14 +8,15 @@ using Udemy.Course.Domain.Interfaces.Service;
 
 namespace Udemy.Course.API.Controllers;
 
-[Route("/")]
+[Route("/v{version:apiVersion}/")]
 [ApiController]
+[ApiVersion("1.0")]
 public class CourseController(ICourseService courseService) : ControllerBase
 {
     private readonly ICourseService _courseService = courseService;
 
     // Get all courses (only for debug purposes)
-    [HttpGet("/get-all")]
+    [HttpGet("get-all")]
     public async Task<IResult> GetAllCourses(EndpointFilter filter)
     {
         var result = await _courseService.GetAllCourses(filter);
@@ -22,7 +24,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
     }
 
     // Create a course
-    [HttpPost("/create")]
+    [HttpPost("create")]
     public async Task<IResult> CreateCourse([FromBody] CreateCourseRequest request)
     {
         var isLevelValid = Enum.TryParse(request.Level, true, out CourseLevel courseLevel);
@@ -35,7 +37,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
     }
 
     // Update a course
-    [HttpPost("/update/{courseId}")]
+    [HttpPost("update/{courseId}")]
     public async Task<IResult> UpdateCourse([FromBody] UpdateCourseRequest request, Guid courseId)
     {
         var id = await _courseService.UpdateAsync(courseId, request.Updates);
@@ -44,7 +46,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
     }
 
     // Delete a course
-    [HttpDelete("/delete/{courseId}")]
+    [HttpDelete("delete/{courseId}")]
     public async Task<IResult> DeleteCourse(Guid courseId)
     {
         var id = await _courseService.DeleteAsync(courseId);
@@ -53,7 +55,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
     }
 
     // Hide a course
-    [HttpPost("/update-status/{courseId}")]
+    [HttpPost("update-status/{courseId}")]
     public async Task<IResult> HideCourse([FromBody] UpdateCourseStatusRequest request, Guid courseId)
     {
         var id = await _courseService.UpdateStatusAsync(courseId, request.IsActive);
@@ -62,7 +64,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
     }
 
     // Get course by ID
-    [HttpGet("/get/{courseId}")]
+    [HttpGet("get/{courseId}")]
     public async Task<IResult> GetCourseById(Guid courseId)
     {
         var result = await _courseService.GetByIdAsync(courseId);
@@ -73,7 +75,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
     }
 
     // Get courses by instructor
-    [HttpGet("/get-by-instructor/{instructorId}")]
+    [HttpGet("get-by-instructor/{instructorId}")]
     public async Task<IResult> GetCoursesByInstructor(Guid instructorId, EndpointFilter filter)
     {
         var result = await _courseService.GetAllByInstructorAsync(instructorId, filter);
@@ -86,7 +88,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
 
     // Get course details
     // TODO: Refactor this later
-    [HttpGet("/details/{courseId}")]
+    [HttpGet("details/{courseId}")]
     public async Task<IResult> GetCourseDetails(Guid courseId)
     {
         var result = await _courseService.GetByIdAsync(courseId);
@@ -97,7 +99,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
     }
 
     // Get featured courses
-    [HttpGet("/featured")]
+    [HttpGet("featured")]
     public async Task<IResult> GetFeaturedCourses(EndpointFilter filter)
     {
         var result = await _courseService.GetFeaturedCoursesAsync(filter);
@@ -109,7 +111,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
     }
 
     // Get courses by keyword
-    [HttpGet("/search")]
+    [HttpGet("search")]
     public async Task<IResult> SearchCourses([FromQuery] string? keyword, EndpointFilter filter)
     {
         keyword ??= "";
@@ -122,7 +124,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
     }
 
     // Get courses by keyword for search bar
-    [HttpGet("/search-bar")]
+    [HttpGet("search-bar")]
     public async Task<IResult> GetCoursesForSearchBar([FromQuery] string keyword, EndpointFilter filter)
     {
         keyword ??= "";

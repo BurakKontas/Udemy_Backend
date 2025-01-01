@@ -2,6 +2,7 @@ using Udemy.Auth.Application;
 using Udemy.Auth.Infrastructure;
 using Udemy.Auth.Infrastructure.Context;
 using Udemy.Common.ExceptionMiddlewares;
+using Udemy.Common.Extensions;
 using Udemy.Common.Helpers;
 using Udemy.Common.Middlewares;
 
@@ -16,6 +17,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAuthMiddleware();
+builder.Services.AddApiVersioningExtension();
 
 builder.Services.AddExceptionMiddlewares();
 
@@ -31,7 +33,7 @@ if (app.Environment.IsDevelopment())
 
 //app.MapIdentityApi<User>();
 
-app.UseMiddleware<TransactionMiddleware<ApplicationDbContext>>();
+//app.UseMiddleware<TransactionMiddleware<ApplicationDbContext>>(); // it causes an error but idk why
 
 app.AddExceptionMiddlewares();
 

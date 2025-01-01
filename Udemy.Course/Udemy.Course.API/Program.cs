@@ -1,4 +1,6 @@
+using Asp.Versioning;
 using Udemy.Common.ExceptionMiddlewares;
+using Udemy.Common.Extensions;
 using Udemy.Common.Helpers;
 using Udemy.Common.Middlewares;
 using Udemy.Course.Application;
@@ -18,6 +20,7 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddExceptionMiddlewares();
 builder.Services.AddAuthMiddleware();
+builder.Services.AddApiVersioningExtension();
 
 var app = builder.Build();
 

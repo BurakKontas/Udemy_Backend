@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Udemy.Auth.Domain.Entities;
@@ -8,8 +9,9 @@ using Udemy.Auth.Contracts.Response;
 
 namespace Udemy.Auth.API.Controllers;
 
-[Route("/")]
+[Route("/v{version:apiVersion}")]
 [ApiController]
+[ApiVersion("1.0")]
 public class AuthController(IAuthService authService) : ControllerBase
 {
     private readonly IAuthService _authService = authService;
@@ -102,7 +104,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     {
         var ticket = _authService.GetIdentityFromToken(token, cancellationToken);
 
-        if (ticket == null) return TypedResults.Unauthorized();
+        if (ticket == null) return TypedResults.BadRequest("Token is not valid.");
 
         var id = ticket.Properties.Items["Id"];
 

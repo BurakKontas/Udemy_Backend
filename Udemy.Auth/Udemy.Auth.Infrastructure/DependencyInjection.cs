@@ -12,6 +12,7 @@ using Udemy.Auth.Infrastructure.Repositories;
 using Udemy.Auth.Infrastructure.User;
 using Udemy.Common.Consul;
 using Udemy.Common.Helpers;
+using Udemy.Common.Middlewares;
 using DataProtectionProvider = Udemy.Auth.Infrastructure.DataProtection.DataProtectionProvider;
 using Role = Udemy.Auth.Domain.Entities.Role;
 
