@@ -19,6 +19,7 @@ public class CourseConfiguration : IEntityTypeConfiguration<Domain.Entities.Cour
             .HasConversion<string>();
 
         builder.Property(c => c.Language)
+            .HasDefaultValue("English")
             .IsRequired()
             .HasMaxLength(50);
 
@@ -27,9 +28,6 @@ public class CourseConfiguration : IEntityTypeConfiguration<Domain.Entities.Cour
 
         #region Requireds
 
-        builder.Property(c => c.ApprovedAt)
-            .IsRequired();
-
         builder.Property(c => c.CreatedAt)
             .IsRequired();
 
@@ -37,15 +35,19 @@ public class CourseConfiguration : IEntityTypeConfiguration<Domain.Entities.Cour
             .IsRequired();
 
         builder.Property(c => c.IsActive)
+            .HasDefaultValue(true)
             .IsRequired();
 
         builder.Property(c => c.IsApproved)
+            .HasDefaultValue(false)
             .IsRequired();
 
         builder.Property(c => c.IsFeatured)
+            .HasDefaultValue(false)
             .IsRequired();
 
         builder.Property(c => c.HasCertificate)
+            .HasDefaultValue(false)
             .IsRequired();
 
         #endregion
