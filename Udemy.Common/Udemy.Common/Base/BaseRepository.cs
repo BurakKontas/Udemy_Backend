@@ -1,5 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Text.Json;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Newtonsoft.Json.Linq;
+using Udemy.Common.Helpers;
 using Udemy.Common.ModelBinder;
 
 namespace Udemy.Common.Base;
@@ -133,12 +138,58 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
 
             foreach (var kvp in updatedValues)
             {
-                var property = entry.Property(kvp.Key);
+                if (kvp.Key.Contains('.'))
+                {
+                    var objects = kvp.Key.Split('.');
+                    var key = string.Join(" ", objects.Take(objects.Length - 1));
+                    var obj = entry.Navigation(key);
+                    var property = obj.CurrentValue?.GetType().GetProperty(objects.Last());
 
-                if (property == null)
-                    throw new ArgumentException($"Property {kvp.Key} not found on entity.");
+                    if (property == null) continue;
 
-                property.CurrentValue = kvp.Value;
+                    if (kvp.Value is JsonElement jsonValue)
+                    {
+                        switch (jsonValue.ValueKind)
+                        {
+                            case JsonValueKind.String:
+                                property.SetValue(obj.CurrentValue, jsonValue.GetString());
+                                break;
+                            case JsonValueKind.Number:
+                                property.SetValue(obj.CurrentValue, jsonValue.GetDecimal());
+                                break;
+                            case JsonValueKind.True or JsonValueKind.False:
+                                property.SetValue(obj.CurrentValue, jsonValue.GetBoolean());
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        property.SetValue(obj.CurrentValue, kvp.Value);
+                    }
+                }
+                else
+                {
+                    var property = entry.Property(kvp.Key);
+                    if (kvp.Value is JsonElement jsonValue)
+                    {
+                        switch (jsonValue.ValueKind)
+                        {
+                            case JsonValueKind.String:
+                                property.CurrentValue = jsonValue.GetString();
+                                break;
+                            case JsonValueKind.Number:
+                                property.CurrentValue = jsonValue.GetDecimal();
+                                break;
+                            case JsonValueKind.True or JsonValueKind.False:
+                                property.CurrentValue = jsonValue.GetBoolean();
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        property.CurrentValue = kvp.Value;
+                    }
+                }
             }
 
             _dbSet.Update(entity);
@@ -150,7 +201,6 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
         {
             throw new InvalidOperationException("Error updating entity.", ex);
         }
-
     }
 
     public virtual async Task<Guid[]> UpdateManyAsync(IEnumerable<T> entities)
