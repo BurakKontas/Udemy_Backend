@@ -18,6 +18,10 @@ public static class DependencyInjection
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<ICourseService, CourseService>();
         services.AddScoped<ILessonCategoryService, LessonCategoryService>();
+        services.AddScoped<IQuestionService, QuestionService>();
+        services.AddScoped<IAnswerService, AnswerService>();
+        services.AddScoped<ILikeService, LikeService>();
+        services.AddScoped<IFavoriteService, FavoriteService>();
 
         return services;
     }
