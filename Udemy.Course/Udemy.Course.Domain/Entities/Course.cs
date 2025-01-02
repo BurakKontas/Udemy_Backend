@@ -16,13 +16,13 @@ public class Course : BaseEntity, ICloneable
     public bool HasCertificate { get; set; }
     public string? CertificateTemplateUrl { get; set; }
 
-    public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
-    public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
-    public virtual ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
-    public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
-    public virtual ICollection<LessonCategory> LessonCategories { get; set; } = new List<LessonCategory>();
-    public virtual ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
-    public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
+    public virtual ICollection<AuditLog> AuditLogs { get; set; } = [];
+    public virtual ICollection<Comment> Comments { get; set; } = [];
+    public virtual ICollection<Favorite> Favorites { get; set; } = [];
+    public virtual ICollection<Tag> Tags { get; set; } = [];
+    public virtual ICollection<LessonCategory> LessonCategories { get; set; } = [];
+    public virtual ICollection<Lesson> Lessons { get; set; } = [];
+    public virtual ICollection<Enrollment> Enrollments { get; set; } = [];
 
     public virtual CourseDetails? CourseDetails { get; set; }
 
