@@ -39,7 +39,7 @@ public static class DependencyInjection
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
         services.AddScoped<ILessonRepository, LessonRepository>();
-        services.AddScoped<IRateRepository, RateRepository>();
+        services.AddScoped<ILessonCategoryRepository, LessonCategoryRepository>();
 
         services.AddTransient<TransactionMiddleware<ApplicationDbContext>>();
 

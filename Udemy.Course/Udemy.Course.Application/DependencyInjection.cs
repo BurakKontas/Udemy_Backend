@@ -13,11 +13,11 @@ public static class DependencyInjection
     {
         services.AddValidatorsFromAssembly(Assembly.GetAssembly(typeof(DependencyInjection)));
 
-        services.AddScoped<IRateService, RateService>();
         services.AddScoped<ILessonService, LessonService>();
         services.AddScoped<IEnrollmentService, EnrollmentService>();
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<ICourseService, CourseService>();
+        services.AddScoped<ILessonCategoryService, LessonCategoryService>();
 
         return services;
     }

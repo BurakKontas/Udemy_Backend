@@ -82,4 +82,23 @@ public class LessonRepository(ApplicationDbContext context) : BaseRepository<Les
 
         return entity.Id;
     }
+
+    public override async Task<Guid> DeleteAsync(Lesson lesson)
+    {
+        var courseDetails = await _context.Courses
+            .Include(x => x.CourseDetails)
+            .Select(x => x.CourseDetails)
+            .FirstOrDefaultAsync(x => x!.Id == lesson.CourseId);
+
+        if (courseDetails is null)
+            throw new ArgumentNullException($"Course not found");
+
+        courseDetails.TotalDuration -= lesson.Duration;
+
+        _context.Lessons.Remove(lesson);
+
+        await _context.SaveChangesAsync();
+
+        return lesson.Id;
+    }
 }
