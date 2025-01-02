@@ -7,6 +7,7 @@ public class Lesson : BaseEntity
     public string Title { get; set; } = "";
     public string Description { get; set; } = "";
     public string VideoUrl { get; set; } = "";
+    public TimeSpan Duration { get; set; }
     public Guid CourseId { get; set; }
     public Guid LessonCategoryId { get; set; }
 

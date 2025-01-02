@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json.Linq;
 using Udemy.Common.Helpers;
 using Udemy.Common.ModelBinder;
+using Consul.Filtering;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Udemy.Common.Base;
 
@@ -63,10 +65,8 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
         return await _dbSet.FindAsync(id);
     }
 
-    public virtual async Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> predicate, EndpointFilter filter)
+    protected virtual IQueryable<T> Filtering(IQueryable<T> query, EndpointFilter filter)
     {
-        var query = _dbSet.AsNoTracking().Where(predicate);
-
         // Filtering
         if (!string.IsNullOrEmpty(filter.FilterBy) && !string.IsNullOrEmpty(filter.FilterValue))
         {
@@ -79,6 +79,11 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
             query = query.Where(filterPredicate);
         }
 
+        return query;
+    }
+
+    protected virtual IQueryable<T> Sorting(IQueryable<T> query, EndpointFilter filter)
+    {
         // Sorting
         if (!string.IsNullOrEmpty(filter.SortBy))
         {
@@ -94,8 +99,29 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
             query = (IQueryable<T>)method.Invoke(null, [query, lambda])!;
         }
 
+        return query;
+    }
+
+    protected virtual IQueryable<T> Paginating(IQueryable<T> query, EndpointFilter filter)
+    {
         // Paginating
         query = query.Skip(filter.Start).Take(filter.Limit);
+
+        return query;
+    }
+
+    public virtual async Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> predicate, EndpointFilter filter)
+    {
+        var query = _dbSet.AsNoTracking().Where(predicate);
+
+        // Filtering
+        query = Filtering(query, filter);
+
+        // Sorting
+        query = Sorting(query, filter);
+
+        // Paginating
+        query = Paginating(query, filter);
 
         return await query.ToListAsync();
     }

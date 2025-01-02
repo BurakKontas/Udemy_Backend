@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Udemy.Common.Base;
 using Udemy.Common.ModelBinder;
@@ -9,13 +8,13 @@ using Udemy.Course.Infrastructure.Contexts;
 
 namespace Udemy.Course.Infrastructure.Repositories;
 
-public class EnrollmentRepository(ApplicationDbContext context) : BaseRepository<Enrollment>(context), IEnrollmentRepository
+public class LessonCategoryRepository(ApplicationDbContext context) : BaseRepository<LessonCategory>(context), ILessonCategoryRepository
 {
     private readonly ApplicationDbContext _context = context;
 
-    public async Task<IEnumerable<Enrollment>> GetAll(Guid courseId, EndpointFilter filter)
+    public async Task<IEnumerable<LessonCategory>> GetAll(Guid courseId, EndpointFilter filter)
     {
-        var query = _context.Enrollments.AsNoTracking()
+        var query = _context.LessonCategories.AsNoTracking()
             .Where(x => x.CourseId == courseId);
 
         // Filtering
@@ -30,17 +29,17 @@ public class EnrollmentRepository(ApplicationDbContext context) : BaseRepository
         return await query.ToListAsync();
     }
 
-    public async Task<Enrollment?> GetByIdAsync(Guid id, Guid courseId)
+    public async Task<LessonCategory?> GetByIdAsync(Guid id, Guid courseId)
     {
-        var enrollment = await _context.Enrollments.AsNoTracking()
+        var lessonCategory = await _context.LessonCategories.AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id && x.CourseId == courseId);
 
-        return enrollment;
+        return lessonCategory;
     }
 
-    public async Task<IEnumerable<Enrollment>> GetManyAsync(Expression<Func<Enrollment, bool>> predicate, Guid courseId, EndpointFilter filter)
+    public async Task<IEnumerable<LessonCategory>> GetManyAsync(Expression<Func<LessonCategory, bool>> predicate, Guid courseId, EndpointFilter filter)
     {
-        var query = _context.Enrollments.AsNoTracking()
+        var query = _context.LessonCategories.AsNoTracking()
             .Where(x => x.CourseId == courseId)
             .Where(predicate);
 
@@ -56,11 +55,11 @@ public class EnrollmentRepository(ApplicationDbContext context) : BaseRepository
         return await query.ToListAsync();
     }
 
-    public async Task<Guid> AddAsync(Enrollment entity, Guid courseId)
+    public async Task<Guid> AddAsync(LessonCategory entity, Guid courseId)
     {
         entity.CourseId = courseId;
 
-        await _context.Enrollments.AddAsync(entity);
+        await _context.LessonCategories.AddAsync(entity);
 
         await _context.SaveChangesAsync();
 
