@@ -16,6 +16,15 @@ public class CourseRepository(IElasticSearchRepository elasticSearchRepository, 
     private readonly IElasticSearchRepository _elasticSearchRepository = elasticSearchRepository;
     private readonly ApplicationDbContext _dbContext = dbContext;
 
+    public new async Task<Domain.Entities.Course?> GetByIdAsync(Guid id)
+    {
+        var course = await _dbContext.Courses
+            .Include(c => c.CourseDetails)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        return course;
+    }
+
     // from pg
     public async Task<IEnumerable<Domain.Entities.Course>> GetCoursesByInstructorAsync(Guid instructorId, EndpointFilter filter)
     {
