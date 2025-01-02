@@ -7,4 +7,6 @@ public class Answer : BaseEntity
     public string Value { get; set; } = "";
     public Guid UserId { get; set; }
     public Guid QuestionId { get; set; }
+
+    public virtual ICollection<Like> Likes { get; set; } = new List<Like>();
 }

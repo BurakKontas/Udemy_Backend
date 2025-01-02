@@ -13,5 +13,10 @@ public class AnswerConfiguration : IEntityTypeConfiguration<Answer>
         builder.Property(a => a.Value)
             .IsRequired()
             .HasMaxLength(500);
+
+        builder.HasMany(a => a.Likes)
+            .WithOne()
+            .HasForeignKey(l => l.AnswerId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
