@@ -6,8 +6,7 @@ namespace Udemy.Course.Domain.Interfaces.Service;
 
 public interface ILessonService
 {
-    Task<Guid> AddAsync(Lesson entity);
-    Task<IEnumerable<Lesson>> GetAll(Guid categoryId, EndpointFilter filter);
+    Task<Guid> AddAsync(Guid categoryId, string title, string videoUrl, TimeSpan duration, string? description);
     Task<Lesson?> GetByIdAsync(Guid id, Guid categoryId);
     Task<IEnumerable<Lesson>> GetManyAsync(Expression<Func<Lesson, bool>> predicate, Guid categoryId, EndpointFilter filter);
     Task<Guid> UpdateAsync(Guid id, Dictionary<string, object> updates);
@@ -17,4 +16,6 @@ public interface ILessonService
     Task<IEnumerable<Lesson>> GetManyAsync(Expression<Func<Lesson, bool>> predicate, EndpointFilter filter);
     Task<Guid> AddAsync(Lesson entity, Guid categoryId);
     Task<IEnumerable<Lesson>> GetAllAsync(Guid categoryId, EndpointFilter filter);
+    Task<IEnumerable<Lesson>> GetByCourseIdAsync(Guid courseId, EndpointFilter filter);
+    Task<IEnumerable<Lesson>> GetByCategoryIdAsync(Guid categoryId, EndpointFilter filter);
 }

@@ -10,10 +10,16 @@ public class LessonCategoryService(ILessonCategoryRepository lessonCategoryRepos
 {
     private readonly ILessonCategoryRepository _lessonCategoryRepository = lessonCategoryRepository;
 
-    public async Task<Guid> AddAsync(LessonCategory entity)
+    public async Task<Guid> AddAsync(Guid courseId, string name, string? description)
     {
-        var courseId = entity.CourseId;
-        return await _lessonCategoryRepository.AddAsync(entity, courseId);
+        var lessonCategory = new LessonCategory
+        {
+            Name = name,
+            Description = description ?? string.Empty,
+            CourseId = courseId
+        };
+
+        return await _lessonCategoryRepository.AddAsync(lessonCategory);
     }
 
     public async Task<IEnumerable<LessonCategory>> GetAll(Guid courseId, EndpointFilter filter)
@@ -82,5 +88,10 @@ public class LessonCategoryService(ILessonCategoryRepository lessonCategoryRepos
     public async Task<IEnumerable<LessonCategory>> GetAllAsync(Guid courseId, EndpointFilter filter)
     {
         return await _lessonCategoryRepository.GetAll(courseId, filter);
+    }
+
+    public async Task<IEnumerable<LessonCategory>> GetByCourseIdAsync(Guid courseId, EndpointFilter filter)
+    {
+        return await _lessonCategoryRepository.GetByCourseIdAsync(courseId, filter);
     }
 }

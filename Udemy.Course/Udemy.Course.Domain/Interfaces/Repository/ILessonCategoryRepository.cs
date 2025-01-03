@@ -11,4 +11,5 @@ public interface ILessonCategoryRepository : IBaseRepository<LessonCategory>
     Task<LessonCategory?> GetByIdAsync(Guid id, Guid courseId);
     Task<IEnumerable<LessonCategory>> GetManyAsync(Expression<Func<LessonCategory, bool>> predicate, Guid courseId, EndpointFilter filter);
     Task<Guid> AddAsync(LessonCategory entity, Guid courseId);  
+    Task<IEnumerable<LessonCategory>> GetByCourseIdAsync(Guid courseId, EndpointFilter filter);
 }

@@ -10,15 +10,23 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
 {
     private readonly ILessonRepository _lessonRepository = lessonRepository;
 
-    public async Task<Guid> AddAsync(Lesson entity)
-    {
-        var categoryId = entity.LessonCategoryId;
-        return await _lessonRepository.AddAsync(entity, categoryId);
-    }
-
     public async Task<IEnumerable<Lesson>> GetAll(Guid categoryId, EndpointFilter filter)
     {
         return await _lessonRepository.GetAll(categoryId, filter);
+    }
+
+    public async Task<Guid> AddAsync(Guid categoryId, string title, string videoUrl, TimeSpan duration, string? description)
+    {
+        var lesson = new Lesson
+        {
+            LessonCategoryId = categoryId,
+            Title = title,
+            VideoUrl = videoUrl,
+            Duration = duration,
+            Description = description ?? string.Empty
+        };
+
+        return await _lessonRepository.AddAsync(lesson, categoryId);
     }
 
     public async Task<Lesson?> GetByIdAsync(Guid id, Guid categoryId)
@@ -82,5 +90,16 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
     public async Task<IEnumerable<Lesson>> GetAllAsync(Guid categoryId, EndpointFilter filter)
     {
         return await _lessonRepository.GetAll(categoryId, filter);
+    }
+
+    public async Task<IEnumerable<Lesson>> GetByCourseIdAsync(Guid courseId, EndpointFilter filter)
+    {
+        var lessons = await _lessonRepository.GetManyAsync(x => x.CourseId == courseId, filter);
+        return lessons;
+    }
+
+    public async Task<IEnumerable<Lesson>> GetByCategoryIdAsync(Guid categoryId, EndpointFilter filter)
+    {
+        return await _lessonRepository.GetManyAsync(x => x.LessonCategoryId == categoryId, filter);
     }
 }

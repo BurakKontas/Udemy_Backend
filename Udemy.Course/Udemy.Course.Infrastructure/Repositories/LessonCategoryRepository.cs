@@ -65,4 +65,21 @@ public class LessonCategoryRepository(ApplicationDbContext context) : BaseReposi
 
         return entity.Id;
     }
+
+    public async Task<IEnumerable<LessonCategory>> GetByCourseIdAsync(Guid courseId, EndpointFilter filter)
+    {
+        var query = _context.LessonCategories.AsNoTracking()
+            .Where(x => x.CourseId == courseId);
+
+        // Filtering
+        query = Filtering(query, filter);
+
+        // Sorting
+        query = Sorting(query, filter);
+
+        // Paginating
+        query = Paginating(query, filter);
+
+        return await query.ToListAsync();
+    }
 }
