@@ -6,7 +6,7 @@ namespace Udemy.Course.Domain.Interfaces.Service;
 
 public interface IEnrollmentService
 {
-    Task<Guid> AddAsync(Enrollment entity);
+    Task<Guid> AddAsync(Guid userId, Guid courseId);
     Task<IEnumerable<Enrollment>> GetAll(Guid courseId, EndpointFilter filter);
     Task<Enrollment?> GetByIdAsync(Guid id, Guid courseId);
     Task<IEnumerable<Enrollment>> GetManyAsync(Expression<Func<Enrollment, bool>> predicate, Guid courseId, EndpointFilter filter);
@@ -17,4 +17,5 @@ public interface IEnrollmentService
     Task<IEnumerable<Enrollment>> GetManyAsync(Expression<Func<Enrollment, bool>> predicate, EndpointFilter filter);
     Task<Guid> AddAsync(Enrollment entity, Guid courseId);
     Task<IEnumerable<Enrollment>> GetAllAsync(Guid courseId, EndpointFilter filter);
+    Task<IEnumerable<Enrollment>> GetAllByUserAsync(Guid userId, EndpointFilter filter);
 }

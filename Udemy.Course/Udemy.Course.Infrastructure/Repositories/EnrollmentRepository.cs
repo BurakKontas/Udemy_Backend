@@ -83,4 +83,21 @@ public class EnrollmentRepository(ApplicationDbContext context) : BaseRepository
 
         return await query.ToListAsync();
     }
+
+    public async Task<IEnumerable<Enrollment>> GetAllByUserId(Guid userId, EndpointFilter filter)
+    {
+        var query = _context.Enrollments.AsNoTracking()
+            .Where(x => x.StudentId == userId);
+
+        // Filtering
+        query = Filtering(query, filter);
+
+        // Sorting
+        query = Sorting(query, filter);
+
+        // Paginating
+        query = Paginating(query, filter);
+
+        return await query.ToListAsync();
+    }
 }

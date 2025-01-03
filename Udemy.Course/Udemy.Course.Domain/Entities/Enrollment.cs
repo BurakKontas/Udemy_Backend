@@ -9,4 +9,17 @@ public class Enrollment : BaseEntity
     public DateTimeOffset? CompletedAt { get; set; } = null;
     public List<Guid> CompletedLessons { get; set; } = [];
     public Guid CourseId { get; set; }
+
+    public Enrollment() { }
+
+    private Enrollment(Guid studentId, Guid courseId)
+    {
+        StudentId = studentId;
+        CourseId = courseId;
+    }
+
+    public static Enrollment Create(Guid studentId, Guid courseId)
+    {
+        return new Enrollment(studentId, courseId);
+    }
 }

@@ -10,10 +10,10 @@ public class EnrollmentService(IEnrollmentRepository enrollmentRepository) : IEn
 {
     private readonly IEnrollmentRepository _enrollmentRepository = enrollmentRepository;
 
-    public async Task<Guid> AddAsync(Enrollment entity)
+    public async Task<Guid> AddAsync(Guid userId, Guid courseId)
     {
-        var courseId = entity.CourseId;
-        return await _enrollmentRepository.AddAsync(entity, courseId);
+        var enrollment = Enrollment.Create(userId, courseId);
+        return await _enrollmentRepository.AddAsync(enrollment, courseId);
     }
 
     public async Task<IEnumerable<Enrollment>> GetAll(Guid courseId, EndpointFilter filter)
@@ -82,5 +82,10 @@ public class EnrollmentService(IEnrollmentRepository enrollmentRepository) : IEn
     public async Task<IEnumerable<Enrollment>> GetAllAsync(Guid courseId, EndpointFilter filter)
     {
         return await _enrollmentRepository.GetAllByCourseId(courseId, filter);
+    }
+
+    public async Task<IEnumerable<Enrollment>> GetAllByUserAsync(Guid userId, EndpointFilter filter)
+    {
+        return await _enrollmentRepository.GetAllByUserId(userId, filter);
     }
 }

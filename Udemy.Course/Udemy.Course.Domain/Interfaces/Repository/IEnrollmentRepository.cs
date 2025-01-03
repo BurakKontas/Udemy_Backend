@@ -12,4 +12,5 @@ public interface IEnrollmentRepository : IBaseRepository<Enrollment>
     Task<IEnumerable<Enrollment>> GetManyAsync(Expression<Func<Enrollment, bool>> predicate, Guid courseId, EndpointFilter filter);
     Task<Guid> AddAsync(Enrollment entity, Guid courseId);
     Task<IEnumerable<Enrollment>> GetAllByCourseId(Guid courseId, EndpointFilter filter);
+    Task<IEnumerable<Enrollment>> GetAllByUserId(Guid userId, EndpointFilter filter);
 }
