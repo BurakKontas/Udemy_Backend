@@ -27,22 +27,6 @@ public class LikeRepository(ApplicationDbContext context) : BaseRepository<Like>
         return await query.ToListAsync();
     }
 
-    public async Task<IEnumerable<Like>> GetLikesByAnswerIdAsync(Guid answerId, EndpointFilter filter)
-    {
-        var query = _context.Likes
-            .AsNoTracking()
-            .Where(x => x.AnswerId == answerId)
-            .AsQueryable();
-
-        query = Filtering(query, filter);
-
-        query = Sorting(query, filter);
-
-        query = Paginating(query, filter);
-
-        return await query.ToListAsync();
-    }
-
     public async Task<IEnumerable<Like>> GetLikesByUserIdAsync(Guid userId, EndpointFilter filter)
     {
         var query = _context.Likes
@@ -59,7 +43,7 @@ public class LikeRepository(ApplicationDbContext context) : BaseRepository<Like>
         return await query.ToListAsync();
     }
 
-    public async Task<Guid> AddAsync(Guid answerId, Like like)
+    public async Task<Guid> AddAsync(Guid questionId, Like like)
     {
         await _context.Likes.AddAsync(like);
         await _context.SaveChangesAsync();
@@ -67,10 +51,10 @@ public class LikeRepository(ApplicationDbContext context) : BaseRepository<Like>
         return like.Id;
     }
 
-    public async Task DeleteAsync(Guid answerId, Guid likeId)
+    public async Task DeleteAsync(Guid questionId, Guid likeId)
     {
         var like = await _context.Likes
-            .FirstOrDefaultAsync(x => x.AnswerId == answerId && x.Id == likeId);
+            .FirstOrDefaultAsync(x => x.QuestionId == questionId && x.Id == likeId);
 
         if (like is null)
         {
@@ -81,10 +65,10 @@ public class LikeRepository(ApplicationDbContext context) : BaseRepository<Like>
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> IsLiked(Guid userId, Guid answerId)
+    public async Task<bool> IsLiked(Guid userId, Guid questionId)
     {
         return await _context.Likes
-            .AnyAsync(x => x.UserId == userId && x.AnswerId == answerId);
+            .AnyAsync(x => x.UserId == userId && x.QuestionId == questionId);
     }
 
     public async Task<Like> GetLikeByIdAsync(Guid userId, Guid likeId)
@@ -96,11 +80,11 @@ public class LikeRepository(ApplicationDbContext context) : BaseRepository<Like>
         return like ?? throw new KeyNotFoundException();
     }
 
-    public async Task<Like> GetLikeByUserIdAsync(Guid userId, Guid answerId)
+    public async Task<Like> GetLikeByUserIdAsync(Guid userId, Guid questionId)
     {
         var like = await _context.Likes
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.UserId == userId && x.AnswerId == answerId);
+            .FirstOrDefaultAsync(x => x.UserId == userId && x.QuestionId == questionId);
 
         return like ?? throw new KeyNotFoundException();
     }

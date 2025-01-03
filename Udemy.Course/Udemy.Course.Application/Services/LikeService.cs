@@ -9,9 +9,9 @@ public class LikeService(ILikeRepository likeRepository) : ILikeService
 {
     private readonly ILikeRepository _likeRepository = likeRepository;
 
-    public async Task<IEnumerable<Like>> GetLikesByAnswerIdAsync(Guid answerId, EndpointFilter filter)
+    public async Task<IEnumerable<Like>> GetLikesByQuestionIdAsync(Guid questionId, EndpointFilter filter)
     {
-        return await _likeRepository.GetLikesByAnswerIdAsync(answerId, filter);
+        return await _likeRepository.GetLikesByQuestionIdAsync(questionId, filter);
     }
 
     public async Task<IEnumerable<Like>> GetLikesByUserIdAsync(Guid userId, EndpointFilter filter)
@@ -19,9 +19,12 @@ public class LikeService(ILikeRepository likeRepository) : ILikeService
         return await _likeRepository.GetLikesByUserIdAsync(userId, filter);
     }
 
-    public async Task<Guid> AddAsync(Guid answerId, Like like)
+    public async Task<Guid> AddAsync(Guid id, Guid userId)
     {
-        return await _likeRepository.AddAsync(answerId, like);
+        Like like = new Like { QuestionId = id, UserId = userId };
+
+        await _likeRepository.AddAsync(like);
+        return like.Id;
     }
 
     public async Task DeleteAsync(Guid answerId, Guid likeId)
