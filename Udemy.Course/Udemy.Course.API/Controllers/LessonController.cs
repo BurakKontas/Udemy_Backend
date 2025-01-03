@@ -5,7 +5,7 @@ using Udemy.Course.Domain.Interfaces.Service;
 
 namespace Udemy.Course.API.Controllers;
 
-[Route("/lesson/v{version:apiVersion}")]
+[Route("/v{version:apiVersion}/lesson")]
 [ApiController]
 [ApiVersion("1.0")]
 public class LessonController(ILessonCategoryService lessonCategoryService, ILessonService lessonService) : ControllerBase

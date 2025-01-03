@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Udemy.Course.API.Controllers;
 
-[Route("/rate/v{version:apiVersion}")]
+[Route("/v{version:apiVersion}/rate")]
 [ApiController]
 [ApiVersion("1.0")]
 public class RateController : ControllerBase

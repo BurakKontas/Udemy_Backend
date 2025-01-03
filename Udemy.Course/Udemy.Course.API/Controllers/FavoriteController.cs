@@ -6,7 +6,7 @@ using Udemy.Course.Domain.Interfaces.Service;
 
 namespace Udemy.Course.API.Controllers;
 
-[Route("/favorite/v{version:apiVersion}")]
+[Route("/v{version:apiVersion}/favorite")]
 [ApiController]
 [ApiVersion("1.0")]
 public class FavoriteController(IFavoriteService favoriteService) : ControllerBase

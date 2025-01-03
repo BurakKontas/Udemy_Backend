@@ -8,7 +8,7 @@ using Udemy.Course.Domain.Interfaces.Service;
 
 namespace Udemy.Course.API.Controllers;
 
-[Route("/v{version:apiVersion}/")]
+[Route("/v{version:apiVersion}")]
 [ApiController]
 [ApiVersion("1.0")]
 public class CourseController(ICourseService courseService) : ControllerBase

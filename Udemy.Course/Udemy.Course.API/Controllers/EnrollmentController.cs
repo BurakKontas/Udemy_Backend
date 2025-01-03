@@ -5,7 +5,7 @@ using Udemy.Course.Domain.Interfaces.Service;
 
 namespace Udemy.Course.API.Controllers;
 
-[Route("/enrollment/v{version:apiVersion}")]
+[Route("/v{version:apiVersion}/enrollment")]
 [ApiController]
 [ApiVersion("1.0")]
 public class EnrollmentController(IEnrollmentService enrollmentService) : ControllerBase

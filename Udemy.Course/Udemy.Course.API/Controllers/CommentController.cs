@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Udemy.Course.API.Controllers;
 
-[Route("/comment/v{version:apiVersion}")]
+[Route("/v{version:apiVersion}/comment")]
 [ApiController]
 [ApiVersion("1.0")]
 public class CommentController : ControllerBase
