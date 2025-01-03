@@ -13,4 +13,5 @@ public interface IFavoriteRepository : IBaseRepository<Favorite>
     Task<Favorite> GetFavoriteByIdAsync(Guid userId, Guid favoriteId);
     Task<Favorite> GetFavoriteByUserIdAsync(Guid userId, Guid courseId);
     Task<IEnumerable<Favorite>> GetFavoritesByCourseIdAsync(Guid courseId, EndpointFilter filter);
+    Task<Favorite> GetFavoriteByUserIdAndCourseId(Guid userId, Guid courseId);
 }

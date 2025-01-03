@@ -47,14 +47,22 @@ public class FavoriteService(IFavoriteRepository favoriteRepository) : IFavorite
         return await _favoriteRepository.GetFavoritesByUserIdAsync(userId, filter);
     }
 
-    public async Task<Guid> AddAsync(Guid userId, Favorite favorite)
+    public async Task<Guid> AddAsync(Guid userId, Guid courseId)
     {
+        var favorite = new Favorite
+        {
+            UserId = userId,
+            CourseId = courseId
+        };
+
         return await _favoriteRepository.AddAsync(userId, favorite);
     }
 
-    public async Task<Guid> DeleteAsync(Guid userId, Guid favoriteId)
+    public async Task<Guid> DeleteAsync(Guid userId, Guid courseId)
     {
-        return await _favoriteRepository.DeleteAsync(userId, favoriteId);
+        var favorite = await _favoriteRepository.GetFavoriteByUserIdAndCourseId(userId, courseId);
+
+        return await _favoriteRepository.DeleteAsync(favorite);
     }
 
     public async Task<bool> IsFavorite(Guid userId, Guid courseId)

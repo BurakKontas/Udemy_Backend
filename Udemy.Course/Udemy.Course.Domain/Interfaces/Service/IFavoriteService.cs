@@ -11,7 +11,7 @@ public interface IFavoriteService
     Task<Guid> UpdateAsync(Favorite favorite, Dictionary<string, object> updates);
     Task DeleteAsync(Guid id);
     Task<IEnumerable<Favorite>> GetFavoritesByUserIdAsync(Guid userId, EndpointFilter filter);
-    Task<Guid> AddAsync(Guid userId, Favorite favorite);
-    Task<Guid> DeleteAsync(Guid userId, Guid favoriteId);
+    Task<Guid> AddAsync(Guid userId, Guid courseId);
+    Task<Guid> DeleteAsync(Guid userId, Guid courseId);
     Task<bool> IsFavorite(Guid userId, Guid courseId);
 }

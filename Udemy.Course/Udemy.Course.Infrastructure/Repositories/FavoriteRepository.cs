@@ -95,4 +95,13 @@ public class FavoriteRepository(ApplicationDbContext context) : BaseRepository<F
 
         return await query.ToListAsync();
     }
+
+    public async Task<Favorite> GetFavoriteByUserIdAndCourseId(Guid userId, Guid courseId)
+    {
+        var favorite = await _context.Favorites
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.UserId == userId && x.CourseId == courseId);
+
+        return favorite ?? throw new KeyNotFoundException();
+    }
 }
