@@ -14,9 +14,21 @@ public class FavoriteService(IFavoriteRepository favoriteRepository) : IFavorite
         return await _favoriteRepository.GetAll(filter);
     }
 
-    public async Task<Favorite?> GetByIdAsync(Guid id)
+    public async Task<Favorite?> GetByIdAsync(Guid userId, Guid id)
     {
-        return await _favoriteRepository.GetByIdAsync(id);
+        var favorite = await _favoriteRepository.GetByIdAsync(id);
+
+        if (favorite is null)
+        {
+            return null;
+        }
+
+        if(favorite.UserId != userId)
+        {
+            throw new UnauthorizedAccessException("You cannot access a favorite that is not yours.");
+        }
+
+        return favorite;
     }
 
     public async Task<Guid> AddAsync(Favorite favorite)
@@ -30,13 +42,18 @@ public class FavoriteService(IFavoriteRepository favoriteRepository) : IFavorite
         return updated.Id;
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid userId, Guid id)
     {
         var favorite = await _favoriteRepository.GetByIdAsync(id);
 
         if (favorite is null)
         {
             throw new KeyNotFoundException();
+        }
+
+        if(favorite.UserId != userId)
+        {
+            throw new UnauthorizedAccessException("You cannot delete a favorite that is not yours.");
         }
 
         await _favoriteRepository.DeleteAsync(favorite);
@@ -56,13 +73,6 @@ public class FavoriteService(IFavoriteRepository favoriteRepository) : IFavorite
         };
 
         return await _favoriteRepository.AddAsync(userId, favorite);
-    }
-
-    public async Task<Guid> DeleteAsync(Guid userId, Guid courseId)
-    {
-        var favorite = await _favoriteRepository.GetFavoriteByUserIdAndCourseId(userId, courseId);
-
-        return await _favoriteRepository.DeleteAsync(favorite);
     }
 
     public async Task<bool> IsFavorite(Guid userId, Guid courseId)

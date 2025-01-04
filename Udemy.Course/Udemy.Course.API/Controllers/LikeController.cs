@@ -18,16 +18,16 @@ public class LikeController(ILikeService likeService) : ControllerBase
     // like question
     [Authorize]
     [HttpPost("/{question:guid}")]
-    public async Task<IResult> LikeQuestion([FromBody] LikeRequest request, Guid questionId)
+    public async Task<IResult> LikeQuestion(UserId userId, Guid questionId)
     {
-        var result = await _likeService.AddAsync(request.UserId, questionId);
+        var result = await _likeService.AddAsync(userId.Value, questionId);
         return TypedResults.Redirect($"get/{result}");
     }
 
     // unlike question
     [Authorize]
     [HttpDelete("/{likeId:guid}")]
-    public async Task<IResult> UnlikeQuestion(Guid likeId)
+    public async Task<IResult> UnlikeQuestion(Guid likeId, UserId userId)
     {
         var result = await _likeService.DeleteAsync(likeId);
 
@@ -37,7 +37,7 @@ public class LikeController(ILikeService likeService) : ControllerBase
     // get like
     [Authorize]
     [HttpGet("/{likeId:guid}")]
-    public async Task<IResult> GetLike(Guid likeId)
+    public async Task<IResult> GetLike(Guid likeId, UserId userId)
     {
         var result = await _likeService.GetByIdAsync(likeId);
 
@@ -46,10 +46,10 @@ public class LikeController(ILikeService likeService) : ControllerBase
 
     // get likes by user
     [Authorize]
-    [HttpGet("/user/{userId:guid}")]
-    public async Task<IResult> GetLikesByUser(Guid userId, EndpointFilter filter)
+    [HttpGet("/user")]
+    public async Task<IResult> GetLikesByUser(UserId userId, EndpointFilter filter)
     {
-        var result = await _likeService.GetLikesByUserIdAsync(userId, filter);
+        var result = await _likeService.GetLikesByUserIdAsync(userId.Value, filter);
 
         return TypedResults.Ok(result);
     }
@@ -73,5 +73,3 @@ public class LikeController(ILikeService likeService) : ControllerBase
         return TypedResults.Ok(result);
     }
 }
-
-public record LikeRequest(Guid UserId);

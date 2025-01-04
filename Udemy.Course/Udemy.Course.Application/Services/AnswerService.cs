@@ -38,7 +38,7 @@ public class AnswerService(IAnswerRepository answerRepository) : IAnswerService
         return await _answerRepository.AddAsync(answer);
     }
 
-    public async Task<Guid> UpdateAsync(Guid answerId, Dictionary<string, object> updates)
+    public async Task<Guid> UpdateAsync(Guid userId, Guid answerId, Dictionary<string, object> updates)
     {
         var answer = await _answerRepository.GetByIdAsync(answerId);
 
@@ -47,17 +47,27 @@ public class AnswerService(IAnswerRepository answerRepository) : IAnswerService
             throw new KeyNotFoundException();
         }
 
+        if(answer.UserId != userId)
+        {
+            throw new UnauthorizedAccessException("You are not allowed to update this answer");
+        }
+
         var updated = await _answerRepository.UpdateAsync(answer, updates);
         return updated.Id;
     }
 
-    public async Task<Guid> DeleteAsync(Guid id)
+    public async Task<Guid> DeleteAsync(Guid userId, Guid id)
     {
         var answer = await _answerRepository.GetByIdAsync(id);
 
         if (answer is null)
         {
             throw new KeyNotFoundException();
+        }
+
+        if (answer.UserId != userId)
+        {
+            throw new UnauthorizedAccessException("You are not allowed to delete this answer");
         }
 
         await _answerRepository.DeleteAsync(answer);
@@ -83,10 +93,5 @@ public class AnswerService(IAnswerRepository answerRepository) : IAnswerService
     public async Task<Guid> AddAsync(Guid questionId, Answer answer)
     {
         return await _answerRepository.AddAsync(questionId, answer);
-    }
-
-    public async Task DeleteAsync(Guid questionId, Guid answerId)
-    {
-        await _answerRepository.DeleteAsync(questionId, answerId);
     }
 }

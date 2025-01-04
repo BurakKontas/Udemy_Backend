@@ -10,7 +10,7 @@ public class LessonCategoryService(ILessonCategoryRepository lessonCategoryRepos
 {
     private readonly ILessonCategoryRepository _lessonCategoryRepository = lessonCategoryRepository;
 
-    public async Task<Guid> AddAsync(Guid courseId, string name, string? description)
+    public async Task<Guid> AddAsync(Guid userId, Guid courseId, string name, string? description)
     {
         var lessonCategory = new LessonCategory
         {
@@ -19,7 +19,7 @@ public class LessonCategoryService(ILessonCategoryRepository lessonCategoryRepos
             CourseId = courseId
         };
 
-        return await _lessonCategoryRepository.AddAsync(lessonCategory);
+        return await _lessonCategoryRepository.AddAsync(userId, lessonCategory, courseId);
     }
 
     public async Task<IEnumerable<LessonCategory>> GetAll(Guid courseId, EndpointFilter filter)
@@ -37,7 +37,7 @@ public class LessonCategoryService(ILessonCategoryRepository lessonCategoryRepos
         return await _lessonCategoryRepository.GetManyAsync(predicate, courseId, filter);
     }
 
-    public async Task<Guid> UpdateAsync(Guid id, Dictionary<string, object> updates)
+    public async Task<Guid> UpdateAsync(Guid userId, Guid id, Dictionary<string, object> updates)
     {
         var lessonCategory = await _lessonCategoryRepository.GetByIdAsync(id);
 
@@ -46,12 +46,12 @@ public class LessonCategoryService(ILessonCategoryRepository lessonCategoryRepos
             throw new Exception("LessonCategory not found");
         }
 
-        await _lessonCategoryRepository.UpdateAsync(lessonCategory, updates);
+        await _lessonCategoryRepository.UpdateAsync(userId, lessonCategory, updates);
 
         return id;
     }
 
-    public async Task<Guid> DeleteAsync(Guid id)
+    public async Task<Guid> DeleteAsync(Guid userId, Guid id)
     {
         var lessonCategory = await _lessonCategoryRepository.GetByIdAsync(id);
 
@@ -60,7 +60,7 @@ public class LessonCategoryService(ILessonCategoryRepository lessonCategoryRepos
             throw new Exception("LessonCategory not found");
         }
 
-        await _lessonCategoryRepository.DeleteAsync(lessonCategory);
+        await _lessonCategoryRepository.DeleteAsync(userId, lessonCategory);
 
         return id;
     }
@@ -78,11 +78,6 @@ public class LessonCategoryService(ILessonCategoryRepository lessonCategoryRepos
     public async Task<IEnumerable<LessonCategory>> GetManyAsync(Expression<Func<LessonCategory, bool>> predicate, EndpointFilter filter)
     {
         return await _lessonCategoryRepository.GetManyAsync(predicate, filter);
-    }
-
-    public async Task<Guid> AddAsync(LessonCategory entity, Guid courseId)
-    {
-        return await _lessonCategoryRepository.AddAsync(entity, courseId);
     }
 
     public async Task<IEnumerable<LessonCategory>> GetAllAsync(Guid courseId, EndpointFilter filter)

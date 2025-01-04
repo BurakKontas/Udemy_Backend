@@ -17,6 +17,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
     private readonly ICourseService _courseService = courseService;
 
     // Get all courses (only for debug purposes)
+    [Authorize(Roles = "Admin")]
     [HttpGet("get-all")]
     public async Task<IResult> GetAllCourses(EndpointFilter filter)
     {
@@ -27,13 +28,13 @@ public class CourseController(ICourseService courseService) : ControllerBase
     // Create a course
     [Authorize]
     [HttpPost("create")]
-    public async Task<IResult> CreateCourse([FromBody] CreateCourseRequest request)
+    public async Task<IResult> CreateCourse([FromBody] CreateCourseRequest request, UserId userId)
     {
         var isLevelValid = Enum.TryParse(request.Level, true, out CourseLevel courseLevel);
 
         if (!isLevelValid) throw new InvalidEnumArgumentException("CreateCourseRequest.Level");
 
-        var id = await _courseService.CreateAsync(request.InstructorId, request.Title, request.Description, request.Price, courseLevel, request.Language, request.IsActive);
+        var id = await _courseService.CreateAsync(userId.Value, request.Title, request.Description, request.Price, courseLevel, request.Language, request.IsActive);
 
         var version = HttpContext.GetRequestedApiVersion()?.ToString();
 
@@ -43,9 +44,9 @@ public class CourseController(ICourseService courseService) : ControllerBase
     // Update a course
     [Authorize]
     [HttpPost("update/{courseId}")]
-    public async Task<IResult> UpdateCourse([FromBody] UpdateCourseRequest request, Guid courseId)
+    public async Task<IResult> UpdateCourse([FromBody] UpdateCourseRequest request, Guid courseId, UserId userId)
     {
-        var id = await _courseService.UpdateAsync(courseId, request.Updates);
+        var id = await _courseService.UpdateAsync(userId.Value, courseId, request.Updates);
 
         var version = HttpContext.GetRequestedApiVersion()?.ToString();
 
@@ -55,9 +56,9 @@ public class CourseController(ICourseService courseService) : ControllerBase
     // Delete a course
     [Authorize]
     [HttpDelete("delete/{courseId}")]
-    public async Task<IResult> DeleteCourse(Guid courseId)
+    public async Task<IResult> DeleteCourse(Guid courseId, UserId userId)
     {
-        var id = await _courseService.DeleteAsync(courseId);
+        var id = await _courseService.DeleteAsync(userId.Value, courseId);
 
         return TypedResults.Ok(id);
     }
@@ -65,9 +66,9 @@ public class CourseController(ICourseService courseService) : ControllerBase
     // Hide a course
     [Authorize]
     [HttpPost("update-status/{courseId}")]
-    public async Task<IResult> HideCourse([FromBody] UpdateCourseStatusRequest request, Guid courseId)
+    public async Task<IResult> HideCourse([FromBody] UpdateCourseStatusRequest request, Guid courseId, UserId userId)
     {
-        var id = await _courseService.UpdateStatusAsync(courseId, request.IsActive);
+        var id = await _courseService.UpdateStatusAsync(userId.Value, courseId, request.IsActive);
 
         return TypedResults.Ok(id);
     }

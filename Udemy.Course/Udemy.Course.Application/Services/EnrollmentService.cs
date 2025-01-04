@@ -16,14 +16,14 @@ public class EnrollmentService(IEnrollmentRepository enrollmentRepository) : IEn
         return await _enrollmentRepository.AddAsync(enrollment, courseId);
     }
 
-    public async Task<IEnumerable<Enrollment>> GetAll(Guid courseId, EndpointFilter filter)
+    public async Task<IEnumerable<Enrollment>> GetAll(Guid userId, Guid courseId, EndpointFilter filter)
     {
-        return await _enrollmentRepository.GetAll(courseId, filter);
+        return await _enrollmentRepository.GetAllAsync(userId, courseId, filter);
     }
 
-    public async Task<Enrollment?> GetByIdAsync(Guid id, Guid courseId)
+    public async Task<Enrollment?> GetByIdAsync(Guid consumerId, Guid enrollmentId)
     {
-        return await _enrollmentRepository.GetByIdAsync(id, courseId);
+        return await _enrollmentRepository.GetByIdAsync(consumerId, enrollmentId);
     }
 
     public async Task<IEnumerable<Enrollment>> GetManyAsync(Expression<Func<Enrollment, bool>> predicate, Guid courseId, EndpointFilter filter)
@@ -79,13 +79,17 @@ public class EnrollmentService(IEnrollmentRepository enrollmentRepository) : IEn
         return await _enrollmentRepository.AddAsync(entity, courseId);
     }
 
-    public async Task<IEnumerable<Enrollment>> GetAllAsync(Guid courseId, EndpointFilter filter)
+    public async Task<IEnumerable<Enrollment>> GetAllByCourseAsync(Guid userId, Guid courseId, EndpointFilter filter)
     {
-        return await _enrollmentRepository.GetAllByCourseId(courseId, filter);
+        return await _enrollmentRepository.GetAllByCourseIdAsync(userId, courseId, filter);
     }
 
-    public async Task<IEnumerable<Enrollment>> GetAllByUserAsync(Guid userId, EndpointFilter filter)
+    public async Task<IEnumerable<Enrollment>> GetAllByUserAsync(Guid consumerId, Guid userId, EndpointFilter filter)
     {
-        return await _enrollmentRepository.GetAllByUserId(userId, filter);
+        if (consumerId != userId)
+            throw new Exception("Unauthorized");
+
+        return await _enrollmentRepository.GetAllByUserIdAsync(userId, filter);
+
     }
 }

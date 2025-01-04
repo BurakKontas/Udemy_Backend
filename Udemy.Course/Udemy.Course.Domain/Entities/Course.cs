@@ -5,6 +5,7 @@ namespace Udemy.Course.Domain.Entities;
 
 public class Course : BaseEntity, ICloneable
 {
+    public Guid OwnerId { get; set; }
     public List<Guid> InstructorIds { get; set; } = [];
     public string Title { get; set; } = "";
     public string Language { get; set; }
@@ -30,27 +31,29 @@ public class Course : BaseEntity, ICloneable
     public Course() { }
 
     private Course(
+        Guid ownerId,
         string title,
         CourseLevel level,
         string language,
         bool isActive)
     {
+        OwnerId = ownerId;
         Title = title;
         Level = level;
         Language = language;
         IsActive = isActive;
+        InstructorIds = new List<Guid> { ownerId };
     }
 
     // Static Factory Method
     public static Course Create(
-        Guid instructorId,
+        Guid ownerId,
         string title,
         CourseLevel level,
         string language = "English",
         bool isActive = true)
     {
-        var course = new Course(title, level, language, isActive);
-        course.AssignInstructor(instructorId);
+        var course = new Course(ownerId, title, level, language, isActive);
         return course;
     }
 

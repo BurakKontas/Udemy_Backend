@@ -50,7 +50,7 @@ public class CommentService(ICommentRepository commentRepository) : ICommentServ
         return added;
     }
 
-    public async Task<Guid> UpdateAsync(Guid commentId, Dictionary<string, object> updates)
+    public async Task<Guid> UpdateAsync(Guid userId, Guid commentId, Dictionary<string, object> updates)
     {
         var comment = await _commentRepository.GetByIdAsync(commentId);
 
@@ -59,18 +59,28 @@ public class CommentService(ICommentRepository commentRepository) : ICommentServ
             throw new KeyNotFoundException("Comment not found");
         }
 
+        if(comment.UserId != userId)
+        {
+            throw new UnauthorizedAccessException("You are not allowed to update this comment");
+        }
+        
         var updated = await _commentRepository.UpdateAsync(comment, updates);
 
         return updated.Id;
     }
 
-    public async Task<Guid> DeleteAsync(Guid id)
+    public async Task<Guid> DeleteAsync(Guid userId, Guid id)
     {
         var comment = await _commentRepository.GetByIdAsync(id);
 
         if(comment == null)
         {
             throw new Exception("Comment not found");
+        }
+
+        if(comment.UserId != userId)
+        {
+            throw new UnauthorizedAccessException("You are not allowed to delete this comment");
         }
 
         await _commentRepository.DeleteAsync(comment);

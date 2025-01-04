@@ -8,8 +8,10 @@ namespace Udemy.Course.Domain.Interfaces.Repository;
 public interface ILessonCategoryRepository : IBaseRepository<LessonCategory>
 {
     Task<IEnumerable<LessonCategory>> GetAll(Guid courseId, EndpointFilter filter);
-    Task<LessonCategory?> GetByIdAsync(Guid id, Guid courseId);
+    Task<LessonCategory?> GetByIdAsync(Guid userId, Guid categoryId);
     Task<IEnumerable<LessonCategory>> GetManyAsync(Expression<Func<LessonCategory, bool>> predicate, Guid courseId, EndpointFilter filter);
-    Task<Guid> AddAsync(LessonCategory entity, Guid courseId);  
+    Task<Guid> AddAsync(Guid userId, LessonCategory entity, Guid courseId);
+    Task<LessonCategory> UpdateAsync(Guid userId, LessonCategory entity, Dictionary<string, object> updatedValues);
+    Task<Guid> DeleteAsync(Guid userId, LessonCategory entity);
     Task<IEnumerable<LessonCategory>> GetByCourseIdAsync(Guid courseId, EndpointFilter filter);
 }

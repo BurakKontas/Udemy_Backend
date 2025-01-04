@@ -38,7 +38,7 @@ public class QuestionService(IQuestionRepository questionRepository) : IQuestion
         return await _questionRepository.AddAsync(question);
     }
 
-    public async Task<Guid> UpdateAsync(Guid questionId, Dictionary<string, object> updates)
+    public async Task<Guid> UpdateAsync(Guid userId, Guid questionId, Dictionary<string, object> updates)
     {
         var question = await _questionRepository.GetByIdAsync(questionId);
 
@@ -47,17 +47,27 @@ public class QuestionService(IQuestionRepository questionRepository) : IQuestion
             throw new KeyNotFoundException();
         }
 
+        if(question.UserId != userId)
+        {
+            throw new UnauthorizedAccessException();
+        }
+
         var updated = await _questionRepository.UpdateAsync(question, updates);
         return updated.Id;
     }
 
-    public async Task<Guid> DeleteAsync(Guid id)
+    public async Task<Guid> DeleteAsync(Guid userId, Guid id)
     {
         var question = await _questionRepository.GetByIdAsync(id);
 
         if (question is null)
         {
             throw new KeyNotFoundException();
+        }
+
+        if(question.UserId != userId)
+        {
+            throw new UnauthorizedAccessException();
         }
 
         await _questionRepository.DeleteAsync(question);

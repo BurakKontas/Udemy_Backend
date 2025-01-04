@@ -39,9 +39,9 @@ public class QuestionController(IQuestionService questionService) : ControllerBa
     // make question
     [Authorize]
     [HttpPost]
-    public async Task<IResult> MakeQuestion([FromBody] CreateQuestionRequest request)
+    public async Task<IResult> MakeQuestion([FromBody] CreateQuestionRequest request, UserId userId)
     {
-        var result = await _questionService.AddAsync(request.UserId, request.LessonId, request.Value);
+        var result = await _questionService.AddAsync(userId.Value, request.LessonId, request.Value);
 
         return TypedResults.Redirect($"get/{result}");
     }
@@ -49,9 +49,9 @@ public class QuestionController(IQuestionService questionService) : ControllerBa
     // edit question
     [Authorize]
     [HttpPost("/update/{questionId:guid}")]
-    public async Task<IResult> EditQuestion(Guid questionId, [FromBody] UpdateRequest request)
+    public async Task<IResult> EditQuestion(Guid questionId, [FromBody] UpdateRequest request, UserId userId)
     {
-        var result = await _questionService.UpdateAsync(questionId, request.Updates);
+        var result = await _questionService.UpdateAsync(userId.Value, questionId, request.Updates);
 
         return TypedResults.Redirect($"get/{result}");
     }
@@ -59,13 +59,13 @@ public class QuestionController(IQuestionService questionService) : ControllerBa
     // delete question
     [Authorize]
     [HttpDelete("/delete/{questionId:guid}")]
-    public async Task<IResult> DeleteQuestion(Guid questionId)
+    public async Task<IResult> DeleteQuestion(Guid questionId, UserId userId)
     {
-        await _questionService.DeleteAsync(questionId);
+        await _questionService.DeleteAsync(userId.Value, questionId);
 
         return TypedResults.NoContent();
     }
 
 }
 
-public record CreateQuestionRequest(Guid UserId, Guid LessonId, string Value);
+public record CreateQuestionRequest(Guid LessonId, string Value);

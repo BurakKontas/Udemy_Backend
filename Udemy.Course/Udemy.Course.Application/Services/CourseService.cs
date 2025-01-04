@@ -32,11 +32,14 @@ public class CourseService(IValidator<AppCourse> validator, ICourseRepository co
         return course.Id;
     }
 
-    public async Task<Guid> UpdateAsync(Guid courseId, Dictionary<string, object> updates)
+    public async Task<Guid> UpdateAsync(Guid userId, Guid courseId, Dictionary<string, object> updates)
     {
         var course = await _courseRepository.GetByIdAsync(courseId);
         if (course == null)
             throw new NotFoundException($"Course with id {courseId} not found");
+
+        if (!course.InstructorIds.Contains(userId))
+            throw new UnauthorizedAccessException("You are not authorized to update this course");
 
         var originalCourse = course.Clone() as AppCourse;
 
@@ -56,11 +59,14 @@ public class CourseService(IValidator<AppCourse> validator, ICourseRepository co
         }
     }
 
-    public async Task<Guid> DeleteAsync(Guid courseId)
+    public async Task<Guid> DeleteAsync(Guid userId, Guid courseId)
     {
         var course = await _courseRepository.GetByIdAsync(courseId);
         if (course == null)
             throw new NotFoundException($"Course with id {courseId} not found");
+
+        if (course.OwnerId != userId)
+            throw new UnauthorizedAccessException("You are not authorized to delete this course");
 
         await _courseRepository.DeleteAsync(course);
 
@@ -99,11 +105,14 @@ public class CourseService(IValidator<AppCourse> validator, ICourseRepository co
         return courseId;
     }
 
-    public async Task<Guid> UpdateStatusAsync(Guid courseId, bool isActive)
+    public async Task<Guid> UpdateStatusAsync(Guid userId, Guid courseId, bool isActive)
     {
         var course = await _courseRepository.GetByIdAsync(courseId);
         if (course == null)
             throw new NotFoundException($"Course with id {courseId} not found");
+
+        if (!course.InstructorIds.Contains(userId))
+            throw new UnauthorizedAccessException("You are not authorized to update this course");
 
         course.UpdateStatus(isActive);
         await _courseRepository.UpdateAsync(course);

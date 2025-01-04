@@ -10,5 +10,7 @@ public interface ILessonRepository : IBaseRepository<Lesson>
     Task<IEnumerable<Lesson>> GetAll(Guid categoryId, EndpointFilter filter);
     Task<Lesson?> GetByIdAsync(Guid id, Guid categoryId);
     Task<IEnumerable<Lesson>> GetManyAsync(Expression<Func<Lesson, bool>> predicate, Guid categoryId, EndpointFilter filter);
-    Task<Guid> AddAsync(Lesson entity, Guid categoryId);
+    Task<Guid> AddAsync(Guid userId, Lesson entity, Guid categoryId);
+    Task<Guid> UpdateAsync(Guid userId, Lesson entity, Dictionary<string, object> updates);
+    Task<Guid> DeleteAsync(Guid userId, Guid id);
 }

@@ -16,20 +16,20 @@ public class FavoriteController(IFavoriteService favoriteService) : ControllerBa
 
     // get favorite courses
     [Authorize]
-    [HttpGet("/get-all/{userId:guid}")]
-    public async Task<IResult> GetAllByUser(Guid userId, EndpointFilter filter)
+    [HttpGet("/get-all")]
+    public async Task<IResult> GetAllByUser(UserId userId, EndpointFilter filter)
     {
-        var favorites = await _favoriteService.GetFavoritesByUserIdAsync(userId, filter);
+        var favorites = await _favoriteService.GetFavoritesByUserIdAsync(userId.Value, filter);
 
         return TypedResults.Ok(favorites);
     }
 
     // add favorite course
     [Authorize]
-    [HttpPost("/add/{courseId:guid}/user/{userId:guid}")]
-    public async Task<IResult> AddFavorite(Guid courseId, Guid userId)
+    [HttpPost("/add/{courseId:guid}")]
+    public async Task<IResult> AddFavorite(Guid courseId, UserId userId)
     {
-        var favoriteId = await _favoriteService.AddAsync(userId, courseId);
+        var favoriteId = await _favoriteService.AddAsync(userId.Value, courseId);
 
         return TypedResults.Redirect($"get/{favoriteId}");
     }
@@ -37,14 +37,14 @@ public class FavoriteController(IFavoriteService favoriteService) : ControllerBa
     // remove favorite course
     [Authorize]
     [HttpDelete("/delete/{favoriteId:guid}")]
-    public async Task<IResult> RemoveFavorite(Guid favoriteId)
+    public async Task<IResult> RemoveFavorite(Guid favoriteId, UserId userId)
     {
-        await _favoriteService.DeleteAsync(favoriteId);
+        await _favoriteService.DeleteAsync(userId.Value, favoriteId);
 
         return TypedResults.NoContent();
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("/delete/{courseId:guid}/user/{userId:guid}")]
     public async Task<IResult> RemoveFavorite(Guid courseId, Guid userId)
     {
@@ -56,8 +56,11 @@ public class FavoriteController(IFavoriteService favoriteService) : ControllerBa
     //is favorite
     [Authorize]
     [HttpGet("/is-favorite/{courseId:guid}/user/{userId:guid}")]
-    public async Task<IResult> IsFavorite(Guid courseId, Guid userId)
+    public async Task<IResult> IsFavorite(Guid courseId, Guid userId, UserId consumerId)
     {
+        if (userId != consumerId.Value)
+            return TypedResults.Unauthorized();
+
         var isFavorite = await _favoriteService.IsFavorite(userId, courseId);
 
         return TypedResults.Ok(isFavorite);
@@ -66,9 +69,9 @@ public class FavoriteController(IFavoriteService favoriteService) : ControllerBa
     // get favorite details
     [Authorize]
     [HttpGet("/get/{favoriteId:guid}")]
-    public async Task<IResult> GetFavorite(Guid favoriteId)
+    public async Task<IResult> GetFavorite(Guid favoriteId, UserId userId)
     {
-        var favorite = await _favoriteService.GetByIdAsync(favoriteId);
+        var favorite = await _favoriteService.GetByIdAsync(userId.Value, favoriteId);
 
         return TypedResults.Ok(favorite);
     }

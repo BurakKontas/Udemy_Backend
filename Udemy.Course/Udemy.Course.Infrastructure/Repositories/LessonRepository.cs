@@ -55,7 +55,7 @@ public class LessonRepository(ApplicationDbContext context) : BaseRepository<Les
         return await query.ToListAsync();
     }
 
-    public async Task<Guid> AddAsync(Lesson entity, Guid categoryId)
+    public async Task<Guid> AddAsync(Guid userId, Lesson entity, Guid categoryId)
     {
         entity.LessonCategoryId = categoryId;
 
@@ -71,6 +71,18 @@ public class LessonRepository(ApplicationDbContext context) : BaseRepository<Les
 
         if(courseDetails is null)
             throw new ArgumentNullException($"Course not found");
+
+        var instructors = await _context.Courses
+            .AsNoTracking()
+            .Where(x => x.Id == courseId)
+            .Select(x => x.InstructorIds)
+            .FirstOrDefaultAsync();
+
+        if (instructors is null)
+            throw new ArgumentNullException($"Instructors not found");
+
+        if (!instructors.Contains(userId))
+            throw new UnauthorizedAccessException($"User is not authorized to add lesson to this course");
         
         entity.CourseId = courseDetails.CourseId;
 
@@ -81,6 +93,49 @@ public class LessonRepository(ApplicationDbContext context) : BaseRepository<Les
         await _context.SaveChangesAsync();
 
         return entity.Id;
+    }
+
+    public async Task<Guid> UpdateAsync(Guid userId, Lesson entity, Dictionary<string, object> updates)
+    {
+        var instructors = await _context.Courses
+            .AsNoTracking()
+            .Where(x => x.Id == entity.CourseId)
+            .Select(x => x.InstructorIds)
+            .FirstOrDefaultAsync();
+
+        if (instructors is null)
+            throw new ArgumentNullException($"Instructors not found");
+
+        if (!instructors.Contains(userId))
+            throw new UnauthorizedAccessException($"User is not authorized to update lesson to this course");
+
+        await base.UpdateAsync(entity, updates);
+
+        return entity.Id;
+    }
+
+    public async Task<Guid> DeleteAsync(Guid userId, Guid id)
+    {
+        var instructors = await _context.Courses
+            .AsNoTracking()
+            .Where(x => x.Lessons.Any(x => x.Id == id))
+            .Select(x => x.InstructorIds)
+            .FirstOrDefaultAsync();
+
+        if (instructors is null)
+            throw new ArgumentNullException($"Instructors not found");
+
+        if (!instructors.Contains(userId))
+            throw new UnauthorizedAccessException($"User is not authorized to delete lesson to this course");
+
+        var lesson = await GetByIdAsync(id);
+
+        if (lesson is null)
+            throw new ArgumentNullException($"Lesson not found");
+
+        await base.DeleteAsync(lesson);
+
+        return id;
     }
 
     public override async Task<Guid> DeleteAsync(Lesson lesson)

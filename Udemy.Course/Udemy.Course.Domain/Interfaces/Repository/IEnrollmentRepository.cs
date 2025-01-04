@@ -7,10 +7,10 @@ namespace Udemy.Course.Domain.Interfaces.Repository;
 
 public interface IEnrollmentRepository : IBaseRepository<Enrollment>
 {
-    Task<IEnumerable<Enrollment>> GetAll(Guid courseId, EndpointFilter filter);
-    Task<Enrollment?> GetByIdAsync(Guid id, Guid courseId);
+    Task<IEnumerable<Enrollment>> GetAllAsync(Guid userId, Guid courseId, EndpointFilter filter);
+    Task<Enrollment?> GetByIdAsync(Guid consumerId, Guid enrollmentId);
     Task<IEnumerable<Enrollment>> GetManyAsync(Expression<Func<Enrollment, bool>> predicate, Guid courseId, EndpointFilter filter);
     Task<Guid> AddAsync(Enrollment entity, Guid courseId);
-    Task<IEnumerable<Enrollment>> GetAllByCourseId(Guid courseId, EndpointFilter filter);
-    Task<IEnumerable<Enrollment>> GetAllByUserId(Guid userId, EndpointFilter filter);
+    Task<IEnumerable<Enrollment>> GetAllByCourseIdAsync(Guid userId, Guid courseId, EndpointFilter filter);
+    Task<IEnumerable<Enrollment>> GetAllByUserIdAsync(Guid userId, EndpointFilter filter);
 }

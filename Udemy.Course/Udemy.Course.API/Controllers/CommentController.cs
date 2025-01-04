@@ -25,9 +25,9 @@ public class CommentController(ICommentService commentService) : ControllerBase
     // make comment
     [Authorize]
     [HttpPost("/{courseId:guid}")]
-    public async Task<IResult> MakeComment([FromBody] AddCommentRequest request, Guid courseId)
+    public async Task<IResult> MakeComment([FromBody] AddCommentRequest request, Guid courseId, UserId userId)
     {
-        var commentId = await _commentService.AddAsync(request.UserId, courseId, request.Value, request.Rate);
+        var commentId = await _commentService.AddAsync(userId.Value, courseId, request.Value, request.Rate);
 
         return TypedResults.Redirect($"get/{commentId}");
     }
@@ -35,9 +35,9 @@ public class CommentController(ICommentService commentService) : ControllerBase
     // edit comments (to edit rate updates.rate.value)
     [Authorize]
     [HttpPost("/update/{commentId:guid}")]
-    public async Task<IResult> EditComment(Guid commentId, [FromBody] UpdateRequest request)
+    public async Task<IResult> EditComment(Guid commentId, [FromBody] UpdateRequest request, UserId userId)
     {
-        var result = await _commentService.UpdateAsync(commentId, request.Updates);
+        var result = await _commentService.UpdateAsync(userId.Value, commentId, request.Updates);
 
         return TypedResults.Redirect($"get/{result}");
     }
@@ -45,12 +45,12 @@ public class CommentController(ICommentService commentService) : ControllerBase
     // delete comment
     [Authorize]
     [HttpDelete("/delete/{commentId:guid}")]
-    public async Task<IResult> DeleteComment(Guid commentId)
+    public async Task<IResult> DeleteComment(Guid commentId, UserId userId)
     {
-        await _commentService.DeleteAsync(commentId);
+        await _commentService.DeleteAsync(userId.Value, commentId);
 
         return TypedResults.NoContent();
     }
 }
 
-public record AddCommentRequest(Guid UserId, string Value, int Rate);
+public record AddCommentRequest(string Value, int Rate);

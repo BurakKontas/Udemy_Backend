@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Udemy.Common.ModelBinder;
@@ -16,9 +17,9 @@ public class AnswerController(IAnswerService answerService) : ControllerBase
     // create answer
     [Authorize]
     [HttpPost("/create/{questionId:guid}")]
-    public async Task<IResult> CreateAnswer([FromBody] CreateAnswerRequest request, Guid questionId)
+    public async Task<IResult> CreateAnswer([FromBody] CreateAnswerRequest request, Guid questionId, UserId userId)
     {
-        var result = await _answerService.AddAsync(request.QuestionId, request.UserId, request.Content);
+        var result = await _answerService.AddAsync(request.QuestionId, userId.Value, request.Content);
         return TypedResults.Redirect($"get/{result}");
     }
 
@@ -34,9 +35,9 @@ public class AnswerController(IAnswerService answerService) : ControllerBase
     // update answer
     [Authorize]
     [HttpPost("/update/{answerId:guid}")]
-    public async Task<IResult> UpdateAnswer(Guid answerId, [FromBody] UpdateRequest request)
+    public async Task<IResult> UpdateAnswer(Guid answerId, [FromBody] UpdateRequest request, UserId userId)
     {
-        var result = await _answerService.UpdateAsync(answerId, request.Updates);
+        var result = await _answerService.UpdateAsync(userId.Value, answerId, request.Updates);
 
         return TypedResults.Redirect($"get/{result}");
     }
@@ -44,9 +45,9 @@ public class AnswerController(IAnswerService answerService) : ControllerBase
     // delete answer
     [Authorize]
     [HttpDelete("/delete/{answerId:guid}")]
-    public async Task<IResult> DeleteAnswer(Guid answerId)
+    public async Task<IResult> DeleteAnswer(Guid answerId, UserId userId)
     {
-        await _answerService.DeleteAsync(answerId);
+        await _answerService.DeleteAsync(userId.Value, answerId);
 
         return TypedResults.NoContent();
     }
@@ -79,4 +80,4 @@ public class AnswerController(IAnswerService answerService) : ControllerBase
     }
 }
 
-public record CreateAnswerRequest(Guid QuestionId, Guid UserId, string Content);
+public record CreateAnswerRequest(Guid QuestionId, string Content);

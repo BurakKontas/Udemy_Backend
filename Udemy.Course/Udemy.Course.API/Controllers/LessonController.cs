@@ -17,9 +17,9 @@ public class LessonController(ILessonCategoryService lessonCategoryService, ILes
     // create lesson category
     [Authorize]
     [HttpPost("category/create")]
-    public async Task<IResult> CreateLessonCategory([FromBody] CreateLessonCategoryRequest request)
+    public async Task<IResult> CreateLessonCategory([FromBody] CreateLessonCategoryRequest request, UserId userId)
     {
-        var result = await _lessonCategoryService.AddAsync(request.CourseId, request.Name, request.Description);
+        var result = await _lessonCategoryService.AddAsync(userId.Value, request.CourseId, request.Name, request.Description);
         return TypedResults.Redirect($"category/{result}");
     }
 
@@ -41,27 +41,27 @@ public class LessonController(ILessonCategoryService lessonCategoryService, ILes
     // update lesson category
     [Authorize]
     [HttpPost("category/update/{categoryId:guid}")]
-    public async Task<IResult> UpdateLessonCategory([FromBody] UpdateRequest request, Guid categoryId)
+    public async Task<IResult> UpdateLessonCategory([FromBody] UpdateRequest request, Guid categoryId, UserId userId)
     {
-        var result = await _lessonCategoryService.UpdateAsync(categoryId, request.Updates);
+        var result = await _lessonCategoryService.UpdateAsync(userId.Value, categoryId, request.Updates);
         return TypedResults.Redirect($"category/{result}");
     }
 
     // delete lesson category
     [Authorize]
     [HttpDelete("category/delete/{categoryId:guid}")]
-    public async Task<IResult> DeleteLessonCategory(Guid categoryId)
+    public async Task<IResult> DeleteLessonCategory(Guid categoryId, UserId userId)
     {
-        await _lessonCategoryService.DeleteAsync(categoryId);
+        await _lessonCategoryService.DeleteAsync(userId.Value, categoryId);
         return TypedResults.NoContent();
     }
 
     // create lesson
     [Authorize]
     [HttpPost("create")]
-    public async Task<IResult> CreateLesson([FromBody] CreateLessonRequest request)
+    public async Task<IResult> CreateLesson([FromBody] CreateLessonRequest request, UserId userId)
     {
-        var result = await _lessonService.AddAsync(request.CategoryId, request.Title, request.VideoUrl, request.Duration, request.Description);
+        var result = await _lessonService.AddAsync(userId.Value, request.CategoryId, request.Title, request.VideoUrl, request.Duration, request.Description);
         return TypedResults.Redirect($"get/{result}");
     }
 
@@ -76,18 +76,18 @@ public class LessonController(ILessonCategoryService lessonCategoryService, ILes
     // update lesson
     [Authorize]
     [HttpPost("update/{lessonId:guid}")]
-    public async Task<IResult> UpdateLesson([FromBody] UpdateRequest request, Guid lessonId)
+    public async Task<IResult> UpdateLesson([FromBody] UpdateRequest request, Guid lessonId, UserId userId)
     {
-        var result = await _lessonService.UpdateAsync(lessonId, request.Updates);
+        var result = await _lessonService.UpdateAsync(userId.Value, lessonId, request.Updates);
         return TypedResults.Redirect($"get/{result}");
     }
 
     // delete lesson
     [Authorize]
     [HttpDelete("delete/{lessonId:guid}")]
-    public async Task<IResult> DeleteLesson(Guid lessonId)
+    public async Task<IResult> DeleteLesson(Guid lessonId, UserId userId)
     {
-        await _lessonService.DeleteAsync(lessonId);
+        await _lessonService.DeleteAsync(userId.Value, lessonId);
         return TypedResults.NoContent();
     }
 

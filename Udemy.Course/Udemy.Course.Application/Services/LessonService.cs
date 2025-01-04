@@ -15,7 +15,7 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
         return await _lessonRepository.GetAll(categoryId, filter);
     }
 
-    public async Task<Guid> AddAsync(Guid categoryId, string title, string videoUrl, TimeSpan duration, string? description)
+    public async Task<Guid> AddAsync(Guid userId, Guid categoryId, string title, string videoUrl, TimeSpan duration, string? description)
     {
         var lesson = new Lesson
         {
@@ -26,7 +26,7 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
             Description = description ?? string.Empty
         };
 
-        return await _lessonRepository.AddAsync(lesson, categoryId);
+        return await _lessonRepository.AddAsync(userId, lesson, categoryId);
     }
 
     public async Task<Lesson?> GetByIdAsync(Guid id, Guid categoryId)
@@ -39,7 +39,7 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
         return await _lessonRepository.GetManyAsync(predicate, categoryId, filter);
     }
 
-    public async Task<Guid> UpdateAsync(Guid id, Dictionary<string, object> updates)
+    public async Task<Guid> UpdateAsync(Guid userId, Guid id, Dictionary<string, object> updates)
     {
         var lesson = await _lessonRepository.GetByIdAsync(id);
 
@@ -48,12 +48,12 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
             throw new Exception("Lesson not found");
         }
 
-        await _lessonRepository.UpdateAsync(lesson, updates);
+        await _lessonRepository.UpdateAsync(userId, lesson, updates);
 
         return id;
     }
 
-    public async Task<Guid> DeleteAsync(Guid id)
+    public async Task<Guid> DeleteAsync(Guid userId, Guid id)
     {
         var lesson = await _lessonRepository.GetByIdAsync(id);
 
@@ -62,7 +62,7 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
             throw new Exception("Lesson not found");
         }
 
-        await _lessonRepository.DeleteAsync(lesson);
+        await _lessonRepository.DeleteAsync(userId, lesson);
 
         return id;
     }
