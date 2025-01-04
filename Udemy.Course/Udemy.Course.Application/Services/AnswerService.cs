@@ -26,13 +26,27 @@ public class AnswerService(IAnswerRepository answerRepository) : IAnswerService
         return answer;
     }
 
-    public async Task<Guid> AddAsync(Answer answer)
+    public async Task<Guid> AddAsync(Guid userId, Guid questionId, string value)
     {
+        var answer = new Answer
+        {
+            UserId = userId,
+            QuestionId = questionId,
+            Value = value
+        };
+
         return await _answerRepository.AddAsync(answer);
     }
 
-    public async Task<Guid> UpdateAsync(Answer answer, Dictionary<string, object> updates)
+    public async Task<Guid> UpdateAsync(Guid answerId, Dictionary<string, object> updates)
     {
+        var answer = await _answerRepository.GetByIdAsync(answerId);
+
+        if (answer is null)
+        {
+            throw new KeyNotFoundException();
+        }
+
         var updated = await _answerRepository.UpdateAsync(answer, updates);
         return updated.Id;
     }
