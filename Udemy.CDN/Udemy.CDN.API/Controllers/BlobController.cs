@@ -27,52 +27,52 @@ public class BlobController(IMinioService minioService) : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost("upload")]
-    public async Task<IResult> UploadBlob([FromBody] UploadBlobRequest request, [FromQuery] string bucketName = "udemy.default")
+    public async Task<IResult> UploadBlob([FromBody] UploadBlobRequest request, [FromQuery] string bucket = "udemy.default")
     {
         var randomId = Guid.NewGuid();
         var blobId = $"{request.Name}-{randomId}";
-        var result = await _minioService.UploadFileAsync(bucketName, request.Data, blobId, request.ContentType);
+        var result = await _minioService.UploadFileAsync(bucket, request.Data, blobId, request.ContentType);
         return TypedResults.Redirect($"{blobId}");
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost("make")]
-    public async Task<IResult> MakeBucket([FromQuery] string bucketName)
+    public async Task<IResult> MakeBucket([FromQuery] string bucket)
     {
-        var result = await _minioService.MakeBucketAsync(bucketName);
+        var result = await _minioService.MakeBucketAsync(bucket);
         return TypedResults.Created();
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete("delete/{bucketName}")]
-    public async Task<IResult> DeleteBucket(string bucketName)
+    [HttpDelete("delete/{bucket}")]
+    public async Task<IResult> DeleteBucket(string bucket)
     {
-        await _minioService.DeleteBucketAsync(bucketName);
+        await _minioService.DeleteBucketAsync(bucket);
         return TypedResults.NoContent();
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{blobId}")]
-    public async Task<IResult> DeleteBlob(string blobId, [FromQuery] string bucketName = "udemy.default")
+    public async Task<IResult> DeleteBlob(string blobId, [FromQuery] string bucket = "udemy.default")
     {
-        await _minioService.DeleteFileAsync(bucketName, blobId);
+        await _minioService.DeleteFileAsync(bucket, blobId);
         return TypedResults.NoContent();
     }
 
     [Authorize(Roles = "Admin")]
     [HttpGet("list")]
-    public async Task<IResult> ListBlobs(EndpointFilter filter, [FromQuery] string bucketName = "udemy.default")
+    public async Task<IResult> ListBlobs(EndpointFilter filter, [FromQuery] string bucket = "udemy.default")
     {
-        var result = await _minioService.ListObjectsAsync(bucketName, filter);
+        var result = await _minioService.ListObjectsAsync(bucket, filter);
 
         return TypedResults.Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpGet("search/{bucketName}")]
-    public async Task<IResult> ListBlobs(string bucketName, EndpointFilter filter, [FromQuery] string prefix = "")
+    [HttpGet("search/{bucket}")]
+    public async Task<IResult> ListBlobs(string bucket, EndpointFilter filter, [FromQuery] string prefix = "")
     {
-        var result = await _minioService.ListObjectsByPrefixAsync(bucketName, prefix, filter);
+        var result = await _minioService.ListObjectsByPrefixAsync(bucket, prefix, filter);
 
         return TypedResults.Ok(result);
     }
