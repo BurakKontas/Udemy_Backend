@@ -21,7 +21,7 @@ public class LikeService(ILikeRepository likeRepository) : ILikeService
 
     public async Task<Guid> AddAsync(Guid id, Guid userId)
     {
-        Like like = new Like { QuestionId = id, UserId = userId };
+        var like = new Like { QuestionId = id, UserId = userId };
 
         await _likeRepository.AddAsync(like);
         return like.Id;
@@ -77,5 +77,10 @@ public class LikeService(ILikeRepository likeRepository) : ILikeService
 
         await _likeRepository.DeleteAsync(like);
         return like.Id;
+    }
+
+    public async Task<int> GetLikesCount(Guid questionId)
+    {
+        return await _likeRepository.GetLikesCountByQuestionIdAsync(questionId);
     }
 }

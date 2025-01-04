@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Udemy.Common.ModelBinder;
 using Udemy.Course.Domain.Entities;
@@ -54,6 +55,15 @@ public class LikeController(ILikeService likeService) : ControllerBase
     public async Task<IResult> GetLikesByQuestion(Guid questionId, EndpointFilter filter)
     {
         var result = await _likeService.GetLikesByQuestionIdAsync(questionId, filter);
+
+        return TypedResults.Ok(result);
+    }
+
+    // get like count
+    [HttpGet("/count/{questionId:guid}")]
+    public async Task<IResult> GetLikeCount(Guid questionId)
+    {
+        var result = await _likeService.GetLikesCount(questionId);
 
         return TypedResults.Ok(result);
     }

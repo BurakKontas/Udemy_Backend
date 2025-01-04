@@ -13,4 +13,5 @@ public interface ILikeRepository : IBaseRepository<Like>
     Task<bool> IsLiked(Guid userId, Guid questionId);
     Task<Like> GetLikeByIdAsync(Guid userId, Guid likeId);
     Task<Like> GetLikeByUserIdAsync(Guid userId, Guid questionId);
+    Task<int> GetLikesCountByQuestionIdAsync(Guid questionId);
 }

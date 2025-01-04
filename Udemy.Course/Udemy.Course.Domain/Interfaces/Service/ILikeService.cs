@@ -15,4 +15,5 @@ public interface ILikeService
     Task<Like> GetByIdAsync(Guid id);
     Task<Guid> UpdateAsync(Like like, Dictionary<string, object> updates);
     Task<Guid> DeleteAsync(Guid id);
+    Task<int> GetLikesCount(Guid questionId);
 }

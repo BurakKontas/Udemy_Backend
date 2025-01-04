@@ -88,4 +88,13 @@ public class LikeRepository(ApplicationDbContext context) : BaseRepository<Like>
 
         return like ?? throw new KeyNotFoundException();
     }
+
+    public async Task<int> GetLikesCountByQuestionIdAsync(Guid questionId)
+    {
+        var count = await _context.Likes
+            .AsNoTracking()
+            .CountAsync(x => x.QuestionId == questionId);
+
+        return count;
+    }
 }
