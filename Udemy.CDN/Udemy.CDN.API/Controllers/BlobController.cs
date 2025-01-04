@@ -76,6 +76,26 @@ public class BlobController(IMinioService minioService) : ControllerBase
 
         return TypedResults.Ok(result);
     }
+
+    [Authorize]
+    [HttpGet("avatar")]
+    public async Task<IResult> GetAvatar([FromBody] UploadBlobRequest request, UserId userId)
+    {
+        var name = $"{userId}-avatar";
+        var result = await _minioService.UploadFileAsync("udemy.avatars", request.Data, name, request.ContentType);
+        
+        return TypedResults.Redirect($"{name}");
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("avatar/{userId:guid}")]
+    public async Task<IResult> GetAvatar([FromBody] UploadBlobRequest request, Guid userId)
+    {
+        var name = $"{userId}-avatar";
+        var result = await _minioService.UploadFileAsync("udemy.avatars", request.Data, name, request.ContentType);
+
+        return TypedResults.Redirect($"{name}");
+    }
 }
 
 public record UploadBlobRequest(string Name, string ContentType, byte[] Data);
