@@ -6,7 +6,8 @@
       "serviceActions": {
         "udemy.auth.api": "StartDebugging",
         "udemy.apigateway.api": "StartDebugging",
-        "udemy.course.api": "StartDebugging"
+        "udemy.course.api": "StartDebugging",
+        "udemy.cdn.api": "StartDebugging"
       }
     }
   }

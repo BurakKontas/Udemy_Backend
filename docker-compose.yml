@@ -67,6 +67,22 @@ services:
     networks:
       - udemy_network
 
+  udemy.cdn.api:
+    image: ${DOCKER_REGISTRY-}udemycdnapi
+    environment:
+      - CONSUL_URL=http://consul:8500
+      - API_HOST=udemy.apigateway.api
+      - API_HTTP_PORT=8080
+      - API_HTTPS_PORT=8081
+      - API_KEY=d0107a8c-b28d-4266-86e5-5ca24a48cc3f # secret api key that should not be known to anyone
+      - SALT=123456
+    build:
+      context: .
+      dockerfile: Udemy.CDN/Udemy.CDN.API/Dockerfile
+    networks:
+      - udemy_network
+
+
   udemy.postgres:
     image: postgres:latest
     container_name: udemy_postgres
@@ -162,4 +178,5 @@ volumes:
 networks:
   udemy_network:
     driver: bridge
+
 
