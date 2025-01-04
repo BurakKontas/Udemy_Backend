@@ -88,12 +88,13 @@ This project is a Udemy-like platform built using a microservices architecture. 
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-repo/udemy-clone.git
-   cd udemy-clone
+   $ git clone https://github.com/your-repo/udemy-clone.git
+   $ cd udemy-clone
+   ```
 
 2. **Build and Run Services**:
    ```bash
-	docker-compose up --build
+	$ docker-compose up --build
 	```
 
 3. **Access the API Gateway**:
