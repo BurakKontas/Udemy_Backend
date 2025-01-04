@@ -39,21 +39,19 @@ public class AuthService : IAuthService
     {
         //check if user already exists
         var existingUser = await _userManager.FindByNameAsync(request.Email);
-        if (existingUser != null)
+        if (existingUser is { EmailConfirmed: false })
         {
             await SendConfirmationEmail(existingUser, request.Email, cancellationToken);
             return IdentityResult.Success;
-        }
+        } 
+        if (existingUser != null) throw new ArgumentException($"User already exists.");
 
         var user = new User { UserName = request.Email, Email = request.Email };
 
         var result = await _userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded) return result;
-        
 
-        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var protectedId = await _userManager.GetUserIdAsync(user);
-        await _emailSender.SendConfirmationLinkAsync(user, request.Email, $"http://localhost:3000/api/auth/verify-email?token={token}&id={protectedId}");
+        await SendConfirmationEmail(user, request.Email, cancellationToken);
 
         return result;
     }
@@ -62,7 +60,7 @@ public class AuthService : IAuthService
     {
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         var protectedId = await _userManager.GetUserIdAsync(user);
-        await _emailSender.SendConfirmationLinkAsync(user, email, $"http://localhost:3000/api/auth/verify-email?token={token}&id={protectedId}");
+        await _emailSender.SendConfirmationLinkAsync(user, email, $"http://localhost:3000/api/auth/v1/verify-email?token={token}&id={protectedId}");
     }
 
     public async Task<SignInResult> LoginUserAsync(LoginRequest request, bool useCookie)
