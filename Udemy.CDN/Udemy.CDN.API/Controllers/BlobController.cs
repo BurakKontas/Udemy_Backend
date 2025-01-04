@@ -27,11 +27,11 @@ public class BlobController(IMinioService minioService) : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost("upload")]
-    public async Task<IResult> UploadBlob([FromBody] UploadBlobRequest request)
+    public async Task<IResult> UploadBlob([FromBody] UploadBlobRequest request, [FromQuery] string bucketName = "udemy.default")
     {
         var randomId = Guid.NewGuid();
         var blobId = $"{request.Name}-{randomId}";
-        var result = await _minioService.UploadFileAsync("udemy.default", request.Data, blobId, request.ContentType);
+        var result = await _minioService.UploadFileAsync(bucketName, request.Data, blobId, request.ContentType);
         return TypedResults.Redirect($"{blobId}");
     }
 
@@ -53,9 +53,9 @@ public class BlobController(IMinioService minioService) : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{blobId}")]
-    public async Task<IResult> DeleteBlob(string blobId)
+    public async Task<IResult> DeleteBlob(string blobId, [FromQuery] string bucketName = "udemy.default")
     {
-        await _minioService.DeleteFileAsync("udemy.default", blobId);
+        await _minioService.DeleteFileAsync(bucketName, blobId);
         return TypedResults.NoContent();
     }
 
