@@ -30,7 +30,7 @@ public class CommentController(ICommentService commentService) : ControllerBase
         return TypedResults.Redirect($"get/{commentId}");
     }
 
-    // edit comments
+    // edit comments (to edit rate updates.rate.value)
     [HttpPost("/update/{commentId:guid}")]
     public async Task<IResult> EditComment(Guid commentId, [FromBody] UpdateRequest request)
     {
