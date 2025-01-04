@@ -76,6 +76,9 @@ services:
       - API_HTTPS_PORT=8081
       - API_KEY=d0107a8c-b28d-4266-86e5-5ca24a48cc3f # secret api key that should not be known to anyone
       - SALT=123456
+      - MINIO_URL=http://minio:9000
+      - MINIO_ACCESS_KEY=admin
+      - MINIO_SECRET_KEY=password
     build:
       context: .
       dockerfile: Udemy.CDN/Udemy.CDN.API/Dockerfile
@@ -157,9 +160,9 @@ services:
   minio:
     image: minio/minio:latest
     container_name: minio
-    # ports:
-    #   - "9000:9000"
-    #   - "9001:9001"
+    ports:
+      # - "9000:9000"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: password
@@ -174,6 +177,7 @@ volumes:
   pgadmin_data:
   consul_data:
   elasticsearch-data:
+  minio_data:
 
 networks:
   udemy_network:

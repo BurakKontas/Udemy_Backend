@@ -1,3 +1,4 @@
+using Udemy.CDN.Infrastructure;
 using Udemy.Common.Consul;
 using Udemy.Common.ExceptionMiddlewares;
 using Udemy.Common.Extensions;
@@ -14,7 +15,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAuthMiddleware();
 builder.Services.AddApiVersioningExtension();
 
-builder.Services.AddConsul(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddExceptionMiddlewares();
 

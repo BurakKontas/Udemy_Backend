@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Udemy.Common\Udemy.Common\Udemy.Common.csproj" />
+    <ProjectReference Include="..\Udemy.CDN.Domain\Udemy.CDN.Domain.csproj" />
+    <ProjectReference Include="..\Udemy.CDN.Infrastructure\Udemy.CDN.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
