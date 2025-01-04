@@ -16,6 +16,7 @@ public class LikeController(ILikeService likeService) : ControllerBase
     private readonly ILikeService _likeService = likeService;
 
     // like question
+    [Authorize]
     [HttpPost("/{question:guid}")]
     public async Task<IResult> LikeQuestion([FromBody] LikeRequest request, Guid questionId)
     {
@@ -24,6 +25,7 @@ public class LikeController(ILikeService likeService) : ControllerBase
     }
 
     // unlike question
+    [Authorize]
     [HttpDelete("/{likeId:guid}")]
     public async Task<IResult> UnlikeQuestion(Guid likeId)
     {
@@ -33,6 +35,7 @@ public class LikeController(ILikeService likeService) : ControllerBase
     }
 
     // get like
+    [Authorize]
     [HttpGet("/{likeId:guid}")]
     public async Task<IResult> GetLike(Guid likeId)
     {
@@ -42,6 +45,7 @@ public class LikeController(ILikeService likeService) : ControllerBase
     }
 
     // get likes by user
+    [Authorize]
     [HttpGet("/user/{userId:guid}")]
     public async Task<IResult> GetLikesByUser(Guid userId, EndpointFilter filter)
     {
@@ -51,6 +55,7 @@ public class LikeController(ILikeService likeService) : ControllerBase
     }
 
     // get likes by question
+    [Authorize]
     [HttpGet("/question/{questionId:guid}")]
     public async Task<IResult> GetLikesByQuestion(Guid questionId, EndpointFilter filter)
     {

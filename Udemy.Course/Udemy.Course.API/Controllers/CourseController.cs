@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Udemy.Common.ModelBinder;
 using Udemy.Course.Contracts.Requests;
@@ -24,6 +25,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
     }
 
     // Create a course
+    [Authorize]
     [HttpPost("create")]
     public async Task<IResult> CreateCourse([FromBody] CreateCourseRequest request)
     {
@@ -39,6 +41,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
     }
 
     // Update a course
+    [Authorize]
     [HttpPost("update/{courseId}")]
     public async Task<IResult> UpdateCourse([FromBody] UpdateCourseRequest request, Guid courseId)
     {
@@ -50,6 +53,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
     }
 
     // Delete a course
+    [Authorize]
     [HttpDelete("delete/{courseId}")]
     public async Task<IResult> DeleteCourse(Guid courseId)
     {
@@ -59,6 +63,7 @@ public class CourseController(ICourseService courseService) : ControllerBase
     }
 
     // Hide a course
+    [Authorize]
     [HttpPost("update-status/{courseId}")]
     public async Task<IResult> HideCourse([FromBody] UpdateCourseStatusRequest request, Guid courseId)
     {

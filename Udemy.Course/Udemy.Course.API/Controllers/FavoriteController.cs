@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Udemy.Common.ModelBinder;
 using Udemy.Course.Domain.Interfaces.Service;
@@ -14,6 +15,7 @@ public class FavoriteController(IFavoriteService favoriteService) : ControllerBa
     private readonly IFavoriteService _favoriteService = favoriteService;
 
     // get favorite courses
+    [Authorize]
     [HttpGet("/get-all/{userId:guid}")]
     public async Task<IResult> GetAllByUser(Guid userId, EndpointFilter filter)
     {
@@ -23,6 +25,7 @@ public class FavoriteController(IFavoriteService favoriteService) : ControllerBa
     }
 
     // add favorite course
+    [Authorize]
     [HttpPost("/add/{courseId:guid}/user/{userId:guid}")]
     public async Task<IResult> AddFavorite(Guid courseId, Guid userId)
     {
@@ -32,6 +35,7 @@ public class FavoriteController(IFavoriteService favoriteService) : ControllerBa
     }
 
     // remove favorite course
+    [Authorize]
     [HttpDelete("/delete/{favoriteId:guid}")]
     public async Task<IResult> RemoveFavorite(Guid favoriteId)
     {
@@ -40,6 +44,7 @@ public class FavoriteController(IFavoriteService favoriteService) : ControllerBa
         return TypedResults.NoContent();
     }
 
+    [Authorize]
     [HttpDelete("/delete/{courseId:guid}/user/{userId:guid}")]
     public async Task<IResult> RemoveFavorite(Guid courseId, Guid userId)
     {
@@ -49,6 +54,7 @@ public class FavoriteController(IFavoriteService favoriteService) : ControllerBa
     }
 
     //is favorite
+    [Authorize]
     [HttpGet("/is-favorite/{courseId:guid}/user/{userId:guid}")]
     public async Task<IResult> IsFavorite(Guid courseId, Guid userId)
     {
@@ -58,6 +64,7 @@ public class FavoriteController(IFavoriteService favoriteService) : ControllerBa
     }
 
     // get favorite details
+    [Authorize]
     [HttpGet("/get/{favoriteId:guid}")]
     public async Task<IResult> GetFavorite(Guid favoriteId)
     {

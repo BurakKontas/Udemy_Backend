@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Udemy.Common.ModelBinder;
 using Udemy.Course.Domain.Interfaces.Service;
@@ -13,6 +14,7 @@ public class EnrollmentController(IEnrollmentService enrollmentService) : Contro
     private readonly IEnrollmentService _enrollmentService = enrollmentService;
 
     // enroll
+    [Authorize]
     [HttpPost("/enroll/{courseId:guid}")]
     public async Task<IResult> Enroll([FromBody] EnrollmentRequest request, Guid courseId)
     {
@@ -21,6 +23,7 @@ public class EnrollmentController(IEnrollmentService enrollmentService) : Contro
         return TypedResults.Redirect($"get/{enrollmentId}");
     }
     // remove enrollment
+    [Authorize]
     [HttpDelete("/delete/{enrollmentId:guid}")]
     public async Task<IResult> RemoveEnrollment(Guid enrollmentId)
     {
@@ -29,6 +32,7 @@ public class EnrollmentController(IEnrollmentService enrollmentService) : Contro
         return TypedResults.NoContent();
     }
     // get enrollment details
+    [Authorize]
     [HttpGet("/details/{enrollmentId:guid}")]
     public async Task<IResult> GetEnrollment(Guid enrollmentId)
     {
@@ -37,6 +41,7 @@ public class EnrollmentController(IEnrollmentService enrollmentService) : Contro
         return TypedResults.Ok(enrollment);
     }
     // get course enrollments
+    [Authorize]
     [HttpGet("/enrollments/{courseId:guid}")]
     public async Task<IResult> GetEnrollmentCount(Guid courseId, EndpointFilter filter)
     {
@@ -46,6 +51,7 @@ public class EnrollmentController(IEnrollmentService enrollmentService) : Contro
     }
 
     // get user enrollments
+    [Authorize]
     [HttpGet("/enrollments-by-user/{userId:guid}")]
     public async Task<IResult> GetUserEnrollments(Guid userId, EndpointFilter filter)
     {

@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Udemy.Common.ModelBinder;
 using Udemy.Course.Domain.Interfaces.Service;
@@ -22,6 +23,7 @@ public class CommentController(ICommentService commentService) : ControllerBase
     }
 
     // make comment
+    [Authorize]
     [HttpPost("/{courseId:guid}")]
     public async Task<IResult> MakeComment([FromBody] AddCommentRequest request, Guid courseId)
     {
@@ -31,6 +33,7 @@ public class CommentController(ICommentService commentService) : ControllerBase
     }
 
     // edit comments (to edit rate updates.rate.value)
+    [Authorize]
     [HttpPost("/update/{commentId:guid}")]
     public async Task<IResult> EditComment(Guid commentId, [FromBody] UpdateRequest request)
     {
@@ -40,6 +43,7 @@ public class CommentController(ICommentService commentService) : ControllerBase
     }
 
     // delete comment
+    [Authorize]
     [HttpDelete("/delete/{commentId:guid}")]
     public async Task<IResult> DeleteComment(Guid commentId)
     {

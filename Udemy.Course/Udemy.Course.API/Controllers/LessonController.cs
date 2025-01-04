@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Udemy.Common.ModelBinder;
 using Udemy.Course.Domain.Interfaces.Service;
@@ -14,6 +15,7 @@ public class LessonController(ILessonCategoryService lessonCategoryService, ILes
     private readonly ILessonService _lessonService = lessonService;
 
     // create lesson category
+    [Authorize]
     [HttpPost("category/create")]
     public async Task<IResult> CreateLessonCategory([FromBody] CreateLessonCategoryRequest request)
     {
@@ -37,6 +39,7 @@ public class LessonController(ILessonCategoryService lessonCategoryService, ILes
     }
 
     // update lesson category
+    [Authorize]
     [HttpPost("category/update/{categoryId:guid}")]
     public async Task<IResult> UpdateLessonCategory([FromBody] UpdateRequest request, Guid categoryId)
     {
@@ -45,6 +48,7 @@ public class LessonController(ILessonCategoryService lessonCategoryService, ILes
     }
 
     // delete lesson category
+    [Authorize]
     [HttpDelete("category/delete/{categoryId:guid}")]
     public async Task<IResult> DeleteLessonCategory(Guid categoryId)
     {
@@ -53,6 +57,7 @@ public class LessonController(ILessonCategoryService lessonCategoryService, ILes
     }
 
     // create lesson
+    [Authorize]
     [HttpPost("create")]
     public async Task<IResult> CreateLesson([FromBody] CreateLessonRequest request)
     {
@@ -69,6 +74,7 @@ public class LessonController(ILessonCategoryService lessonCategoryService, ILes
     }
 
     // update lesson
+    [Authorize]
     [HttpPost("update/{lessonId:guid}")]
     public async Task<IResult> UpdateLesson([FromBody] UpdateRequest request, Guid lessonId)
     {
@@ -77,6 +83,7 @@ public class LessonController(ILessonCategoryService lessonCategoryService, ILes
     }
 
     // delete lesson
+    [Authorize]
     [HttpDelete("delete/{lessonId:guid}")]
     public async Task<IResult> DeleteLesson(Guid lessonId)
     {

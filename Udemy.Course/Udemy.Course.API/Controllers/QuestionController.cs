@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Udemy.Common.ModelBinder;
 using Udemy.Course.Domain.Entities;
@@ -25,6 +26,7 @@ public class QuestionController(IQuestionService questionService) : ControllerBa
 
         return TypedResults.Ok(questionsArray);
     }
+
     // get question details
     [HttpGet("/get/{questionId:guid}")]
     public async Task<IResult> GetQuestionDetails(Guid questionId)
@@ -35,6 +37,7 @@ public class QuestionController(IQuestionService questionService) : ControllerBa
     }
 
     // make question
+    [Authorize]
     [HttpPost]
     public async Task<IResult> MakeQuestion([FromBody] CreateQuestionRequest request)
     {
@@ -44,6 +47,7 @@ public class QuestionController(IQuestionService questionService) : ControllerBa
     }
 
     // edit question
+    [Authorize]
     [HttpPost("/update/{questionId:guid}")]
     public async Task<IResult> EditQuestion(Guid questionId, [FromBody] UpdateRequest request)
     {
@@ -53,6 +57,7 @@ public class QuestionController(IQuestionService questionService) : ControllerBa
     }
 
     // delete question
+    [Authorize]
     [HttpDelete("/delete/{questionId:guid}")]
     public async Task<IResult> DeleteQuestion(Guid questionId)
     {
