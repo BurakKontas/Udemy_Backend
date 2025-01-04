@@ -1,10 +1,10 @@
-# Udemy Clone - Microservices Architecture
+﻿# Udemy Clone - Microservices Architecture
 
 Below is a proposed microservices architecture for a Udemy-like platform. Each service is designed to handle a specific functionality to ensure scalability, maintainability, and modularity.
 
 ---
 
-## 1. **Auth Service**
+## 1. **Auth Service** ✔️
 - **Purpose**: Manages user registration, authentication, and authorization.
 - **Features**:
   - User registration and login (using JWT).
@@ -14,7 +14,7 @@ Below is a proposed microservices architecture for a Udemy-like platform. Each s
 
 ---
 
-## 2. **Course Management Service**
+## 2. **Course Management Service** ✔️
 - **Purpose**: Handles creation, updating, and listing of courses.
 - **Features**:
   - Instructors can add and manage courses.
@@ -38,7 +38,7 @@ Below is a proposed microservices architecture for a Udemy-like platform. Each s
 - **Features**:
   - Integration with payment gateways (e.g., Stripe, PayPal, or Iyzico).
   - Track user purchase history.
-- **Additional**: Purchased courses are added to the user�s account.
+- **Additional**: Purchased courses are added to the user’s account.
 - **Tools and Databases**: PostgreSQL, Redis (for caching).
 
 ---
@@ -53,16 +53,7 @@ Below is a proposed microservices architecture for a Udemy-like platform. Each s
 
 ---
 
-## 6. **Review and Rating Service**
-- **Purpose**: Allows users to leave reviews and rate courses.
-- **Features**:
-  - 5-star rating system for courses.
-  - Add and display user comments.
-- **Tools and Databases**: PostgreSQL, Redis (for caching).
-
----
-
-## 7. **Statistics and Reporting Service**
+## 6. **Statistics and Reporting Service**
 - **Purpose**: Provides analytics and insights for users and courses.
 - **Features**:
   - Track top-selling courses.
@@ -72,16 +63,8 @@ Below is a proposed microservices architecture for a Udemy-like platform. Each s
 
 ---	
 
-## 8. **Category and Tag Management Service**
-- **Purpose**: Categorizes courses and enables filtering based on tags.
-- **Features**:
-  - Dynamic category addition.
-  - Tagging system for courses.
-- **Tools and Databases**: PostgreSQL, Redis (for caching).
 
----
-
-## 9. **API Gateway Service**
+## 7. **API Gateway Service**
 - **Purpose**: Provides a single entry point to all microservices.
 - **Features**:
   - Route API requests to appropriate services.
@@ -92,7 +75,7 @@ Below is a proposed microservices architecture for a Udemy-like platform. Each s
 
 ---
 
-## 10. **Playback and Streaming Service**
+## 8. **Playback and Streaming Service**
 - **Purpose**: Streams course videos with low latency.
 - **Features**:
   - Video transcoding (using FFmpeg).

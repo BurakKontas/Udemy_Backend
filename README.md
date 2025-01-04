@@ -13,9 +13,6 @@ This project is a Udemy-like platform built using a microservices architecture. 
    - RESTful APIs are exposed via controllers to provide easy access for external clients (e.g., frontend, mobile apps).
 3. **Clean Architecture**:
    - Each service is built using Clean Architecture principles to separate concerns and keep business logic independent of frameworks and external dependencies.
-4. **Domain-Driven Design (DDD)**:
-   - Focused on creating rich domain models with entities, value objects, aggregates, and domain events.
-   - The core domain logic is encapsulated in the domain layer, ensuring that the business logic is reusable and testable.
 
 ---
 
@@ -23,57 +20,35 @@ This project is a Udemy-like platform built using a microservices architecture. 
 
 ### 1. **Auth Service**
 - Manages user registration, login, and role-based access control.
-- **gRPC Endpoints**: Authentication, user profile updates.
 - **REST Controllers**: User registration, login.
 
 ### 2. **Course Management Service**
 - Handles course creation, updates, and listings.
-- **gRPC Endpoints**: Fetch course metadata.
 - **REST Controllers**: Course search, filter, and view.
 
 ### 3. **Video Management Service**
 - Manages video uploads, storage, and playback.
-- **gRPC Endpoints**: Internal video metadata retrieval.
 - **REST Controllers**: Upload videos, get playback links.
 
 ### 4. **Order and Payment Service**
 - Handles course purchases and payment processing.
-- **gRPC Endpoints**: Verify and process orders.
 - **REST Controllers**: Initiate payments, view purchase history.
 
 ### 5. **Notification Service**
 - Sends emails and real-time notifications.
-- **gRPC Endpoints**: Trigger notifications for events.
 - **REST Controllers**: Manage notification settings.
-
-### 6. **Review and Rating Service**
-- Allows users to leave reviews and rate courses.
-- **gRPC Endpoints**: Fetch and aggregate review data.
-- **REST Controllers**: Post comments, view ratings.
 
 ### 7. **Statistics and Reporting Service**
 - Provides analytics and insights.
-- **gRPC Endpoints**: Generate statistics for admins.
 - **REST Controllers**: View reports and statistics.
 
-### 8. **Category and Tag Management Service**
-- Categorizes and tags courses.
-- **gRPC Endpoints**: Fetch categories and tags.
-- **REST Controllers**: Add new categories/tags, search by tag.
-
-### 9. **API Gateway**
+### 8. **API Gateway**
 - Routes external REST requests to respective services.
 - Handles load balancing and authentication.
 
 ---
 
 ## Communication Overview
-
-### gRPC:
-- **Purpose**: Used for internal communication between services to ensure low-latency and high-performance messaging.
-- **Protocol**: Uses HTTP/2 and Protocol Buffers for serialization.
-- **Example**: 
-  - Video Management Service communicates with the Course Management Service to fetch course details via gRPC.
 
 ### REST:
 - **Purpose**: Provides a client-friendly interface for external applications such as the frontend or mobile apps.
@@ -101,7 +76,7 @@ This project is a Udemy-like platform built using a microservices architecture. 
 
 ## Technologies Used
 - **Backend**: ASP.NET Core (.NET 8)
-- **Architecture**: Clean Architecture, Domain-Driven Design
+- **Architecture**: Clean Architecture
 - **Communication**: gRPC (for internal), REST (for external)
 - **Database**: PostgreSQL, MongoDB (for specific use cases), Redis (for caching), Elasticsearch (for search), InfluxDB (for metrics), ClickHouse (for analytics), RabbitMQ (for messaging), Amazon S3 (for file storage), Prometheus (for monitoring), Grafana (for visualization), Kibana (for logging), Consul (for service discovery), Vault (for secrets management)
 - **Message Broker**: RabbitMQ (for async notifications)

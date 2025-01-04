@@ -19,11 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Udemy.Payment", "Udemy.Paym
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Udemy.Notification", "Udemy.Notification", "{3439B4A9-77B8-486D-B267-56F55DFFE7F3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Udemy.Rating", "Udemy.Rating", "{D7E752B2-0E0E-4959-AE57-D2D2C82C12B1}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Udemy.Reporting", "Udemy.Reporting", "{9F1C5991-BE36-4C00-B274-05A6709D546E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Udemy.Category", "Udemy.Category", "{97D5A34E-52E8-4B56-9920-0142877E3A8D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Udemy.Streaming", "Udemy.Streaming", "{1A8BC50E-F522-40A2-8109-A84D15B128C3}"
 EndProject
