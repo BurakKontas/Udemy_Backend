@@ -1,17 +1,15 @@
 # Udemy Clone - Microservices Architecture
 
-This project is a Udemy-like platform built using a microservices architecture. The communication between services is handled via **gRPC** for efficiency and speed, while **REST controllers** are exposed for external clients to interact with the system. The system is designed with **Clean Architecture** and **Domain-Driven Design (DDD)** principles to ensure scalability, modularity, and maintainability. Additionally, extensive testing has been implemented, including **unit tests** and **integration tests** using **Testcontainers**.
+This project is a Udemy-like platform built using a microservices architecture. The system is designed with **Clean Architecture** principles to ensure scalability, modularity, and maintainability. Additionally, extensive testing has been implemented, including **unit tests** and **integration tests** using **Testcontainers**.
 
 ---
 
 ## Architecture Overview
 
 ### Key Design Principles:
-1. **gRPC for Inter-Service Communication**: 
-   - All internal service-to-service communication is done using gRPC for faster and more efficient messaging.
-2. **REST for External API Endpoints**:
+1. **REST for External API Endpoints**:
    - RESTful APIs are exposed via controllers to provide easy access for external clients (e.g., frontend, mobile apps).
-3. **Clean Architecture**:
+2. **Clean Architecture**:
    - Each service is built using Clean Architecture principles to separate concerns and keep business logic independent of frameworks and external dependencies.
 
 ---
