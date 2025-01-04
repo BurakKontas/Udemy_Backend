@@ -133,6 +133,23 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     ports:
       - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - udemy_network
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    # ports:
+    #   - "9000:9000"
+    #   - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
     networks:
       - udemy_network
 

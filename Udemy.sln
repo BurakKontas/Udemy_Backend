@@ -62,7 +62,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Udemy.UI", "Udemy.UI", "{6A
 		.todo = .todo
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Udemy.Course.Contracts", "Udemy.Course\Udemy.Course.Contracts\Udemy.Course.Contracts.csproj", "{15155E66-A444-4A9F-BA41-89224681B2D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Udemy.Course.Contracts", "Udemy.Course\Udemy.Course.Contracts\Udemy.Course.Contracts.csproj", "{15155E66-A444-4A9F-BA41-89224681B2D5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Udemy.CDN", "Udemy.CDN", "{2F3CB287-18F5-42B8-A21C-A93FD9BC94D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
