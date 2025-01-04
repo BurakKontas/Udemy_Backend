@@ -55,14 +55,7 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
 
     public async Task<Guid> DeleteAsync(Guid userId, Guid id)
     {
-        var lesson = await _lessonRepository.GetByIdAsync(id);
-
-        if (lesson == null)
-        {
-            throw new Exception("Lesson not found");
-        }
-
-        await _lessonRepository.DeleteAsync(userId, lesson);
+        await _lessonRepository.DeleteAsync(userId, id);
 
         return id;
     }
@@ -80,11 +73,6 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
     public async Task<IEnumerable<Lesson>> GetManyAsync(Expression<Func<Lesson, bool>> predicate, EndpointFilter filter)
     {
         return await _lessonRepository.GetManyAsync(predicate, filter);
-    }
-
-    public async Task<Guid> AddAsync(Lesson entity, Guid categoryId)
-    {
-        return await _lessonRepository.AddAsync(entity, categoryId);
     }
 
     public async Task<IEnumerable<Lesson>> GetAllAsync(Guid categoryId, EndpointFilter filter)

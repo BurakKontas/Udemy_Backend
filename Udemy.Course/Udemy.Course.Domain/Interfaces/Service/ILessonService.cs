@@ -14,7 +14,6 @@ public interface ILessonService
     Task<IEnumerable<Lesson>> GetAllAsync(EndpointFilter filter);
     Task<Lesson?> GetByIdAsync(Guid id);
     Task<IEnumerable<Lesson>> GetManyAsync(Expression<Func<Lesson, bool>> predicate, EndpointFilter filter);
-    Task<Guid> AddAsync(Lesson entity, Guid categoryId);
     Task<IEnumerable<Lesson>> GetAllAsync(Guid categoryId, EndpointFilter filter);
     Task<IEnumerable<Lesson>> GetByCourseIdAsync(Guid courseId, EndpointFilter filter);
     Task<IEnumerable<Lesson>> GetByCategoryIdAsync(Guid categoryId, EndpointFilter filter);
