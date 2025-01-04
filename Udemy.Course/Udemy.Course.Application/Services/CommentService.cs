@@ -29,14 +29,37 @@ public class CommentService(ICommentRepository commentRepository) : ICommentServ
         return await _commentRepository.GetCommentsByUserIdAsync(userId, filter);
     }
 
-    public async Task<Guid> AddAsync(Comment entity)
+    public async Task<Guid> AddAsync(Guid userId, Guid courseId, string value, int rateValue)
     {
-        return await _commentRepository.AddAsync(entity);
+        var rate = new Rate
+        {
+            Value = rateValue,
+            UserId = userId
+        };
+
+        var comment = new Comment
+        {
+            CourseId = courseId,
+            UserId = userId,
+            Value = value,
+            Rate = rate
+        };
+
+        var added = await _commentRepository.AddAsync(comment);
+
+        return added;
     }
 
-    public async Task<Guid> UpdateAsync(Comment entity, Dictionary<string, object> updates)
+    public async Task<Guid> UpdateAsync(Guid commentId, Dictionary<string, object> updates)
     {
-        var updated = await _commentRepository.UpdateAsync(entity, updates);
+        var comment = await _commentRepository.GetByIdAsync(commentId);
+
+        if(comment == null)
+        {
+            throw new KeyNotFoundException("Comment not found");
+        }
+
+        var updated = await _commentRepository.UpdateAsync(comment, updates);
 
         return updated.Id;
     }
