@@ -9,6 +9,7 @@ public interface IMinioService
     Task<bool> UploadFileAsync(string bucketName, string filePath, string objectName, string contentType = "application/octet-stream");
     Task<bool> UploadFileAsync(string bucketName, byte[] fileData, string objectName, string contentType = "application/octet-stream");
     Task<Stream> DownloadFileAsync(string bucketName, string objectName);
+    Task<byte[]> DownloadFileAsBytesAsync(string bucketName, string objectName);
     Task<List<string>> ListBucketsAsync(EndpointFilter filter);
     Task<List<string>> ListObjectsAsync(string bucketName, EndpointFilter filter);
     Task<bool> DeleteFileAsync(string bucketName, string objectName);

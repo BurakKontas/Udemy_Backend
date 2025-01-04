@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Net;
 using Minio;
 using Minio.ApiEndpoints;
 using Minio.DataModel.Args;
@@ -7,27 +8,36 @@ using Udemy.Common.ModelBinder;
 
 namespace Udemy.CDN.Infrastructure;
 
-public class MinioService(IMinioClient minioClient) : IMinioService
+public class MinioService(IMinioClientFactory minioClientFactory) : IMinioService
 {
-    private readonly IMinioClient _minioClient = minioClient;
+    private IMinioClient MinioClient => minioClientFactory.CreateClient();
 
     public async Task<bool> BucketExistsAsync(string bucketName)
     {
         var args = new BucketExistsArgs()
             .WithBucket(bucketName);
 
-        return await _minioClient.BucketExistsAsync(args);
+        return await MinioClient.BucketExistsAsync(args);
     }
 
     public async Task<bool> MakeBucketAsync(string bucketName)
     {
+
+        var exists = await BucketExistsAsync(bucketName);
+        if (exists)
+        {
+            Console.WriteLine($"Bucket {bucketName} zaten var.");
+            return false;
+        }
+
         var args = new MakeBucketArgs()
             .WithBucket(bucketName);
 
-        await _minioClient.MakeBucketAsync(args);
-
+        await MinioClient.MakeBucketAsync(args);
+        Console.WriteLine($"Bucket {bucketName} oluşturuldu.");
         return true;
     }
+
 
     public async Task<bool> UploadFileAsync(string bucketName, string filePath, string objectName, string contentType = "application/octet-stream")
     {
@@ -37,7 +47,7 @@ public class MinioService(IMinioClient minioClient) : IMinioService
             .WithObject(objectName)
             .WithContentType(contentType);
 
-        var response = await _minioClient.PutObjectAsync(args);
+        var response = await MinioClient.PutObjectAsync(args);
 
         if((int)response.ResponseStatusCode < 200 || (int)response.ResponseStatusCode > 300)
         {
@@ -53,16 +63,14 @@ public class MinioService(IMinioClient minioClient) : IMinioService
             .WithBucket(bucketName)
             .WithObject(objectName)
             .WithContentType(contentType)
-            .WithStreamData(new MemoryStream(fileData));
+            .WithStreamData(new MemoryStream(fileData))
+            .WithObjectSize(fileData.Length);
 
-        var response = await _minioClient.PutObjectAsync(args);
+        var response = await MinioClient.PutObjectAsync(args);
 
-        if ((int)response.ResponseStatusCode < 200 || (int)response.ResponseStatusCode >= 300)
-        {
-            throw new Exception($"Error uploading file: {response.ResponseContent}");
-        }
+        if (response.ResponseStatusCode == HttpStatusCode.OK) return true;
 
-        return true;
+        return false;
     }
 
     public async Task<Stream> DownloadFileAsync(string bucketName, string objectName)
@@ -77,15 +85,32 @@ public class MinioService(IMinioClient minioClient) : IMinioService
                 stream.CopyTo(memoryStream);
             });
 
-        await _minioClient.GetObjectAsync(args);
+        await MinioClient.GetObjectAsync(args);
 
         memoryStream.Seek(0, SeekOrigin.Begin);
         return memoryStream;
     }
 
+    public async Task<byte[]> DownloadFileAsBytesAsync(string bucketName, string objectName)
+    {
+        using var memoryStream = new MemoryStream();
+
+        var args = new GetObjectArgs()
+            .WithBucket(bucketName)
+            .WithObject(objectName)
+            .WithCallbackStream(stream =>
+            {
+                stream.CopyTo(memoryStream);
+            });
+
+        await MinioClient.GetObjectAsync(args);
+
+        return memoryStream.ToArray();
+    }
+
     public async Task<List<string>> ListBucketsAsync(EndpointFilter filter)
     {
-        var bucketList = await _minioClient.ListBucketsAsync();
+        var bucketList = await MinioClient.ListBucketsAsync();
 
         // List<Bucket> -> Collection<Bucket>
         var bucketCollection = new Collection<Minio.DataModel.Bucket>(bucketList.Buckets);
@@ -133,7 +158,7 @@ public class MinioService(IMinioClient minioClient) : IMinioService
 
         var objectNames = new List<string>();
 
-        await foreach (var item in _minioClient.ListObjectsEnumAsync(args))
+        await foreach (var item in MinioClient.ListObjectsEnumAsync(args))
         {
             if (item != null)
             {
@@ -177,7 +202,7 @@ public class MinioService(IMinioClient minioClient) : IMinioService
             .WithBucket(bucketName)
             .WithObject(objectName);
 
-        await _minioClient.RemoveObjectAsync(args);
+        await MinioClient.RemoveObjectAsync(args);
         return true;
     }
 
@@ -187,9 +212,9 @@ public class MinioService(IMinioClient minioClient) : IMinioService
             .WithBucket(bucketName)
             .WithObjects(objectNames);
 
-        var deleteErrors = await _minioClient.RemoveObjectsAsync(args);
+        var deleteErrors = await MinioClient.RemoveObjectsAsync(args);
 
-        if (deleteErrors != null && deleteErrors.Count > 0)
+        if (deleteErrors is { Count: > 0 })
         {
             var errorMessages = deleteErrors.Select(e => $"Error deleting object: {e.Key}");
             throw new AggregateException(errorMessages.Select(msg => new Exception(msg)));
@@ -203,8 +228,10 @@ public class MinioService(IMinioClient minioClient) : IMinioService
         var args = new RemoveBucketArgs()
             .WithBucket(bucketName);
 
-        await _minioClient.RemoveBucketAsync(args);
-        return true;
+        var task =  MinioClient.RemoveBucketAsync(args);
+        await task;
+
+        return task.IsCompletedSuccessfully;
     }
 
     public async Task<string> GeneratePreSignedUrlAsync(string bucketName, string objectName, int expiryInSeconds)
@@ -214,7 +241,7 @@ public class MinioService(IMinioClient minioClient) : IMinioService
             .WithObject(objectName)
             .WithExpiry(expiryInSeconds);
 
-        return await _minioClient.PresignedGetObjectAsync(args);
+        return await MinioClient.PresignedGetObjectAsync(args);
     }
 
     public async Task<IDictionary<string, string>> GetFileMetadataAsync(string bucketName, string objectName)
@@ -223,7 +250,7 @@ public class MinioService(IMinioClient minioClient) : IMinioService
             .WithBucket(bucketName)
             .WithObject(objectName);
 
-        var metadata = await _minioClient.StatObjectAsync(args);
+        var metadata = await MinioClient.StatObjectAsync(args);
         return metadata.MetaData;
     }
 
@@ -233,7 +260,7 @@ public class MinioService(IMinioClient minioClient) : IMinioService
             .WithBucket(bucketName)
             .WithObject(objectName);
 
-        var metadata = await _minioClient.StatObjectAsync(args);
+        var metadata = await MinioClient.StatObjectAsync(args);
 
         return metadata.ContentType;
     }
@@ -247,7 +274,7 @@ public class MinioService(IMinioClient minioClient) : IMinioService
 
         var objectNames = new List<string>();
 
-        await foreach (var item in _minioClient.ListObjectsEnumAsync(args))
+        await foreach (var item in MinioClient.ListObjectsEnumAsync(args))
         {
             if (item != null)
             {
