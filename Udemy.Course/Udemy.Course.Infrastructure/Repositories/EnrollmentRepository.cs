@@ -13,6 +13,27 @@ public class EnrollmentRepository(ApplicationDbContext context) : BaseRepository
 {
     private readonly ApplicationDbContext _context = context;
 
+    public async Task<IEnumerable<Guid>> AddManyAsync(IEnumerable<Enrollment> entities, Guid courseId)
+    {
+        var enrollments = entities as Enrollment[] ?? entities.ToArray();
+
+        if(!enrollments.Any())
+        {
+            return new List<Guid>();
+        }
+
+        foreach (var entity in enrollments)
+        {
+            entity.CourseId = courseId;
+        }
+
+        await _context.Enrollments.AddRangeAsync(enrollments);
+
+        await _context.SaveChangesAsync();
+
+        return enrollments.Select(x => x.Id);
+    }
+
     public async Task<IEnumerable<Enrollment>> GetAllAsync(Guid userId, Guid courseId, EndpointFilter filter)
     {
         var instructorIds = await _context.Courses.AsNoTracking()
