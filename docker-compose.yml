@@ -40,6 +40,7 @@
       - API_KEY=d0107a8c-b28d-4266-86e5-5ca24a48cc3f # secret api key that should not be known to anyone
       - SALT=123456
       - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - RABBITMQ_CONNECTION=amqp://admin:admin123@rabbitmq:5672
     depends_on:
       - consul
     networks:

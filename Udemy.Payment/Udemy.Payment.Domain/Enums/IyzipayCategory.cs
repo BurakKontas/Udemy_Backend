@@ -9,4 +9,5 @@ public class IyzipayCategory(string primary, string secondary)
     public static IyzipayCategory Book => new("Education", "Book");
     public static IyzipayCategory Software => new("Software", "Development");
     public static IyzipayCategory Service => new("Service", "Development");
+    public static IyzipayCategory NA => new("N/A", "N/A");
 }

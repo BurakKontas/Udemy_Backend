@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using MassTransit;
 using Udemy.Common.ModelBinder;
 using Udemy.Course.Domain.Entities;
 using Udemy.Course.Domain.Interfaces.Repository;
@@ -6,9 +7,10 @@ using Udemy.Course.Domain.Interfaces.Service;
 
 namespace Udemy.Course.Application.Services;
 
-public class EnrollmentService(IEnrollmentRepository enrollmentRepository) : IEnrollmentService
+public class EnrollmentService(IEnrollmentRepository enrollmentRepository, IBus bus) : IEnrollmentService
 {
     private readonly IEnrollmentRepository _enrollmentRepository = enrollmentRepository;
+    private readonly IBus _bus = bus;
 
     public async Task<Guid> AddAsync(Guid userId, Guid courseId)
     {

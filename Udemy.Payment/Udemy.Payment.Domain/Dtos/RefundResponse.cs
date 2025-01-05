@@ -1,4 +1,7 @@
-﻿namespace Udemy.Payment.Domain.Dtos;
+﻿using Iyzipay.Model;
+using Udemy.Payment.Domain.Enums;
+
+namespace Udemy.Payment.Domain.Dtos;
 
 public class RefundResponse
 {
@@ -6,4 +9,5 @@ public class RefundResponse
     public required string Status { get; set; }
     public required string ErrorMessage { get; set; }
     public DateTime RefundDate { get; set; }
+    public RefundReason RefundReason { get; set; }
 }

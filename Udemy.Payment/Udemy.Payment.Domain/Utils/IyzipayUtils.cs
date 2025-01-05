@@ -20,10 +20,10 @@ public static class IyzipayUtils
         return address;
     }
 
-    public static BasketItem CreateBasketItem(Guid itemId, string name, decimal price, IyzipayCategory category, BasketItemType itemType)
+    public static BasketItem CreateBasketItem(string itemId, string name, decimal price, IyzipayCategory category, BasketItemType itemType)
     {
         var item = new BasketItem();
-        item.Id = itemId.ToString();
+        item.Id = itemId;
         item.Name = name;
         item.Price = price.ToString("F2");
         item.Category1 = category.Primary;
@@ -33,9 +33,14 @@ public static class IyzipayUtils
         return item;
     }
 
-    public static List<BasketItem> CreateBasket(IEnumerable<(Guid itemId, string name, decimal price, IyzipayCategory category, BasketItemType itemType)> items)
+    public static List<BasketItem> CreateBasket(IEnumerable<(string itemId, string name, decimal price, IyzipayCategory category, BasketItemType itemType)> items)
     {
         return items.Select(item => CreateBasketItem(item.itemId, item.name, item.price, item.category, item.itemType)).ToList();
+    }
+
+    public static List<BasketItem> CreateBasket(IEnumerable<PaymentItem> items)
+    {
+        return items.Select(item => CreateBasketItem(item.ItemId, item.PaymentTransactionId, decimal.Parse(item.Price), IyzipayCategory.NA, BasketItemType.VIRTUAL)).ToList();
     }
 
     public static Buyer CreateBuyer(

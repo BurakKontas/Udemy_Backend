@@ -74,7 +74,7 @@ public class EnrollmentCreatedWithThreeDEventHandler(
 
         var threeDsPayment = await _iyzipayRepository.InitializeThreeDSecureAsync(threeDsRequest);
 
-        if (threeDsPayment.Status == PaymentStatus.Failed)
+        if (threeDsPayment.Status == PaymentStatus.Failure)
         {
             await context.RespondAsync(new PaymentFailed("Payment failed: 3D secure payment failed."));
             return;

@@ -11,4 +11,5 @@ public class PaymentDetailResponse
     public required string Currency { get; set; }
     public required DateTime PaymentDate { get; set; }
     public List<BasketItem>? BasketItems { get; set; }
+    public string ConversationId { get; set; }
 }

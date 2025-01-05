@@ -1,4 +1,5 @@
-﻿using Iyzipay.Model;
+﻿using System.Globalization;
+using Iyzipay.Model;
 using Iyzipay.Request;
 using Microsoft.Extensions.Logging;
 using Udemy.Payment.Domain.Dtos;
@@ -48,7 +49,8 @@ namespace Udemy.Payment.Infrastructure.Repositories
                     ErrorMessage = payment.ErrorMessage,
                     TransactionDate = DateTime.UtcNow,
                     BasketId = basketId,
-                    Card = CardEntity.MapToCardEntity(payment)
+                    Card = CardEntity.MapToCardEntity(payment),
+                    ConversationId = payment.ConversationId
                 };
             }
             catch (Exception ex)
@@ -77,12 +79,8 @@ namespace Udemy.Payment.Infrastructure.Repositories
                     Amount = Convert.ToDecimal(payment.PaidPrice),
                     Currency = payment.Currency,
                     PaymentDate = DateTime.UtcNow,
-                    BasketItems = payment.PaymentItems?.Select(item => new BasketItem
-                    {
-                        Id = item.ItemId,
-                        Name = "Undefined",
-                        Price = item.Price
-                    }).ToList()
+                    BasketItems = IyzipayUtils.CreateBasket(payment.PaymentItems),
+                    ConversationId = payment.ConversationId,
                 };
             }
             catch (Exception ex)
@@ -96,11 +94,12 @@ namespace Udemy.Payment.Infrastructure.Repositories
         {
             var refundRequest = new CreateRefundRequest
             {
-                PaymentTransactionId = request.PaymentId,
+                PaymentTransactionId = request.PaymentTransactionId,
                 Locale = Locale.TR.ToString(),
-                ConversationId = IyzipayUtils.GenerateId("REFUND_CONV"),
-                Price = request.RefundAmount.ToString("F2"),
-                Currency = Currency.TRY.ToString()
+                ConversationId = request.ConversationId,
+                Price = request.RefundAmount.ToString(CultureInfo.InvariantCulture),
+                Currency = Currency.TRY.ToString(),
+                Reason = request.Reason.ToString()
             };
 
             try
@@ -111,12 +110,42 @@ namespace Udemy.Payment.Infrastructure.Repositories
                     RefundId = refund.PaymentId,
                     Status = refund.Status,
                     ErrorMessage = refund.ErrorMessage,
-                    RefundDate = DateTime.UtcNow
+                    RefundDate = DateTime.UtcNow,
+                    RefundReason = request.Reason
                 };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while refunding payment for PaymentId: {PaymentId}", request.PaymentId);
+                _logger.LogError(ex, "Error occurred while refunding payment for PaymentId: {PaymentId}", request.PaymentTransactionId);
+                throw;
+            }
+        }
+
+        public async Task<CancelResponse> CancelPaymentAsync(CancelRequest request)
+        {
+            var cancelRequest = new CreateCancelRequest
+            {
+                PaymentId = request.PaymentId,
+                Locale = Locale.TR.ToString(),
+                ConversationId = request.ConversationId,
+                Reason = request.CancelReason.ToString()
+            };
+
+            try
+            {
+                var cancel = await Cancel.Create(cancelRequest, _options);
+                return new CancelResponse
+                {
+                    CancelId = cancel.PaymentId,
+                    Status = cancel.Status,
+                    ErrorMessage = cancel.ErrorMessage,
+                    CancelDate = DateTime.UtcNow,
+                    CancelReason = request.CancelReason
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while cancelling payment for PaymentId: {PaymentId}", request.PaymentId);
                 throw;
             }
         }

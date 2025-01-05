@@ -11,4 +11,5 @@ public interface IIyzipayRepository
     Task<PaymentResponse> CreatePaymentWithStoredCardAsync(StoredCardPaymentRequest request);
     Task<ThreeDSecureResponse> InitializeThreeDSecureAsync(ThreeDSecureRequest request);
     Task<ThreeDSecureResponse> CompleteThreeDSecureAsync(string paymentId);
+    Task<CancelResponse> CancelPaymentAsync(CancelRequest request);
 }

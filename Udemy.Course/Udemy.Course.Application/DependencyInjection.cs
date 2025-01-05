@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using FluentValidation;
+using Udemy.Common.Extensions;
 using Udemy.Course.Application.Services;
 using Udemy.Course.Application.Validators;
 using Udemy.Course.Domain.Interfaces.Service;
@@ -11,7 +12,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddValidatorsFromAssembly(Assembly.GetAssembly(typeof(DependencyInjection)));
+        var assembly = Assembly.GetAssembly(typeof(DependencyInjection));
+        services.AddValidatorsFromAssembly(assembly);
 
         services.AddScoped<ILessonService, LessonService>();
         services.AddScoped<IEnrollmentService, EnrollmentService>();
@@ -22,6 +24,9 @@ public static class DependencyInjection
         services.AddScoped<IAnswerService, AnswerService>();
         services.AddScoped<ILikeService, LikeService>();
         services.AddScoped<IFavoriteService, FavoriteService>();
+
+        var rabbitMqConnectionString = Environment.GetEnvironmentVariable("RABBITMQ_CONNECTION") ?? "amqp://admin:admin123@rabbitmq:5672";
+        services.AddMassTransitExtension(rabbitMqConnectionString, assembly!);
 
         return services;
     }

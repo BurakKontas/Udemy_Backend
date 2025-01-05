@@ -6,9 +6,10 @@ public static class PaymentStatusExtension
     {
         return status.ToLower() switch
         {
+            "success" => PaymentStatus.Success,
             "pending" => PaymentStatus.Pending,
             "successful" => PaymentStatus.Successful,
-            "failed" => PaymentStatus.Failed,
+            "failure" => PaymentStatus.Failure,
             "refunded" => PaymentStatus.Refunded,
             "canceled" => PaymentStatus.Canceled,
             "underreview" => PaymentStatus.UnderReview,

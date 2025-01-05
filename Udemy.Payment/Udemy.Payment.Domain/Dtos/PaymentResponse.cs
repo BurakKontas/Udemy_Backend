@@ -11,4 +11,5 @@ public class PaymentResponse
     public DateTime TransactionDate { get; set; }
     public string BasketId { get; set; }
     public CardEntity Card { get; set; }
+    public string ConversationId { get; set; }
 }
