@@ -60,7 +60,7 @@ public class AuthService : IAuthService
     {
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         var protectedId = await _userManager.GetUserIdAsync(user);
-        await _emailSender.SendConfirmationLinkAsync(user, email, $"http://localhost:3000/api/auth/v1/verify-email?token={token}&id={protectedId}");
+        await _emailSender.SendConfirmationLinkAsync(user, email, $"http://localhost:5000/api/auth/v1/verify-email?token={token}&id={protectedId}");
     }
 
     public async Task<SignInResult> LoginUserAsync(LoginRequest request, bool useCookie)

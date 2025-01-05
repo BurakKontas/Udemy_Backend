@@ -7,7 +7,8 @@
         "udemy.auth.api": "StartDebugging",
         "udemy.apigateway.api": "StartDebugging",
         "udemy.course.api": "StartDebugging",
-        "udemy.cdn.api": "StartDebugging"
+        "udemy.cdn.api": "StartDebugging",
+        "udemy.payment.api": "StartDebugging"
       }
     }
   }

@@ -1,4 +1,4 @@
-services:
+﻿services:
   udemy.auth.api:
     image: ${DOCKER_REGISTRY-}udemyauthapi
     build:
@@ -48,8 +48,8 @@ services:
   udemy.apigateway.api:
     image: ${DOCKER_REGISTRY-}udemyapigatewayapi
     ports:
-      - "3000:8080"
-      - "3001:8081"
+      - "5000:8080"
+      - "5001:8081"
     build:
       context: .
       dockerfile: Udemy.APIGateway/Udemy.APIGateway.API/Dockerfile
@@ -90,6 +90,61 @@ services:
     networks:
       - udemy_network
 
+  udemy.payment.api:
+    image: ${DOCKER_REGISTRY-}udemypaymentapi
+    environment:
+      - CONSUL_URL=http://consul:8500
+      - API_HOST=udemy.payment.api
+      - API_HTTP_PORT=8080
+      - API_HTTPS_PORT=8081
+      - API_KEY=d0107a8c-b28d-4266-86e5-5ca24a48cc3f # secret api key that should not be known to anyone
+      - SALT=123456
+    build:
+      context: .
+      dockerfile: Udemy.Payment/Udemy.Payment.API/Dockerfile
+    depends_on:
+      - consul
+      - rabbitmq
+    networks:
+      - udemy_network
+
+
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      # - "5672:5672" # AMQP protokolü
+      - "15672:15672" # Yönetim konsolu
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq  
+    networks:
+      - udemy_network
+
+  redis:
+    image: redis:7.2
+    container_name: redis
+    # ports:
+      # - "6379:6379" # Redis varsayılan portu
+    volumes:
+      - redis_data:/data
+    networks:
+      - udemy_network
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    ports:
+      - "8088:8081"
+    environment:
+      REDIS_HOSTS: "local:redis:6379"
+    volumes:
+     - redis_commander_data:/app/data
+    networks:
+      - udemy_network
 
   udemy.postgres:
     image: postgres:latest
@@ -183,9 +238,13 @@ volumes:
   consul_data:
   elasticsearch-data:
   minio_data:
+  redis_data:
+  redis_commander_data:
+  rabbitmq_data:
 
 networks:
   udemy_network:
     driver: bridge
+
 
 
