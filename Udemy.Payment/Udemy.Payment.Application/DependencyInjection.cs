@@ -9,7 +9,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
-        var rabbitMqConnectionString = Environment.GetEnvironmentVariable("RABBITMQ_CONNECTION") ?? throw new ArgumentNullException($"env:RABBITMQ_CONNECTION");
+        var rabbitMqConnectionString = Environment.GetEnvironmentVariable("RABBITMQ_CONNECTION") ?? "amqp://admin:admin123@rabbitmq:5672";
         services.AddMassTransitExtension(rabbitMqConnectionString, typeof(DependencyInjection).Assembly);
 
         return services;

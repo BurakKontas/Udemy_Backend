@@ -3,4 +3,4 @@ using Udemy.Common.Events.EventDtos;
 
 namespace Udemy.Common.Events.Enrollment;
 
-public record EnrollmentCreatedWithStoredCardEvent(Guid UserId, ICollection<EnrollmentEventDto> Enrollments, string CardId);
+public record EnrollmentCreatedWithStoredCardEvent(Guid UserId, ICollection<EnrollmentEventDto> Enrollments, string CardId, UserDataEventDto? UserData);

@@ -2,6 +2,8 @@
 using Iyzipay.Request;
 using Microsoft.Extensions.Logging;
 using Udemy.Payment.Domain.Dtos;
+using Udemy.Payment.Domain.Entities;
+using Udemy.Payment.Domain.Enums.Extensions;
 using Udemy.Payment.Domain.Interfaces;
 using Udemy.Payment.Domain.Utils;
 using IyzipayOptions = Iyzipay.Options;
@@ -16,12 +18,14 @@ namespace Udemy.Payment.Infrastructure.Repositories
 
         public async Task<PaymentResponse> CreatePaymentAsync(PaymentRequest request)
         {
-            _logger.LogInformation("Creating payment for BasketId: {BasketId} with amount: {Amount}", request.BasketId, request.Amount);
+            var basketId = IyzipayUtils.GenerateId("BASKET");
+
+            _logger.LogInformation("Creating payment for BasketId: {BasketId} with amount: {Amount}", basketId, request.Price);
 
             var createPaymentRequest = IyzipayUtils.CreatePaymentRequest(
                 conversationId: IyzipayUtils.GenerateId("PAYMENT_CONV"),
-                price: request.Amount,
-                basketId: request.BasketId,
+                price: request.Price,
+                basketId: basketId,
                 paymentChannel: PaymentChannel.WEB,
                 paymentGroup: PaymentGroup.PRODUCT,
                 buyer: request.Buyer,
@@ -40,14 +44,16 @@ namespace Udemy.Payment.Infrastructure.Repositories
                 return new PaymentResponse
                 {
                     PaymentId = payment.PaymentId,
-                    Status = payment.Status,
+                    Status = PaymentStatusExtension.GetPaymentStatus(payment.Status),
                     ErrorMessage = payment.ErrorMessage,
-                    TransactionDate = DateTime.UtcNow
+                    TransactionDate = DateTime.UtcNow,
+                    BasketId = basketId,
+                    Card = CardEntity.MapToCardEntity(payment)
                 };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating payment for BasketId: {BasketId}", request.BasketId);
+                _logger.LogError(ex, "Error occurred while creating payment for BasketId: {BasketId}", basketId);
                 throw;
             }
         }
@@ -67,7 +73,7 @@ namespace Udemy.Payment.Infrastructure.Repositories
                 return new PaymentDetailResponse
                 {
                     PaymentId = payment.PaymentId,
-                    Status = payment.Status,
+                    Status = PaymentStatusExtension.GetPaymentStatus(payment.Status),
                     Amount = Convert.ToDecimal(payment.PaidPrice),
                     Currency = payment.Currency,
                     PaymentDate = DateTime.UtcNow,
@@ -183,7 +189,7 @@ namespace Udemy.Payment.Infrastructure.Repositories
                 return new PaymentResponse
                 {
                     PaymentId = payment.PaymentId,
-                    Status = payment.Status,
+                    Status = PaymentStatusExtension.GetPaymentStatus(payment.Status),
                     ErrorMessage = payment.ErrorMessage,
                     TransactionDate = DateTime.UtcNow
                 };
@@ -218,13 +224,14 @@ namespace Udemy.Payment.Infrastructure.Repositories
                 {
                     PaymentId = IyzipayUtils.GenerateId("3DS_PAYMENT"),
                     HtmlContent = threeDSecure.HtmlContent,
-                    Status = threeDSecure.Status,
-                    ErrorMessage = threeDSecure.ErrorMessage
+                    Status = PaymentStatusExtension.GetPaymentStatus(threeDSecure.Status),
+                    ErrorMessage = threeDSecure.ErrorMessage,
+                    BasketId = threeDsRequest.BasketId
                 };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while initializing 3D Secure for BasketId: {BasketId}", request.BasketId);
+                _logger.LogError(ex, "Error occurred while initializing 3D Secure for BasketId: {BasketId}", threeDsRequest.BasketId);
                 throw;
             }
         }
@@ -243,8 +250,9 @@ namespace Udemy.Payment.Infrastructure.Repositories
                 return new ThreeDSecureResponse
                 {
                     PaymentId = payment.PaymentId,
-                    Status = payment.Status,
-                    ErrorMessage = payment.ErrorMessage
+                    Status = PaymentStatusExtension.GetPaymentStatus(payment.Status),
+                    ErrorMessage = payment.ErrorMessage,
+                    BasketId = payment.BasketId
                 };
             }
             catch (Exception ex)

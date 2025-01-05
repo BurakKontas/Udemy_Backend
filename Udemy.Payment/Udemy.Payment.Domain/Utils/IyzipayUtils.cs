@@ -1,5 +1,7 @@
 ﻿using Iyzipay.Model;
 using Iyzipay.Request;
+using Udemy.Common.Events.EventDtos;
+using Udemy.Payment.Domain.Entities;
 using Udemy.Payment.Domain.Enums;
 
 namespace Udemy.Payment.Domain.Utils;
@@ -65,12 +67,52 @@ public static class IyzipayUtils
             Ip = ip,
             City = city,
             Country = country,
-            ZipCode = zipCode
+            ZipCode = zipCode,
         };
 
         return buyer;
     }
 
+    public static Buyer CreateBuyer(UserDataEventDto userData)
+    {
+        var buyer = new Buyer
+        {
+            Id = userData.Id.ToString(),
+            Name = userData.Name,
+            Surname = userData.Surname,
+            Email = userData.Email,
+            GsmNumber = userData.GsmNumber,
+            IdentityNumber = "11111111111",
+            LastLoginDate = "N/A",
+            RegistrationDate = userData.RegistrationDate.ToString("yyyy-MM-dd HH:mm:ss"),
+            RegistrationAddress = userData.Address,
+            Ip = "0.0.0.0",
+            City = userData.City,
+            Country = userData.Country,
+            ZipCode = userData.ZipCode,
+        };
+
+        return buyer;
+    }
+
+    public static Buyer CreateBuyer(UserDataEntity userData)
+    {
+        return CreateBuyer(userData.ToDto());
+    }
+
+    public static PaymentCard CreatePaymentCard(CardInformationEventDto cardInformation, bool registerCard = false)
+    {
+        var card = new PaymentCard();
+        card.CardHolderName = cardInformation.CardHolderName;
+        card.CardNumber = cardInformation.CardNumber;
+        card.ExpireMonth = cardInformation.ExpireMonth.ToString();
+        card.ExpireYear = cardInformation.ExpireYear.ToString();
+        card.Cvc = cardInformation.Cvc.ToString();
+        card.RegisterCard = registerCard ? 1 : 0;
+        card.CardAlias = $"CARD-{cardInformation.CardNumber[..^4]}";
+
+        return card;
+    }
 
     public static PaymentCard CreatePaymentCard(string cardHolderName, string cardNumber, string expireMonth, string expireYear, string cvc, bool registerCard = false)
     {
@@ -124,8 +166,20 @@ public static class IyzipayUtils
         return request;
     }
 
+    public static Address GenerateNaAddress()
+    {
+        return new Address()
+        {
+            ContactName = "N/A",
+            City = "N/A",
+            Country = "N/A",
+            Description = "N/A",
+            ZipCode = "N/A"
+        };
+    }
+
     public static string GenerateId(string prefix = "")
     {
-        return $"{prefix}{Ulid.NewUlid()}";
+        return $"{prefix}-{Ulid.NewUlid()}";
     }
 }

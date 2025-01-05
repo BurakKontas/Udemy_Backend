@@ -93,6 +93,11 @@
   udemy.payment.api:
     image: ${DOCKER_REGISTRY-}udemypaymentapi
     environment:
+      - POSTGRES_HOST=udemy.postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=udemypaymentdb
+      - POSTGRES_USER=udemyuser
+      - POSTGRES_PASSWORD=udemypassword
       - CONSUL_URL=http://consul:8500
       - API_HOST=udemy.payment.api
       - API_HTTP_PORT=8080

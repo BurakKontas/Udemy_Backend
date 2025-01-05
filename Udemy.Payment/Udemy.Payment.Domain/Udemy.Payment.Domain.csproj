@@ -7,13 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Enums\" />
+    <Folder Include="Enums\Extensions\" />
     <Folder Include="Utils\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Iyzipay" Version="2.1.66" />
     <PackageReference Include="Ulid" Version="1.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Udemy.Common\Udemy.Common\Udemy.Common.csproj" />
   </ItemGroup>
 
 </Project>

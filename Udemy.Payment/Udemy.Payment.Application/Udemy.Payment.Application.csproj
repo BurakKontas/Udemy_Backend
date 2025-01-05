@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Udemy.Common\Udemy.Common\Udemy.Common.csproj" />
+    <ProjectReference Include="..\Udemy.Payment.Domain\Udemy.Payment.Domain.csproj" />
   </ItemGroup>
 
 </Project>
