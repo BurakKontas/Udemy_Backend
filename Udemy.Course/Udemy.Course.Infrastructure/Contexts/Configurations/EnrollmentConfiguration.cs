@@ -13,6 +13,8 @@ public class EnrollmentConfiguration : IEntityTypeConfiguration<Enrollment>
         builder.Property(e => e.EnrolledAt)
             .IsRequired();
 
+        builder.HasQueryFilter(x => x.IsPaid);
+
         builder.HasIndex(e => new { e.StudentId, e.CourseId }).IsUnique();
     }
 }

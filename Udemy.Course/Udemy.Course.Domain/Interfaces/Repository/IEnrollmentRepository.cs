@@ -13,4 +13,5 @@ public interface IEnrollmentRepository : IBaseRepository<Enrollment>
     Task<Guid> AddAsync(Enrollment entity, Guid courseId);
     Task<IEnumerable<Enrollment>> GetAllByCourseIdAsync(Guid userId, Guid courseId, EndpointFilter filter);
     Task<IEnumerable<Enrollment>> GetAllByUserIdAsync(Guid userId, EndpointFilter filter);
+    Task<IEnumerable<Enrollment>> GetUnpaidEnrollments(Guid courseId, EndpointFilter filter);
 }

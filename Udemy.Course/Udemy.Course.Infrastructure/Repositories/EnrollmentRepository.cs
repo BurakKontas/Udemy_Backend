@@ -152,4 +152,22 @@ public class EnrollmentRepository(ApplicationDbContext context) : BaseRepository
 
         return await query.ToListAsync();
     }
+
+    public async Task<IEnumerable<Enrollment>> GetUnpaidEnrollments(Guid courseId, EndpointFilter filter)
+    {
+        var query = _context.Enrollments.AsNoTracking()
+            .IgnoreQueryFilters()
+            .Where(x => x.CourseId == courseId && !x.IsPaid);
+
+        // Filtering
+        query = Filtering(query, filter);
+
+        // Sorting
+        query = Sorting(query, filter);
+
+        // Paginating
+        query = Paginating(query, filter);
+
+        return await query.ToListAsync();
+    }
 }

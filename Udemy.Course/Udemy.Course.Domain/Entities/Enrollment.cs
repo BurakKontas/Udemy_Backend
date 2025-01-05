@@ -9,6 +9,7 @@ public class Enrollment : BaseEntity
     public DateTimeOffset? CompletedAt { get; set; } = null;
     public List<Guid> CompletedLessons { get; set; } = [];
     public Guid CourseId { get; set; }
+    public bool IsPaid { get; set; } = false;
 
     public Enrollment() { }
 
