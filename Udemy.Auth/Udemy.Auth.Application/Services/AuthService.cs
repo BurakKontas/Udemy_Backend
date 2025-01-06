@@ -163,6 +163,8 @@ public class AuthService : IAuthService
 
     public AuthenticationTicket? GetIdentityFromToken(string token, CancellationToken cancellationToken)
     {
+        if (token.Contains("Bearer")) token = token.Split(" ")[1];
+
         var unprotectedToken = _bearerOptions.BearerTokenProtector.Unprotect(token);
         if (unprotectedToken == null) throw new ArgumentNullException($"Invalid token");
 

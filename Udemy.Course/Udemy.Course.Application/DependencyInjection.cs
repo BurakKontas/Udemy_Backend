@@ -25,8 +25,7 @@ public static class DependencyInjection
         services.AddScoped<ILikeService, LikeService>();
         services.AddScoped<IFavoriteService, FavoriteService>();
 
-        var rabbitMqConnectionString = Environment.GetEnvironmentVariable("RABBITMQ_CONNECTION") ?? "amqp://admin:admin123@rabbitmq:5672";
-        services.AddMassTransitExtension(rabbitMqConnectionString, assembly!);
+        services.AddMassTransitExtension(assembly!);
 
         return services;
     }

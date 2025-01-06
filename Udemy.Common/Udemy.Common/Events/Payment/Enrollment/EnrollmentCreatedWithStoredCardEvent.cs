@@ -1,6 +1,5 @@
-﻿using Udemy.Common.Events.Dtos;
-using Udemy.Common.Events.EventDtos;
+﻿using Udemy.Common.Events.Payment.EventDtos;
 
-namespace Udemy.Common.Events.Enrollment;
+namespace Udemy.Common.Events.Payment.Enrollment;
 
 public record EnrollmentCreatedWithStoredCardEvent(Guid UserId, ICollection<EnrollmentEventDto> Enrollments, string CardId, UserDataEventDto? UserData);

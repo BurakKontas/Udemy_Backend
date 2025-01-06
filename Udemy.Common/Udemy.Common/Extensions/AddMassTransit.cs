@@ -6,8 +6,10 @@ namespace Udemy.Common.Extensions;
 
 public static class AddMassTransit
 {
-    public static IServiceCollection AddMassTransitExtension(this IServiceCollection services, string connectionString, Assembly assembly)
+    public static IServiceCollection AddMassTransitExtension(this IServiceCollection services, Assembly assembly)
     {
+        var rabbitMqConnectionString = Environment.GetEnvironmentVariable("RABBITMQ_CONNECTION") ?? "amqp://admin:admin123@rabbitmq:5672";
+
         services.AddMassTransit(busConfigurator =>
         {
             busConfigurator.SetKebabCaseEndpointNameFormatter();
@@ -16,7 +18,7 @@ public static class AddMassTransit
 
             busConfigurator.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host(connectionString);
+                cfg.Host(rabbitMqConnectionString);
 
                 cfg.UseInMemoryOutbox(context);
 

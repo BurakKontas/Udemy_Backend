@@ -1,11 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Security.Authentication;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Authentication;
-using Udemy.Auth.Contracts.Response;
+﻿using MassTransit;
 using Udemy.Common.Consul;
+using Udemy.Common.Events.Auth;
 using Udemy.Common.Helpers;
 
 namespace Udemy.APIGateway.API.Middlewares;
@@ -16,8 +11,9 @@ public class IdentityMiddleware : IMiddleware
     private readonly HttpClient _httpClient;
     private readonly string API_KEY;
     private readonly string SALT;
+    private readonly IBus _bus;
 
-    public IdentityMiddleware(HttpClient httpClient, IConsulDiscoveryService discoveryService)
+    public IdentityMiddleware(HttpClient httpClient, IConsulDiscoveryService discoveryService, IBus bus)
     {
         _discoveryService = discoveryService;
 
@@ -29,6 +25,7 @@ public class IdentityMiddleware : IMiddleware
         _httpClient = new HttpClient(handler);
         API_KEY = Environment.GetEnvironmentVariable("API_KEY") ?? throw new ArgumentNullException($"env:API_KEY");
         SALT = Environment.GetEnvironmentVariable("SALT") ?? throw new ArgumentNullException($"env:SALT");
+        _bus = bus;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -39,14 +36,6 @@ public class IdentityMiddleware : IMiddleware
 
     private async Task AddAuthenticationTicketToHeaders(HttpContext context)
     {
-
-        var version = context.Request.Headers["X-API-Version"].ToString();
-
-        if (string.IsNullOrEmpty(version))
-        {
-            version = context.Request.Path.Value!.Split("/")[2];
-        }
-
         context.Request.Headers["X-Api-Key"] = API_KEY;
 
         var token = context.Request.Headers.Authorization.ToString();
@@ -56,29 +45,23 @@ public class IdentityMiddleware : IMiddleware
             return;
         }
 
-        var authUri = await _discoveryService.GetServiceUriAsync("Udemy.Auth.API");
-        //var requestUri = $"{authUri}/identity?token=" + token.Split(" ").Last();
-        var requestUri = $"{authUri}/{version}/identity?token=" + token.Split(" ").Last();
+        var identityEvent = new IdentityRequestedEvent(token);
 
-        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Split(" ").Last());
-        request.Headers.Add("X-Api-Key", API_KEY);
+        var response = await _bus.Request<IdentityRequestedEvent, IdentityRequestFinalizedEvent>(identityEvent);
 
-        var response = await _httpClient.SendAsync(request);
-
-        if (!response.IsSuccessStatusCode)
+        if(response.Message.IsFailure) 
         {
             return;
         }
 
-        var ticket = await response.Content.ReadFromJsonAsync<IdentityResponse>();
+        var ticket = response.Message.Success;
 
-        if (ticket == null)
+        if(ticket == null)
         {
-            return;
+            throw new InvalidOperationException("Ticket is null.");
         }
 
-        context.Request.Headers["X-User-Roles"] = string.Join(",", ticket.Roles);
+        context.Request.Headers["X-User-Roles"] = string.Join(",", ticket!.Roles);
         context.Request.Headers["X-User-IsAuthenticated"] = ticket.IsAuthenticated.ToString();
         context.Request.Headers["X-User-Name"] = ticket.Name ?? string.Empty;
         context.Request.Headers["X-User-AuthType"] = ticket.AuthenticationType ?? string.Empty;

@@ -9,12 +9,14 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+    <PackageReference Include="MassTransit.Abstractions" Version="8.3.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.11" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.11" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Udemy.Common\Udemy.Common\Udemy.Common.csproj" />
     <ProjectReference Include="..\Udemy.Auth.Domain\Udemy.Auth.Domain.csproj" />
   </ItemGroup>
 

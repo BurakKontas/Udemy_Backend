@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Consul;
 using Microsoft.Extensions.DependencyInjection;
+using Udemy.Common.Extensions;
 using Yarp.ReverseProxy.Configuration;
 using DestinationConfig = Yarp.ReverseProxy.Configuration.DestinationConfig;
 using RouteConfig = Yarp.ReverseProxy.Configuration.RouteConfig;
@@ -24,6 +25,7 @@ public static class DependencyInjection
                     handler.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, errors) => true;
             });
 
+        services.AddMassTransitExtension(typeof(DependencyInjection).Assembly);
 
         return services;
 
