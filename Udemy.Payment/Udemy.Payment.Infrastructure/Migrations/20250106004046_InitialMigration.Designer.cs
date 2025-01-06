@@ -12,7 +12,7 @@ using Udemy.Payment.Infrastructure.Contexts;
 namespace Udemy.Payment.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250105170150_InitialMigration")]
+    [Migration("20250106004046_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -30,8 +30,8 @@ namespace Udemy.Payment.Infrastructure.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
@@ -173,8 +173,8 @@ namespace Udemy.Payment.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("datetime");
+                    b.Property<DateTimeOffset>("PaymentDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("integer");
@@ -237,8 +237,8 @@ namespace Udemy.Payment.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<DateTime>("RegistrationDate")
-                        .HasColumnType("datetime");
+                    b.Property<DateTimeOffset>("RegistrationDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Surname")
                         .IsRequired()

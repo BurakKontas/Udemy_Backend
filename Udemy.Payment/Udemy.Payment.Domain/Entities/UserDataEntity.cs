@@ -1,5 +1,5 @@
 ﻿using Udemy.Common.Base;
-using Udemy.Common.Events.EventDtos;
+using Udemy.Common.Events.Payment.EventDtos;
 
 namespace Udemy.Payment.Domain.Entities;
 
@@ -8,7 +8,7 @@ public class UserDataEntity : BaseEntity
     public string Name { get; set; }
     public string Surname { get; set; }
     public string Email { get; set; }
-    public DateTime RegistrationDate { get; set; }
+    public DateTimeOffset RegistrationDate { get; set; }
     public string? GsmNumber { get; set; }
     public string? City { get; set; }
     public string? Country { get; set; }

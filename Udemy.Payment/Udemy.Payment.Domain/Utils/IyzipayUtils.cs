@@ -1,6 +1,6 @@
 ﻿using Iyzipay.Model;
 using Iyzipay.Request;
-using Udemy.Common.Events.EventDtos;
+using Udemy.Common.Events.Payment.EventDtos;
 using Udemy.Payment.Domain.Entities;
 using Udemy.Payment.Domain.Enums;
 
@@ -55,8 +55,8 @@ public static class IyzipayUtils
         string country,
         string address,
         string zipCode,
-        DateTime registrationDate,
-        DateTime lastLoginDate)
+        DateTimeOffset registrationDate,
+        DateTimeOffset lastLoginDate)
     {
         var buyer = new Buyer
         {

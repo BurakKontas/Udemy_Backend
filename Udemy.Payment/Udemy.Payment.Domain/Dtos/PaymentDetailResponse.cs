@@ -9,7 +9,7 @@ public class PaymentDetailResponse
     public required PaymentStatus Status { get; set; }
     public decimal Amount { get; set; }
     public required string Currency { get; set; }
-    public required DateTime PaymentDate { get; set; }
+    public required DateTimeOffset PaymentDate { get; set; }
     public List<BasketItem>? BasketItems { get; set; }
     public string ConversationId { get; set; }
 }

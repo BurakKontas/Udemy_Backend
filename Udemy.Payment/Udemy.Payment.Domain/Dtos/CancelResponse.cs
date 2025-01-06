@@ -7,6 +7,6 @@ public class CancelResponse
     public string CancelId { get; set; }
     public string Status { get; set; }
     public string ErrorMessage { get; set; }
-    public DateTime CancelDate { get; set; }
+    public DateTimeOffset CancelDate { get; set; }
     public RefundReason CancelReason { get; set; }
 }

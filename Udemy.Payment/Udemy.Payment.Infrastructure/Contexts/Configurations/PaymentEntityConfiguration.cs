@@ -11,7 +11,7 @@ public class PaymentEntityConfiguration : IEntityTypeConfiguration<PaymentEntity
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.TotalAmount).HasColumnType("decimal(18,2)").IsRequired();
-        builder.Property(x => x.PaymentDate).HasColumnType("datetime").IsRequired();
+        builder.Property(x => x.PaymentDate).IsRequired();
         builder.Property(x => x.Description).HasMaxLength(500);
         builder.Property(x => x.IpAddress).HasMaxLength(50);
 

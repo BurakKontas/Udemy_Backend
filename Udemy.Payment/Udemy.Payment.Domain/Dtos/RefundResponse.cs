@@ -8,6 +8,6 @@ public class RefundResponse
     public required string RefundId { get; set; }
     public required string Status { get; set; }
     public required string ErrorMessage { get; set; }
-    public DateTime RefundDate { get; set; }
+    public DateTimeOffset RefundDate { get; set; }
     public RefundReason RefundReason { get; set; }
 }

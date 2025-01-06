@@ -11,7 +11,7 @@ public class BasketEntityConfiguration : IEntityTypeConfiguration<BasketEntity>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.TotalAmount).HasColumnType("decimal(18,2)").IsRequired();
-        builder.Property(x => x.CreatedAt).HasColumnType("datetime").IsRequired();
+        builder.Property(x => x.CreatedAt).IsRequired();
 
         builder.HasMany(x => x.Items)
             .WithOne()

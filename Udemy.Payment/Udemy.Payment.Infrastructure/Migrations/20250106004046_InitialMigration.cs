@@ -17,7 +17,7 @@ namespace Udemy.Payment.Infrastructure.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -56,7 +56,7 @@ namespace Udemy.Payment.Infrastructure.Migrations
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Surname = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    RegistrationDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    RegistrationDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     GsmNumber = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: true),
                     City = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     Country = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
@@ -101,7 +101,7 @@ namespace Udemy.Payment.Infrastructure.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     PaymentMethod = table.Column<int>(type: "integer", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    PaymentDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    PaymentDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     IpAddress = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     PaymentStatus = table.Column<int>(type: "integer", nullable: false),

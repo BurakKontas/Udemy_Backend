@@ -1,7 +1,7 @@
 ﻿using Iyzipay.Model;
 using MassTransit;
 using Udemy.Common.Events;
-using Udemy.Common.Events.Enrollment;
+using Udemy.Common.Events.Payment.Enrollment;
 using Udemy.Payment.Domain.Dtos;
 using Udemy.Payment.Domain.Entities;
 using Udemy.Payment.Domain.Enums;
@@ -31,7 +31,7 @@ public class EnrollmentCreatedWithThreeDEventHandler(
         var price = message.Enrollments.Sum(x => x.Course.Price);
 
         var basketItems = message.Enrollments.Select(x =>
-            IyzipayUtils.CreateBasketItem(x.Course.Id, x.Course.Name, x.Course.Price, IyzipayCategory.Course, BasketItemType.VIRTUAL))
+            IyzipayUtils.CreateBasketItem(x.Course.Id.ToString(), x.Course.Name, x.Course.Price, IyzipayCategory.Course, BasketItemType.VIRTUAL))
         .ToList();
 
         var ifCardInformationExists = message.CardInformation is not null;

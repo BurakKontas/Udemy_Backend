@@ -9,7 +9,7 @@ public class PaymentEntity : BaseEntity
     public string Id { get; set; } = IyzipayUtils.GenerateId("PAYMENT");
     public PaymentMethod PaymentMethod { get; set; }
     public decimal TotalAmount { get; set; } 
-    public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset PaymentDate { get; set; } = DateTime.UtcNow;
     public string? Description { get; set; }
     public string? IpAddress { get; set; }
     public PaymentStatus PaymentStatus { get; set; }

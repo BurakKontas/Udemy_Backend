@@ -13,7 +13,7 @@ public class UserDataEntityConfiguration : IEntityTypeConfiguration<UserDataEnti
         builder.Property(x => x.Name).HasMaxLength(100).IsRequired();
         builder.Property(x => x.Surname).HasMaxLength(100).IsRequired();
         builder.Property(x => x.Email).HasMaxLength(255).IsRequired();
-        builder.Property(x => x.RegistrationDate).HasColumnType("datetime").IsRequired();
+        builder.Property(x => x.RegistrationDate).IsRequired();
         builder.Property(x => x.GsmNumber).HasMaxLength(15);
         builder.Property(x => x.City).HasMaxLength(100);
         builder.Property(x => x.Country).HasMaxLength(100);
